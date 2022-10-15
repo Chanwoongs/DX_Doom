@@ -101,9 +101,9 @@ XMFLOAT3 CameraClass::GetRotation()
 // This uses the position and rotation of the camera to build and to update the view matrix.
 void CameraClass::Render()
 {
-	XMVECTOR position;
+	XMVECTOR position, lookAt;
 
-	XMMATRIX rotationtempMatrix;
+	XMMATRIX rotationTempMatrix;
 
 	// Setup the position of the camera in the world.
 	position = XMLoadFloat3(&m_position);
@@ -113,16 +113,19 @@ void CameraClass::Render()
 	m_yaw = m_rotation.y * 0.0174532925f;
 	m_roll = m_rotation.z * 0.0174532925f;
 
+	// Setup where the camera is looking by default.
+	lookAt = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+
 	camRotationMatrix = XMMatrixRotationRollPitchYaw(m_pitch, m_yaw, m_roll);
 	m_target = XMVector3TransformCoord(m_defaultForward, camRotationMatrix);
 	m_target = XMVector3Normalize(m_target);
 
 	// Create the rotation matrix from the yaw, pitch, and roll values.
-	rotationtempMatrix = XMMatrixRotationY(m_yaw);
+	rotationTempMatrix = XMMatrixRotationY(m_yaw);
 
-	m_camRight = XMVector3TransformCoord(m_defaultRight, rotationtempMatrix); // 회전한 만큼 카메라의 오른쪽 벡터 설정
-	m_up = XMVector3TransformCoord(m_up, rotationtempMatrix); // 회전한 만큼 카메라의 위쪽 벡터 설정
-	m_camForward = XMVector3TransformCoord(m_defaultForward, rotationtempMatrix); // 회전한 만큼 카메라의 앞 벡터 설정
+	m_camRight = XMVector3TransformCoord(m_defaultRight, rotationTempMatrix); // 회전한 만큼 카메라의 오른쪽 벡터 설정
+	m_up = XMVector3TransformCoord(m_up, rotationTempMatrix); // 회전한 만큼 카메라의 위쪽 벡터 설정
+	m_camForward = XMVector3TransformCoord(m_defaultForward, rotationTempMatrix); // 회전한 만큼 카메라의 앞 벡터 설정
 
 	position += m_moveLeftRight * m_camRight; // 좌우 위치 이동
 	position += m_moveBackForward * m_camForward; // 앞뒤 위치 이동
@@ -154,6 +157,7 @@ void CameraClass::GetViewMatrix(XMMATRIX& viewMatrix)
 {
 	viewMatrix = m_viewMatrix;
 }
+
 
 void CameraClass::RotateCamera(float x, float y, float z)
 {

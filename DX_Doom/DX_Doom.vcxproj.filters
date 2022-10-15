@@ -33,6 +33,12 @@
     <None Include="data\color.vs">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="data\font.vs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="data\font.ps">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="colorshaderclass.cpp">
@@ -75,6 +81,21 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="bitmapclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="fontshaderclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="fontclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="textclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="model2Dclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="spriteclass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -121,5 +142,40 @@
     <ClInclude Include="bitmapclass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="fontclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fontshaderclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="textclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="model2Dclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="spriteclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="data\ET_Seafloor.dds">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\MT_Crosshair.dds">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\ET_Plane.dds">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\MT_Warewolf_0.dds">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\MT_Warewolf_1.dds">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\MT_Warewolf_2.dds">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

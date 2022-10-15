@@ -142,6 +142,8 @@
   <ItemGroup>
     <None Include="data\color.ps" />
     <None Include="data\color.vs" />
+    <None Include="data\font.ps" />
+    <None Include="data\font.vs" />
     <None Include="data\light.ps" />
     <None Include="data\light.vs" />
     <None Include="data\texture.ps" />
@@ -153,13 +155,18 @@
     <ClCompile Include="colorshaderclass.cpp" />
     <ClCompile Include="d3dclass.cpp" />
     <ClCompile Include="DDSTextureLoader.cpp" />
+    <ClCompile Include="fontclass.cpp" />
+    <ClCompile Include="fontshaderclass.cpp" />
     <ClCompile Include="graphicsclass.cpp" />
     <ClCompile Include="inputclass.cpp" />
     <ClCompile Include="lightclass.cpp" />
     <ClCompile Include="lightshaderclass.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="model2Dclass.cpp" />
     <ClCompile Include="modelclass.cpp" />
+    <ClCompile Include="spriteclass.cpp" />
     <ClCompile Include="systemclass.cpp" />
+    <ClCompile Include="textclass.cpp" />
     <ClCompile Include="textureclass.cpp" />
     <ClCompile Include="textureshaderclass.cpp" />
   </ItemGroup>
@@ -170,14 +177,27 @@
     <ClInclude Include="colorshaderclass.h" />
     <ClInclude Include="d3dclass.h" />
     <ClInclude Include="DDSTextureLoader.h" />
+    <ClInclude Include="fontclass.h" />
+    <ClInclude Include="fontshaderclass.h" />
     <ClInclude Include="graphicsclass.h" />
     <ClInclude Include="inputclass.h" />
     <ClInclude Include="lightclass.h" />
     <ClInclude Include="lightshaderclass.h" />
+    <ClInclude Include="model2Dclass.h" />
     <ClInclude Include="modelclass.h" />
+    <ClInclude Include="spriteclass.h" />
     <ClInclude Include="systemclass.h" />
+    <ClInclude Include="textclass.h" />
     <ClInclude Include="textureclass.h" />
     <ClInclude Include="textureshaderclass.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="data\ET_Plane.dds" />
+    <Image Include="data\ET_Seafloor.dds" />
+    <Image Include="data\MT_Crosshair.dds" />
+    <Image Include="data\MT_Warewolf_0.dds" />
+    <Image Include="data\MT_Warewolf_1.dds" />
+    <Image Include="data\MT_Warewolf_2.dds" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

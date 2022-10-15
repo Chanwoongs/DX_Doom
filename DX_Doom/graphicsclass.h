@@ -14,6 +14,11 @@
 #include "lightshaderclass.h"
 #include "lightclass.h"
 #include "textureshaderclass.h"
+#include "bitmapclass.h"
+#include "textclass.h"
+#include "spriteclass.h"
+#include "model2Dclass.h"
+
 
 /////////////
 // GLOBALS //
@@ -56,6 +61,13 @@ private:
 	ModelClass* m_Plane;
 
 	TextureShaderClass* m_TextureShader;
+	XMMATRIX m_BaseViewMatrix;
+
+	int m_ScreenWidth, m_ScreenHeight;
+	BitmapClass* m_Bitmap;
+	BitmapClass* m_Crosshair;
+
+	TextClass* m_Text;
 
 	LightShaderClass* m_LightShader;
 	LightClass* m_Light;
@@ -65,7 +77,12 @@ private:
 	bool m_specular;
 
 	XMFLOAT3* m_planePosition;
+	XMFLOAT3* m_monsterPosition;
 	int m_planeCount;
+
+	Model2DClass* m_Enemy;
+	const WCHAR** m_textureFileNames;
+	int frameNum;
 };
 
 #endif
