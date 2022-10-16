@@ -10,8 +10,10 @@
 //////////////
 #include <d3d11.h>
 #include <directxmath.h>
+#include <vector>
 
 using namespace DirectX;
+using namespace std;
 
 
 ///////////////////////
@@ -29,7 +31,7 @@ class Model2DClass
 private:
 	struct Animation
 	{
-		SpriteClass* sprites;
+		vector<SpriteClass*> sprites;
 	};
 
 public:
@@ -37,22 +39,26 @@ public:
 	Model2DClass(const Model2DClass&);
 	~Model2DClass();
 
-	bool Initialize(ID3D11Device*, int, int, const WCHAR*[]);
+	bool Initialize(ID3D11Device*, int, int[], int, int, const WCHAR**[]);
 	void Shutdown();
-	bool Render(ID3D11DeviceContext*, int, int, int);
+	bool Render(ID3D11DeviceContext*, int, int, int, int);
 
-	int GetMaxFrame() { return m_maxFrame; }
-	int GetIndexCount();
-	ID3D11ShaderResourceView* GetTexture();
+	vector<Animation*> GetAnimations() { return m_animations; }
+	int GetMaxFrameNum(int animationIndex) { return m_maxFrame[animationIndex]; }
+	int GetSpriteIndexCount(int, int);
+	ID3D11ShaderResourceView* GetSpriteTexture(int, int);
 
 private:
 	ID3D11Buffer* m_vertexBuffer, * m_indexBuffer;
 	int m_spriteWidth, m_spriteHeight;
-	int m_previousPosX, m_previousPosY;
+	int m_previousPosX, m_previousPos;
 
-	Animation m_Idle;
-	int m_maxFrame;
+	vector<Animation*> m_animations;
+	int m_animationCount;
+	int* m_maxFrame;
+	int m_currentAnimationIndex;
 	int m_currentSpriteIndex;
+
 };
 
 #endif

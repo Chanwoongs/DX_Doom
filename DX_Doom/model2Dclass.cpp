@@ -5,14 +5,9 @@
 
 
 Model2DClass::Model2DClass()
+	:
+	m_currentSpriteIndex(0)
 {
-	m_maxFrame = 4;
-	m_currentSpriteIndex = 0;
-
-	for (int i = 0; i < m_maxFrame; i++)
-	{
-		m_Idle.sprites = new SpriteClass[m_maxFrame];
-	}
 }
 
 
@@ -26,17 +21,50 @@ Model2DClass::~Model2DClass()
 }
 
 
-bool Model2DClass::Initialize(ID3D11Device* device, int spriteWidth, int spriteHeight, const WCHAR* textureFilenames[])
+bool Model2DClass::Initialize(ID3D11Device* device, int animationCount, int maxFrame[], int spriteWidth, int spriteHeight, const WCHAR** textureFilenames[])
 {
 	bool result;
-	
-	for (int i = 0; i < m_maxFrame; i++)
+
+	m_maxFrame = maxFrame;
+	m_animationCount = animationCount;
+
+	// 애니메이션 벡터 생성
+	for (int i = 0; i < m_animationCount; i++)
 	{
-		result = m_Idle.sprites[i].Initialize(device, spriteWidth, spriteHeight, textureFilenames[i]);
-		if (!result)
+		m_animations.push_back(new Animation());
+	}
+
+	// 애니메이션 안에 있는 이미지들 생성
+	for (auto ani : m_animations)
+	{
+		for (int i = 0; i < m_maxFrame[i]; i++)
 		{
-			return false;
+			ani->sprites.push_back(new SpriteClass());
 		}
+	}
+
+	/*
+	for (int i = 0; i < animationCount; i++)
+	{
+		for (int j = 0; j < m_maxFrame[i]; j++)
+		{
+			m_animations[i]->sprites =
+		}
+	}*/
+	
+	// 애니메이션 안에 있는 이미지들 초기화
+	int j = 0;
+	for (auto ani : m_animations)
+	{
+		for (int i = 0; i < m_maxFrame[i]; i++)
+		{
+			result = ani->sprites.at(i)->Initialize(device, spriteWidth, spriteHeight, textureFilenames[j][i]);
+			if (!result)
+			{
+				return false;
+			}
+		}
+		j++;
 	}
 
 	return true;
@@ -45,23 +73,35 @@ bool Model2DClass::Initialize(ID3D11Device* device, int spriteWidth, int spriteH
 
 void Model2DClass::Shutdown()
 {
-	for (int i = 0; i < m_maxFrame; i++)
+	// 애니메이션의 이미지들 삭제
+	for (auto ani : m_animations)
 	{
-		m_Idle.sprites[i].Shutdown();
+		for (int i = 0; i < m_maxFrame[i]; i++)
+		{
+			ani->sprites.at(i)->Shutdown();
+			delete ani->sprites.at(i);
+			ani->sprites.at(i) = 0;
+		}
 	}
-
-	delete[] m_Idle.sprites;
+	// 애니메이션 삭제
+	for (int i = 0; i < m_animationCount; i++)
+	{
+		delete m_animations.at(i);
+		m_animations.at(i) = 0;
+	}
 
 	return;
 }
 
 
-bool Model2DClass::Render(ID3D11DeviceContext* deviceContext, int positionX, int positionY, int frameNum)
+bool Model2DClass::Render(ID3D11DeviceContext* deviceContext, int positionX, int positionY, int animationIndex, int frameIndex)
 {
 	bool result;
-	m_currentSpriteIndex = frameNum;
+	m_currentAnimationIndex = animationIndex;
+	m_currentSpriteIndex = frameIndex;
 
-	result = m_Idle.sprites[m_currentSpriteIndex].Render(deviceContext, positionX, positionY);
+	// 원하는 애니메이션의 원하는 프레임 재생
+	result = m_animations.at(m_currentAnimationIndex)->sprites.at(m_currentSpriteIndex)->Render(deviceContext, positionX, positionY);
 	if (!result)
 	{
 		return false;
@@ -70,14 +110,12 @@ bool Model2DClass::Render(ID3D11DeviceContext* deviceContext, int positionX, int
 	return true;
 }
 
-int Model2DClass::GetIndexCount()
+int Model2DClass::GetSpriteIndexCount(int animationIndex, int spriteIndex)
 {
-	return m_Idle.sprites[m_currentSpriteIndex].GetIndexCount();
+	return m_animations.at(m_currentAnimationIndex)->sprites.at(m_currentSpriteIndex)->GetIndexCount();
 }
 
-
-ID3D11ShaderResourceView* Model2DClass::GetTexture()
+ID3D11ShaderResourceView* Model2DClass::GetSpriteTexture(int animationIndex, int spriteIndex)
 {
-	return  m_Idle.sprites[m_currentSpriteIndex].GetTexture();
+	return m_animations.at(m_currentAnimationIndex)->sprites.at(m_currentSpriteIndex)->GetTexture();
 }
-
