@@ -5,6 +5,12 @@
 #define _GRAPHICSCLASS_H_
 
 
+//////////////
+// INCLUDES //
+//////////////
+#include <vector>
+
+
 ///////////////////////
 // MY CLASS INCLUDES //
 ///////////////////////
@@ -18,6 +24,7 @@
 #include "textclass.h"
 #include "spriteclass.h"
 #include "model2Dclass.h"
+#include "enemyclass.h"
 
 
 /////////////
@@ -64,7 +71,6 @@ private:
 	XMMATRIX m_BaseViewMatrix;
 
 	int m_ScreenWidth, m_ScreenHeight;
-	BitmapClass* m_Bitmap;
 	BitmapClass* m_Crosshair;
 
 	TextClass* m_Text;
@@ -82,6 +88,12 @@ private:
 
 	Model2DClass* m_Enemy;
 	const WCHAR** m_textureFileNames;
+
+	EnemyClass* m_Zombie;
+	const WCHAR*** m_zombieTextureNames;
+	int m_zombieAnimationCount;
+	int m_zombieCurrentAnimationIndex;
+	int* m_zombieMaxFrame;
 	int frameNum;
 };
 

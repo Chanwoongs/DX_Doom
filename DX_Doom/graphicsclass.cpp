@@ -10,7 +10,6 @@ GraphicsClass::GraphicsClass()
 	m_Camera = 0;	
 
 	m_TextureShader = 0;
-	m_Bitmap = 0;
 	m_Text = 0;
 
 	m_LightShader = 0;
@@ -146,21 +145,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	// Create the bitmap object.
-	m_Bitmap = new BitmapClass;
-	if (!m_Bitmap)
-	{
-		return false;
-	}
-	// Initialize the bitmap object.
-	result = m_Bitmap->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight,
-		L"./data/ET_Seafloor.dds", 256, 256);
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
-		return false;
-	}
-
-	// Create the bitmap object.
 	m_Crosshair = new BitmapClass;
 	if (!m_Crosshair)
 	{
@@ -175,12 +159,12 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
+	/*
 	m_Enemy = new Model2DClass;
 	if (!m_Enemy)
 	{
 		return false;
 	}
-	m_Enemy->GetMaxFrame();
 	m_textureFileNames = new const WCHAR*[m_Enemy->GetMaxFrame()];
 	m_textureFileNames[0] = L"./data/MT_Warewolf_0.dds";
 	m_textureFileNames[1] = L"./data/MT_Warewolf_1.dds";
@@ -195,6 +179,76 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 	delete[] m_textureFileNames;
+	*/
+
+
+	m_zombieAnimationCount = 8;
+	m_zombieCurrentAnimationIndex = 0;
+	m_zombieMaxFrame = new int[m_zombieAnimationCount];
+	for (int i = 0; i < 8; i++)
+	{
+		m_zombieMaxFrame[i] = 4;
+	}
+	
+	m_zombieTextureNames = new const WCHAR**[m_zombieAnimationCount];
+	for (int i = 0; i < m_zombieAnimationCount; i++)
+	{
+		m_zombieTextureNames[i] = new const WCHAR*[m_zombieMaxFrame[i]];
+	}
+
+	m_zombieTextureNames[0][0] = L"./data/zombie/MT_Zombie_F_1.dds";
+	m_zombieTextureNames[0][1] = L"./data/zombie/MT_Zombie_F_2.dds";
+	m_zombieTextureNames[0][2] = L"./data/zombie/MT_Zombie_F_3.dds";
+	m_zombieTextureNames[0][3] = L"./data/zombie/MT_Zombie_F_4.dds";
+
+	m_zombieTextureNames[1][0] = L"./data/zombie/MT_Zombie_FL_1.dds";
+	m_zombieTextureNames[1][1] = L"./data/zombie/MT_Zombie_FL_2.dds";
+	m_zombieTextureNames[1][2] = L"./data/zombie/MT_Zombie_FL_3.dds";
+	m_zombieTextureNames[1][3] = L"./data/zombie/MT_Zombie_FL_4.dds";
+
+	m_zombieTextureNames[2][0] = L"./data/zombie/MT_Zombie_L_1.dds";
+	m_zombieTextureNames[2][1] = L"./data/zombie/MT_Zombie_L_2.dds";
+	m_zombieTextureNames[2][2] = L"./data/zombie/MT_Zombie_L_3.dds";
+	m_zombieTextureNames[2][3] = L"./data/zombie/MT_Zombie_L_4.dds";
+
+	m_zombieTextureNames[3][0] = L"./data/zombie/MT_Zombie_BL_1.dds";
+	m_zombieTextureNames[3][1] = L"./data/zombie/MT_Zombie_BL_2.dds";
+	m_zombieTextureNames[3][2] = L"./data/zombie/MT_Zombie_BL_3.dds";
+	m_zombieTextureNames[3][3] = L"./data/zombie/MT_Zombie_BL_4.dds";
+
+	m_zombieTextureNames[4][0] = L"./data/zombie/MT_Zombie_B_1.dds";
+	m_zombieTextureNames[4][1] = L"./data/zombie/MT_Zombie_B_2.dds";
+	m_zombieTextureNames[4][2] = L"./data/zombie/MT_Zombie_B_3.dds";
+	m_zombieTextureNames[4][3] = L"./data/zombie/MT_Zombie_B_4.dds";
+
+	m_zombieTextureNames[5][0] = L"./data/zombie/MT_Zombie_BR_1.dds";
+	m_zombieTextureNames[5][1] = L"./data/zombie/MT_Zombie_BR_2.dds";
+	m_zombieTextureNames[5][2] = L"./data/zombie/MT_Zombie_BR_3.dds";
+	m_zombieTextureNames[5][3] = L"./data/zombie/MT_Zombie_BR_4.dds";
+
+	m_zombieTextureNames[6][0] = L"./data/zombie/MT_Zombie_R_1.dds";
+	m_zombieTextureNames[6][1] = L"./data/zombie/MT_Zombie_R_2.dds";
+	m_zombieTextureNames[6][2] = L"./data/zombie/MT_Zombie_R_3.dds";
+	m_zombieTextureNames[6][3] = L"./data/zombie/MT_Zombie_R_4.dds";
+
+	m_zombieTextureNames[7][0] = L"./data/zombie/MT_Zombie_FR_1.dds";
+	m_zombieTextureNames[7][1] = L"./data/zombie/MT_Zombie_FR_2.dds";
+	m_zombieTextureNames[7][2] = L"./data/zombie/MT_Zombie_FR_3.dds";
+	m_zombieTextureNames[7][3] = L"./data/zombie/MT_Zombie_FR_4.dds";
+
+	m_Zombie = new EnemyClass(m_zombieAnimationCount, m_zombieMaxFrame, 10, 10, m_zombieTextureNames);
+
+	result = m_Zombie->Initialize(m_D3D->GetDevice());
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
+		return false;
+	}
+	for (int i = 0; i < m_zombieAnimationCount; i++)
+	{
+		delete[] m_zombieTextureNames[i];
+	}
+	delete[] m_zombieTextureNames;
 
 	return true;
 }
@@ -270,14 +324,6 @@ void GraphicsClass::Shutdown()
 		m_TextureShader = 0;
 	}
 
-	// Release the bitmap object.
-	if (m_Bitmap)
-	{
-		m_Bitmap->Shutdown();
-		delete m_Bitmap;
-		m_Bitmap = 0;
-	}
-
 	// Release the text object.
 	if (m_Text)
 	{
@@ -303,11 +349,11 @@ void GraphicsClass::Shutdown()
 	}
 
 	// Release the model object.
-	if (m_Enemy)
+	if (m_Zombie)
 	{
-		m_Enemy->Shutdown();
-		delete m_Enemy;
-		m_Enemy = 0;
+		m_Zombie->Shutdown();
+		delete m_Zombie;
+		m_Zombie = 0;
 	}
 
 	// Release the light object.
@@ -389,20 +435,22 @@ bool GraphicsClass::Render(float rotation)
 	m_D3D->TurnOnAlphaBlending();
 
 	// Put the bitmap vertex and index buffers on the graphics pipeline to prepare them for drawing.
-	result = m_Enemy->Render(m_D3D->GetDeviceContext(), 0, 0, frameNum / 25);
+	result = m_Zombie->Render(m_D3D->GetDeviceContext(), 0, 0, m_zombieCurrentAnimationIndex, frameNum / 25);
 	if (!result)
 	{
 		return false;
 	}
-	if (frameNum + 1 == m_Enemy->GetMaxFrame() * 25)
+	if (frameNum + 1 == m_Zombie->GetModel()->GetMaxFrameNum(m_zombieCurrentAnimationIndex) * 25)
 	{
 		frameNum = 0;
 	}
 	else frameNum++;
 
 	// Render the bitmap with the texture shader.
-	result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Enemy->GetIndexCount(),
-		worldMatrix, viewMatrix, projectionMatrix, m_Enemy->GetTexture());
+	result = m_TextureShader->Render(m_D3D->GetDeviceContext(), 
+		m_Zombie->GetModel()->GetSpriteIndexCount(m_zombieCurrentAnimationIndex, frameNum / 25),
+		worldMatrix, viewMatrix, projectionMatrix,
+		m_Zombie->GetModel()->GetSpriteTexture(m_zombieCurrentAnimationIndex, frameNum / 25));
 	if (!result)
 	{
 		return false;
@@ -414,21 +462,6 @@ bool GraphicsClass::Render(float rotation)
 	/////////////////////////////////////////////////////// 2D Render
 	// Turn off the Z buffer to begin all 2D rendering.
 	m_D3D->TurnZBufferOff();
-
-	// Put the bitmap vertex and index buffers on the graphics pipeline to prepare them for drawing.
-	result = m_Bitmap->Render(m_D3D->GetDeviceContext(), 0, 0);
-	if (!result)
-	{
-		return false;
-	}
-
-	// Render the bitmap with the texture shader.
-	result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Bitmap->GetIndexCount(),
-		worldMatrix, m_BaseViewMatrix, orthoMatrix, m_Bitmap->GetTexture());
-	if (!result)
-	{
-		return false;
-	}
 
 	// Turn on the alpha blending before rendering the text.
 	m_D3D->TurnOnAlphaBlending();
