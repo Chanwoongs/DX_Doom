@@ -1,2 +1,5 @@
 ﻿  graphicsclass.cpp
+C:\Users\Chanwoongs\Desktop\Project\DX_Doom\DX_Doom\graphicsclass.cpp(269,97): warning C4316: 'EnemyClass': object allocated on the heap may not be aligned 16
+C:\Users\Chanwoongs\Desktop\Project\DX_Doom\DX_Doom\graphicsclass.cpp(449,41): warning C4101: 'temp': unreferenced local variable
+C:\Users\Chanwoongs\Desktop\Project\DX_Doom\DX_Doom\graphicsclass.cpp(449,27): warning C4101: 'tempRotation': unreferenced local variable
   DX_Doom.vcxproj -> C:\Users\Chanwoongs\Desktop\Project\DX_Doom\DX_Doom\Debug\DX_Doom.exe
