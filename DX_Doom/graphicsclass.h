@@ -54,7 +54,7 @@ public:
 	void toggleDiffuse();
 	void toggleSpecular();
 
-	void SetPlanePosition();
+	void SetModelPosition();
 
 	CameraClass* GetCamera();
 
@@ -66,12 +66,14 @@ private:
 	CameraClass* m_Camera;
 
 	ModelClass* m_Plane;
+	ModelClass* m_Stage;
 
 	TextureShaderClass* m_TextureShader;
 	XMMATRIX m_BaseViewMatrix;
 
 	int m_ScreenWidth, m_ScreenHeight;
 	BitmapClass* m_Crosshair;
+	BitmapClass* m_Gun;
 
 	TextClass* m_Text;
 
@@ -83,8 +85,10 @@ private:
 	bool m_specular;
 
 	XMFLOAT3* m_planePosition;
-	XMFLOAT3* m_monsterPosition;
 	int m_planeCount;
+
+	XMFLOAT3* m_stagePosition;
+	int m_stageCount;
 
 	Model2DClass* m_Enemy;
 	const WCHAR** m_textureFileNames;

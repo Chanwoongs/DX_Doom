@@ -28,6 +28,14 @@ public:
 	bool Render(ID3D11DeviceContext*, int, int, int, int);
 	Model2DClass* GetModel() { return m_model; }
 
+	XMFLOAT3 GetPosition() { return m_position; }
+	void SetPosition(float, float, float);
+	void SetPosition(XMFLOAT3);
+
+	XMVECTOR GetForwardVector() { return m_forwardVec; }
+	void SetForwardVector(float ,float, float);
+	void SetForwardVector(XMVECTOR);
+
 private:
 	Model2DClass* m_model;
 	const WCHAR*** m_textureNames;
@@ -38,6 +46,9 @@ private:
 
 	float m_positionX;
 	float m_positionY;
+
+	XMFLOAT3 m_position;
+	XMVECTOR m_forwardVec;
 };
 
 #endif

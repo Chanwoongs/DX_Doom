@@ -56,3 +56,25 @@ bool EnemyClass::Render(ID3D11DeviceContext* deviceContext, int positionX, int p
 
 	return true;
 }
+
+void EnemyClass::SetPosition(float x, float y, float z)
+{
+	m_position.x = x;
+	m_position.y = y;
+	m_position.z = z;
+}
+
+void EnemyClass::SetPosition(XMFLOAT3 position)
+{
+	m_position = position;
+}
+
+void EnemyClass::SetForwardVector(float x, float y, float z)
+{
+	m_forwardVec = XMVectorSet(x, y, z, 0);
+}
+
+void EnemyClass::SetForwardVector(XMVECTOR forwardVec)
+{
+	m_forwardVec = forwardVec;
+}

@@ -21,7 +21,9 @@ GraphicsClass::GraphicsClass()
 
 	m_planeCount = 1;
 	m_planePosition = new XMFLOAT3[1];
-	m_monsterPosition = new XMFLOAT3[1];
+
+	m_stageCount = 1;
+	m_stagePosition = new XMFLOAT3[1];
 }
 
 
@@ -130,7 +132,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Light->SetSpecularPower(32.0f);
 
 	// Create the model object.
-	SetPlanePosition();
+	SetModelPosition();
 	m_Plane = new ModelClass(m_planePosition, m_planeCount);
 	if (!m_Plane)
 	{
@@ -138,6 +140,19 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 	// Initialize the model object.
 	result = m_Plane->Initialize(m_D3D->GetDevice(), L"./data/EM_Cube.obj", L"./data/ET_Plane.dds");
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
+		return false;
+	}
+
+	m_Stage = new ModelClass(m_stagePosition, m_stageCount);
+	if (!m_Stage)
+	{
+		return false;
+	}
+	// Initialize the model object.
+	result = m_Stage->Initialize(m_D3D->GetDevice(), L"./data/EM_Stage.obj", L"./data/ET_Seafloor.dds");
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
@@ -153,6 +168,21 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	// Initialize the bitmap object.
 	result = m_Crosshair->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight,
 		L"./data/MT_Crosshair.dds", 50, 50);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
+		return false;
+	}
+
+	// Create the bitmap object.
+	m_Gun = new BitmapClass;
+	if (!m_Gun)
+	{
+		return false;
+	}
+	// Initialize the bitmap object.
+	result = m_Gun->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight,
+		L"./data/MT_Gun.dds", 150, 150);
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
@@ -236,7 +266,9 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_zombieTextureNames[7][2] = L"./data/zombie/MT_Zombie_FR_3.dds";
 	m_zombieTextureNames[7][3] = L"./data/zombie/MT_Zombie_FR_4.dds";
 
-	m_Zombie = new EnemyClass(m_zombieAnimationCount, m_zombieMaxFrame, 10, 10, m_zombieTextureNames);
+	m_Zombie = new EnemyClass(m_zombieAnimationCount, m_zombieMaxFrame, 3, 3, m_zombieTextureNames);
+	m_Zombie->SetPosition(0, 0, 0);
+	m_Zombie->SetForwardVector(0, 0, -1);
 
 	result = m_Zombie->Initialize(m_D3D->GetDevice());
 	if (!result)
@@ -289,9 +321,10 @@ void GraphicsClass::toggleSpecular()
 	}
 }
 
-void GraphicsClass::SetPlanePosition()
+void GraphicsClass::SetModelPosition()
 {
 	m_planePosition[0] = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	m_stagePosition[0] = XMFLOAT3(0.0f, 0.0f, 0.0f);
 }
 
 CameraClass* GraphicsClass::GetCamera()
@@ -349,6 +382,14 @@ void GraphicsClass::Shutdown()
 	}
 
 	// Release the model object.
+	if (m_Gun)
+	{
+		m_Gun->Shutdown();
+		delete m_Gun;
+		m_Gun = 0;
+	}
+
+	// Release the model object.
 	if (m_Zombie)
 	{
 		m_Zombie->Shutdown();
@@ -382,11 +423,12 @@ bool GraphicsClass::Frame()
 
 
 	// Update the rotation variable each frame.
-	rotation += XM_PI * 0.005f;
+	rotation += XM_PI * 0.025f;
 	if (rotation > 360.0f)
 	{
 		rotation -= 360.0f;
 	}
+	m_Camera->StartHeadbob(rotation);
 
 	// Render the graphics scene.
 	result = Render(rotation);
@@ -400,15 +442,17 @@ bool GraphicsClass::Frame()
 
 bool GraphicsClass::Render(float rotation)
 {
-	XMMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
+	XMMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix, translateMatrix;
 	bool result;
+	XMFLOAT3 cameraPosition;
+	double angle, tempAngle;
+	float billboardRotation, tempRotation, temp;
 	
 	// Clear the buffers to begin the scene.
 	m_D3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
 
 	// Generate the view matrix based on the camera's position.
 	m_Camera->Render();
-
 	// Get the world, view, and projection matrices from the camera and d3d objects.
 	m_D3D->GetWorldMatrix(worldMatrix);
 	m_D3D->GetProjectionMatrix(projectionMatrix);
@@ -420,7 +464,7 @@ bool GraphicsClass::Render(float rotation)
 
 	// Render the model using the light shader.
 	result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Plane->GetVertexCount(), m_Plane->GetInstanceCount(),
-		worldMatrix * XMMatrixScaling(25.0f, 0.01f, 25.0f) * XMMatrixTranslation(0.0f, 0.0f, 0.0f), viewMatrix, projectionMatrix,
+		worldMatrix * XMMatrixScaling(100.0f, 0.01f, 100.0f) * XMMatrixTranslation(0.0f, 0.0f, 0.0f), viewMatrix, projectionMatrix,
 		m_Plane->GetTexture(),
 		m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
 		m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower(),
@@ -429,6 +473,86 @@ bool GraphicsClass::Render(float rotation)
 	{
 		return false;
 	}
+
+	m_Stage->Render(m_D3D->GetDeviceContext());
+
+	// Render the model using the light shader.
+	result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Stage->GetVertexCount(), m_Stage->GetInstanceCount(),
+		worldMatrix * XMMatrixScaling(0.5f, 0.2f, 0.5f) * XMMatrixTranslation(0.0f, 0.0f, 0.0f), viewMatrix, projectionMatrix,
+		m_Stage->GetTexture(),
+		m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
+		m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower(),
+		m_Light->GetAmbientToggle(), m_Light->GetDiffuseToggle(), m_Light->GetSpecularToggle());
+	if (!result)
+	{
+		return false;
+	}
+
+	// billboard
+	// Get the position of the camera.
+	cameraPosition = XMFLOAT3(m_Camera->GetPosition().x, m_Camera->GetPosition().y, m_Camera->GetPosition().z);
+
+	// Calculate the rotation that needs to be applied to the billboard model to face the current camera position using the arc tangent function.
+	angle = atan2(m_Zombie->GetPosition().x - cameraPosition.x, m_Zombie->GetPosition().z - cameraPosition.z) * (180.0 / XM_PI);
+	// Convert rotation into radians.
+	billboardRotation = (float)angle * 0.0174532925f;
+
+	auto tempWorldMatrix = worldMatrix;
+	// Setup the rotation the billboard at the origin using the world matrix.
+	tempWorldMatrix *= XMMatrixRotationY(billboardRotation);
+	// Setup the translation matrix from the billboard model.
+	translateMatrix = XMMatrixTranslation(m_Zombie->GetPosition().x, m_Zombie->GetPosition().y, m_Zombie->GetPosition().z);
+	// Finally combine the rotation and translation matrices to create the final world matrix for the billboard model.
+	tempWorldMatrix = XMMatrixMultiply(tempWorldMatrix, translateMatrix);
+	// billboard
+
+	// change animation
+	XMVECTOR enemyToPlayerVec = XMVector3Normalize(XMVectorSet(cameraPosition.x - m_Zombie->GetPosition().x, 0,
+		cameraPosition.z - m_Zombie->GetPosition().z, 0));
+	tempAngle = acos(XMVectorGetX(XMVector3Dot(enemyToPlayerVec, m_Zombie->GetForwardVector()))) * (180.0 / XM_PI);
+	float tempCross = XMVectorGetY(XMVector3Cross(m_Zombie->GetForwardVector(), enemyToPlayerVec));
+
+	// case Forward
+	if (tempAngle < 22.5f && tempAngle >= 0.0f)
+	{
+		m_zombieCurrentAnimationIndex = 0;
+	}
+	// case ForwardLeft
+	else if (tempAngle < 67.5f && tempAngle >= 22.5f && tempCross < 0)
+	{
+		m_zombieCurrentAnimationIndex = 1;
+	}
+	// case Left
+	else if (tempAngle < 112.5f && tempAngle >= 67.5f && tempCross < 0)
+	{
+		m_zombieCurrentAnimationIndex = 2;
+	}
+	// case BackLeft
+	else if (tempAngle < 157.5f && tempAngle >= 112.5f && tempCross < 0)
+	{
+		m_zombieCurrentAnimationIndex = 3;
+	}
+	// case Back
+	else if (tempAngle < 180.0f && tempAngle >= 157.5f)
+	{
+		m_zombieCurrentAnimationIndex = 4;
+	}
+	// case BackRight
+	else if (tempAngle < 157.5 && tempAngle >= 112.5f)
+	{
+		m_zombieCurrentAnimationIndex = 5;
+	}
+	// case Right
+	else if (tempAngle < 112.5f && tempAngle >= 67.5f)
+	{
+		m_zombieCurrentAnimationIndex = 6;
+	}
+	// case Back
+	else if (tempAngle < 67.5f && tempAngle >= 22.5f)
+	{
+		m_zombieCurrentAnimationIndex = 7;
+	}
+
 
 	/////////////////////////////////////////////////////// 2.5D Render
 	// Turn on the alpha blending before rendering the text.
@@ -449,7 +573,7 @@ bool GraphicsClass::Render(float rotation)
 	// Render the bitmap with the texture shader.
 	result = m_TextureShader->Render(m_D3D->GetDeviceContext(), 
 		m_Zombie->GetModel()->GetSpriteIndexCount(m_zombieCurrentAnimationIndex, frameNum / 25),
-		worldMatrix, viewMatrix, projectionMatrix,
+		tempWorldMatrix, viewMatrix, projectionMatrix,
 		m_Zombie->GetModel()->GetSpriteTexture(m_zombieCurrentAnimationIndex, frameNum / 25));
 	if (!result)
 	{
@@ -472,10 +596,23 @@ bool GraphicsClass::Render(float rotation)
 	{
 		return false;
 	}
-
 	// Render the bitmap with the texture shader.
 	result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Crosshair->GetIndexCount(),
 		worldMatrix, m_BaseViewMatrix, orthoMatrix, m_Crosshair->GetTexture());
+	if (!result)
+	{
+		return false;
+	}
+
+	// Put the bitmap vertex and index buffers on the graphics pipeline to prepare them for drawing.
+	result = m_Gun->Render(m_D3D->GetDeviceContext(), m_ScreenWidth / 2 - 75, m_ScreenHeight - 150);
+	if (!result)
+	{
+		return false;
+	}
+	// Render the bitmap with the texture shader.
+	result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Gun->GetIndexCount(),
+		worldMatrix, m_BaseViewMatrix, orthoMatrix, m_Gun->GetTexture());
 	if (!result)
 	{
 		return false;
