@@ -32,6 +32,8 @@ public:
 	void MoveForward(float);
 	void MoveDown(float);
 	void MoveUp(float);
+	void StartHeadbob(float);
+	void EndHeadbob(float);
 
 	XMFLOAT3 GetPosition();
 	XMFLOAT3 GetRotation();
@@ -40,6 +42,7 @@ public:
 	void GetViewMatrix(XMMATRIX&);
 	void RotateCamera(float, float, float);
 	void Move(float);
+	void StopMove() { m_isMoving = false; }
 
 private:
 	XMFLOAT3 m_position;
@@ -55,6 +58,9 @@ private:
 	XMVECTOR m_camRight, m_camForward;
 	XMVECTOR m_defaultRight, m_defaultForward;
 	float m_yaw, m_pitch, m_roll;
+
+	float m_defaultYPos;
+	bool m_isMoving;
 };
 
 #endif

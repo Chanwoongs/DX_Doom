@@ -124,7 +124,7 @@ void SystemClass::Run()
 			}
 		}
 
-		float speed = 0.01;
+		float speed = 0.07f;
 
 		// Check if the user pressed escape and wants to quit.
 		if (m_Input->IsEscapePressed() == true)
@@ -176,6 +176,8 @@ void SystemClass::Run()
 		else
 		{
 			isKeyPressed = false;
+			m_Graphics->GetCamera()->StopMove();
+			m_Graphics->GetCamera()->EndHeadbob(0.1f);
 		}
 
 	}

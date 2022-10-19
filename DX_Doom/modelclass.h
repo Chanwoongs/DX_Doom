@@ -66,6 +66,7 @@ public:
 	int GetIndexCount();
 	int GetInstanceCount();
 	ID3D11ShaderResourceView* GetTexture();
+	XMFLOAT3* GetPosition() { return m_instancePosition; }
 
 	bool LoadModel(const WCHAR*);
 	void ReleaseModel();

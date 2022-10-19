@@ -46,6 +46,8 @@ void CameraClass::SetPosition(float x, float y, float z)
 	m_position.x = x;
 	m_position.y = y;
 	m_position.z = z;
+
+	m_defaultYPos = y;
 }
 
 
@@ -59,31 +61,50 @@ void CameraClass::SetRotation(float x, float y, float z)
 void CameraClass::MoveLeft(float speed)
 {
 	m_moveLeftRight -= speed;
+	m_isMoving = true;
 }
 
 void CameraClass::MoveRight(float speed)
 {
 	m_moveLeftRight += speed;
+	m_isMoving = true;
 }
 
 void CameraClass::MoveBack(float speed)
 {
 	m_moveBackForward -= speed;
+	m_isMoving = true;
 }
 
 void CameraClass::MoveForward(float speed)
 {
 	m_moveBackForward += speed;
+	m_isMoving = true;
 }
 
 void CameraClass::MoveDown(float speed)
 {
 	m_moveUpDown -= speed;
+	m_isMoving = true;
 }
 
 void CameraClass::MoveUp(float speed)
 {
 	m_moveUpDown += speed;
+	m_isMoving = true;
+}
+
+void CameraClass::StartHeadbob(float timer)
+{
+	if (!m_isMoving) return;
+
+	m_position.y = m_defaultYPos + sin(timer) / 1.5f;
+}
+
+void CameraClass::EndHeadbob(float timer)
+{
+	XMVECTOR pos = XMVectorSet(m_position.x, m_position.y, m_position.z, 0);
+	m_position.y = XMVectorGetY(XMVectorLerp(pos, XMVectorSet(m_position.x, m_defaultYPos, m_position.z, 0), timer));
 }
 
 
