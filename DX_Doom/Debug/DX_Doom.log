@@ -1,5 +1,31 @@
-﻿  graphicsclass.cpp
+﻿  bitmapclass.cpp
+  cameraclass.cpp
+C:\Users\Chanwoongs\Desktop\Project\DX_Doom\DX_Doom\cameraclass.cpp(101,31): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  colorshaderclass.cpp
+  d3dclass.cpp
+  DDSTextureLoader.cpp
+  enemyclass.cpp
+C:\Users\Chanwoongs\Desktop\Project\DX_Doom\DX_Doom\enemyclass.cpp(48,16): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Users\Chanwoongs\Desktop\Project\DX_Doom\DX_Doom\enemyclass.cpp(49,16): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+  fontclass.cpp
+  fontshaderclass.cpp
+  graphicsclass.cpp
 C:\Users\Chanwoongs\Desktop\Project\DX_Doom\DX_Doom\graphicsclass.cpp(269,97): warning C4316: 'EnemyClass': object allocated on the heap may not be aligned 16
 C:\Users\Chanwoongs\Desktop\Project\DX_Doom\DX_Doom\graphicsclass.cpp(449,41): warning C4101: 'temp': unreferenced local variable
 C:\Users\Chanwoongs\Desktop\Project\DX_Doom\DX_Doom\graphicsclass.cpp(449,27): warning C4101: 'tempRotation': unreferenced local variable
+  inputclass.cpp
+  lightclass.cpp
+  lightshaderclass.cpp
+  main.cpp
+  model2Dclass.cpp
+  modelclass.cpp
+  spriteclass.cpp
+  systemclass.cpp
+C:\Users\Chanwoongs\Desktop\Project\DX_Doom\DX_Doom\systemclass.cpp(48,32): warning C4316: 'GraphicsClass': object allocated on the heap may not be aligned 16
+C:\Users\Chanwoongs\Desktop\Project\DX_Doom\DX_Doom\systemclass.cpp(204,63): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\Chanwoongs\Desktop\Project\DX_Doom\DX_Doom\systemclass.cpp(204,48): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+  textclass.cpp
+  textureclass.cpp
+  textureshaderclass.cpp
+  Generating Code...
   DX_Doom.vcxproj -> C:\Users\Chanwoongs\Desktop\Project\DX_Doom\DX_Doom\Debug\DX_Doom.exe
