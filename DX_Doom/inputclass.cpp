@@ -85,7 +85,7 @@ bool InputClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int
 	}
 
 	// Set the cooperative level of the mouse to share with other programs.
-	result = m_mouse->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
+	result = m_mouse->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE);
 	if (FAILED(result))
 	{
 		return false;
@@ -288,4 +288,15 @@ void InputClass::GetMouseState(float& mouseX, float& mouseY)
 {
 	mouseX = (float)m_mouseState.lX;
 	mouseY = (float)m_mouseState.lY;
+}
+
+bool InputClass::IsLeftMouseButtonDown()
+{
+	// 마우스 왼쪽 버튼이 현재 눌러져 있는지 확인합니다.
+	if (m_mouseState.rgbButtons[0] & 0x80)
+	{
+		return true;
+	}
+
+	return false;
 }

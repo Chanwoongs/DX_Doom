@@ -34,10 +34,12 @@ public:
 	void Shutdown();
 	bool Frame();
 
-	bool IsEscapePressed();
-	void GetMouseLocation(int&, int&);
 	bool GetKeyboardState(char&);
+	bool IsEscapePressed();
+
+	void GetMouseLocation(int&, int&);
 	void GetMouseState(float&, float&);
+	bool IsLeftMouseButtonDown();
 
 private:
 	bool ReadKeyboard();
