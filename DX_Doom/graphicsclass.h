@@ -57,6 +57,8 @@ struct BitmapInfo
 	int currentFrameNum;
 	int* bitmapsHeight;
 	int* bitmapsWidth;
+	int* bitmapsXPos;
+	int* bitmapsYPos;
 };
 
 
@@ -85,6 +87,10 @@ public:
 	void SetModels2DTextures();
 
 	CameraClass* GetCamera();
+
+	void StartShoot();
+	void PlayGunAnim();
+	void FinishShoot();
 
 private:
 	bool Render();
@@ -126,6 +132,9 @@ private:
 	EnemyClass* m_Zombie;
 	AnimationInfo m_ZombieAnimInfo;
 
+	bool m_isShoot;
+	bool m_isGunAnimPlay;
+	bool m_isGunAnimReversed;
 };
 
 #endif

@@ -41,6 +41,7 @@ public:
 	void Shutdown();
 	bool Render(ID3D11DeviceContext*, int, int);
 
+	int GetVertexCount() { return m_vertexCount; }
 	int GetIndexCount();
 	ID3D11ShaderResourceView* GetTexture();
 

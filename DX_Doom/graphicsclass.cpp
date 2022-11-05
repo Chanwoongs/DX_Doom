@@ -124,9 +124,9 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	// Initialize the light object.
-	m_Light->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
+	m_Light->SetAmbientColor(0.5f, 0.5f, 0.5f, 1.0f);
 	m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-	m_Light->SetDirection(1.0f, -0.5f, 1.0f);
+	m_Light->SetDirection(1.0f, -1.0f, 1.0f);
 	m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
 	m_Light->SetSpecularPower(32.0f);
 
@@ -194,18 +194,24 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 	delete[] m_ZombieAnimInfo.textureNames;
 
+
 	m_GunBitmapInfo.maxFrame = 4;
 	m_GunBitmapInfo.bitmapsWidth = new int[m_GunBitmapInfo.maxFrame];
 	m_GunBitmapInfo.bitmapsHeight = new int[m_GunBitmapInfo.maxFrame];
+	m_GunBitmapInfo.bitmapsXPos = new int[m_GunBitmapInfo.maxFrame];
 
 	m_GunBitmapInfo.bitmapsWidth[0] = 116;
-	m_GunBitmapInfo.bitmapsHeight[0] = 62;
+	m_GunBitmapInfo.bitmapsHeight[0] = 92;
+	m_GunBitmapInfo.bitmapsXPos[0] = m_ScreenWidth / 2 - (m_GunBitmapInfo.bitmapsWidth[0] / 2);
 	m_GunBitmapInfo.bitmapsWidth[1] = 116;
 	m_GunBitmapInfo.bitmapsHeight[1] = 120;
+	m_GunBitmapInfo.bitmapsXPos[1] = m_ScreenWidth / 2 - (m_GunBitmapInfo.bitmapsWidth[1] / 2) - 50;
 	m_GunBitmapInfo.bitmapsWidth[2] = 84;
 	m_GunBitmapInfo.bitmapsHeight[2] = 148;
+	m_GunBitmapInfo.bitmapsXPos[2] = m_ScreenWidth / 2 - (m_GunBitmapInfo.bitmapsWidth[2] / 2) - 100;
 	m_GunBitmapInfo.bitmapsWidth[3] = 112;
 	m_GunBitmapInfo.bitmapsHeight[3] = 128;
+	m_GunBitmapInfo.bitmapsXPos[3] = m_ScreenWidth / 2 - (m_GunBitmapInfo.bitmapsWidth[3] / 2) - 150;
 
 	m_GunBitmapInfo.textureNames = new const WCHAR*[m_GunBitmapInfo.maxFrame];
 
@@ -286,6 +292,48 @@ CameraClass* GraphicsClass::GetCamera()
 	return m_Camera;
 }
 
+void GraphicsClass::StartShoot()
+{
+	if (m_isShoot == false)
+	{
+		m_isShoot = true;
+		m_isGunAnimPlay = true;
+	}
+}
+
+void GraphicsClass::PlayGunAnim()
+{
+	if (m_isGunAnimPlay == true)
+	{
+		if (m_isGunAnimReversed == false)
+		{
+			m_GunBitmapInfo.currentFrameNum++;
+		}
+		else if (m_isGunAnimReversed == true)
+		{
+			m_GunBitmapInfo.currentFrameNum--;
+		}
+		
+		if (m_GunBitmapInfo.currentFrameNum + 1 == m_GunBitmapInfo.maxFrame * 25)
+		{
+			m_isGunAnimReversed = true;
+		}
+
+		if (m_isGunAnimReversed == true && m_GunBitmapInfo.currentFrameNum == 0)
+		{
+			m_isGunAnimPlay = false;
+			m_isGunAnimReversed = false;
+
+			return;
+		}
+	}
+}
+
+void GraphicsClass::FinishShoot()
+{
+	m_isShoot = false;
+}
+
 void GraphicsClass::Shutdown()
 {
 	// Release the D3D object.
@@ -340,6 +388,7 @@ void GraphicsClass::Shutdown()
 	{
 		delete[] m_GunBitmapInfo.bitmapsWidth;
 		delete[] m_GunBitmapInfo.bitmapsHeight;
+		delete[] m_GunBitmapInfo.bitmapsXPos;
 		delete[] m_GunBitmapInfo.textureNames;
 
 		for (int i = 0; i < m_GunBitmapInfo.maxFrame; i++)
@@ -405,6 +454,9 @@ bool GraphicsClass::Frame(int fps, int cpu, float frameTime)
 		bobAngle = 0.0f;
 	}
 	m_Camera->StartHeadbob(bobAngle);
+
+	// Play Gun Animation
+	PlayGunAnim();
 
 	// Render the graphics scene.
 	result = Render();
@@ -482,15 +534,28 @@ bool GraphicsClass::Render()
 	}
 	else m_ZombieAnimInfo.currentFrameNum++;
 
-	// Render the bitmap with the texture shader.
-	result = m_TextureShader->Render(m_D3D->GetDeviceContext(), 
-		m_Zombie->GetModel()->GetSpriteIndexCount(m_ZombieAnimInfo.currentAnimationIndex, m_ZombieAnimInfo.currentFrameNum / 25),
-		tempWorldMatrix, viewMatrix, projectionMatrix,
-		m_Zombie->GetModel()->GetSpriteTexture(m_ZombieAnimInfo.currentAnimationIndex, m_ZombieAnimInfo.currentFrameNum / 25));
+	// Render the model using the light shader.
+	result = m_LightShader->Render(m_D3D->GetDeviceContext(), 6, 1,
+		tempWorldMatrix * XMMatrixTranslation(0.0f, 0.0f, 0.0f), viewMatrix, projectionMatrix,
+		m_Zombie->GetModel()->GetSpriteTexture(m_ZombieAnimInfo.currentAnimationIndex, m_ZombieAnimInfo.currentFrameNum / 25),
+		m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
+		m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower(),
+		m_Light->GetAmbientToggle(), m_Light->GetDiffuseToggle(), m_Light->GetSpecularToggle());
 	if (!result)
 	{
 		return false;
 	}
+
+
+	//// Render the bitmap with the texture shader.
+	//result = m_TextureShader->Render(m_D3D->GetDeviceContext(), 
+	//	m_Zombie->GetModel()->GetSpriteIndexCount(m_ZombieAnimInfo.currentAnimationIndex, m_ZombieAnimInfo.currentFrameNum / 25),
+	//	tempWorldMatrix, viewMatrix, projectionMatrix,
+	//	m_Zombie->GetModel()->GetSpriteTexture(m_ZombieAnimInfo.currentAnimationIndex, m_ZombieAnimInfo.currentFrameNum / 25));
+	//if (!result)
+	//{
+	//	return false;
+	//}
 
 	// Turn off alpha blending after rendering the text.
 	m_D3D->TurnOffAlphaBlending();
@@ -517,15 +582,16 @@ bool GraphicsClass::Render()
 	}
 
 	// Put the bitmap vertex and index buffers on the graphics pipeline to prepare them for drawing.
-	result = m_Gun->bitmaps.at(0)->Render(m_D3D->GetDeviceContext(), 
-		m_ScreenWidth / 2 - m_GunBitmapInfo.bitmapsHeight[0], m_ScreenHeight - m_GunBitmapInfo.bitmapsWidth[0]);
+	result = m_Gun->bitmaps.at(m_GunBitmapInfo.currentFrameNum / 25)->Render(m_D3D->GetDeviceContext(),
+		m_GunBitmapInfo.bitmapsXPos[m_GunBitmapInfo.currentFrameNum / 25],
+		m_ScreenHeight - m_GunBitmapInfo.bitmapsHeight[m_GunBitmapInfo.currentFrameNum / 25]);
 	if (!result)
 	{
 		return false;
 	}
 	// Render the bitmap with the texture shader.
-	result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Gun->bitmaps.at(0)->GetIndexCount(),
-		worldMatrix, m_BaseViewMatrix, orthoMatrix, m_Gun->bitmaps.at(0)->GetTexture());
+	result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Gun->bitmaps.at(m_GunBitmapInfo.currentFrameNum / 25)->GetIndexCount(),
+		worldMatrix, m_BaseViewMatrix, orthoMatrix, m_Gun->bitmaps.at(m_GunBitmapInfo.currentFrameNum / 25)->GetTexture());
 	if (!result)
 	{
 		return false;
