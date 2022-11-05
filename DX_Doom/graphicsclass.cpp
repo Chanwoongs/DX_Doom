@@ -464,73 +464,9 @@ bool GraphicsClass::Render()
 		return false;
 	}
 
-	// billboard
-	// Get the position of the camera.
-	cameraPosition = XMFLOAT3(m_Camera->GetPosition().x, m_Camera->GetPosition().y, m_Camera->GetPosition().z);
-
-	// Calculate the rotation that needs to be applied to the billboard model to face the current camera position using the arc tangent function.
-	angle = atan2(m_Zombie->GetPosition().x - cameraPosition.x, m_Zombie->GetPosition().z - cameraPosition.z) * (180.0 / XM_PI);
-	// Convert rotation into radians.
-	billboardRotation = (float)angle * 0.0174532925f;
-
-	auto tempWorldMatrix = worldMatrix;
-	// Setup the rotation the billboard at the origin using the world matrix.
-	tempWorldMatrix *= XMMatrixRotationY(billboardRotation);
-	// Setup the translation matrix from the billboard model.
-	translateMatrix = XMMatrixTranslation(m_Zombie->GetPosition().x, m_Zombie->GetPosition().y, m_Zombie->GetPosition().z);
-	// Finally combine the rotation and translation matrices to create the final world matrix for the billboard model.
-	tempWorldMatrix = XMMatrixMultiply(tempWorldMatrix, translateMatrix);
-	// billboard
-
-	// change animation
-	XMVECTOR enemyToPlayerVec = XMVector3Normalize(XMVectorSet(cameraPosition.x - m_Zombie->GetPosition().x, 0,
-		cameraPosition.z - m_Zombie->GetPosition().z, 0));
-	tempAngle = acos(XMVectorGetX(XMVector3Dot(enemyToPlayerVec, m_Zombie->GetForwardVector()))) * (180.0 / XM_PI);
-	float tempCross = XMVectorGetY(XMVector3Cross(m_Zombie->GetForwardVector(), enemyToPlayerVec));
-
-	// case Forward
-	if (tempAngle < 22.5f && tempAngle >= 0.0f)
-	{
-		m_ZombieAnimInfo.currentAnimationIndex = 0;
-	}
-	// case ForwardLeft
-	else if (tempAngle < 67.5f && tempAngle >= 22.5f && tempCross < 0)
-	{
-		m_ZombieAnimInfo.currentAnimationIndex = 1;
-	}
-	// case Left
-	else if (tempAngle < 112.5f && tempAngle >= 67.5f && tempCross < 0)
-	{
-		m_ZombieAnimInfo.currentAnimationIndex = 2;
-	}
-	// case BackLeft
-	else if (tempAngle < 157.5f && tempAngle >= 112.5f && tempCross < 0)
-	{
-		m_ZombieAnimInfo.currentAnimationIndex = 3;
-	}
-	// case Back
-	else if (tempAngle < 180.0f && tempAngle >= 157.5f)
-	{
-		m_ZombieAnimInfo.currentAnimationIndex = 4;
-	}
-	// case BackRight
-	else if (tempAngle < 157.5 && tempAngle >= 112.5f)
-	{
-		m_ZombieAnimInfo.currentAnimationIndex = 5;
-	}
-	// case Right
-	else if (tempAngle < 112.5f && tempAngle >= 67.5f)
-	{
-		m_ZombieAnimInfo.currentAnimationIndex = 6;
-	}
-	// case Back
-	else if (tempAngle < 67.5f && tempAngle >= 22.5f)
-	{
-		m_ZombieAnimInfo.currentAnimationIndex = 7;
-	}
-
-
 	/////////////////////////////////////////////////////// 2.5D Render
+	// billboarding Enemy
+	auto tempWorldMatrix = UpdateEnemyWalkingAnimation(m_Zombie, m_ZombieAnimInfo);
 	// Turn on the alpha blending before rendering the text.
 	m_D3D->TurnOnAlphaBlending();
 
@@ -581,7 +517,8 @@ bool GraphicsClass::Render()
 	}
 
 	// Put the bitmap vertex and index buffers on the graphics pipeline to prepare them for drawing.
-	result = m_Gun->bitmaps.at(0)->Render(m_D3D->GetDeviceContext(), m_ScreenWidth / 2 - 75, m_ScreenHeight - 150);
+	result = m_Gun->bitmaps.at(0)->Render(m_D3D->GetDeviceContext(), 
+		m_ScreenWidth / 2 - m_GunBitmapInfo.bitmapsHeight[0], m_ScreenHeight - m_GunBitmapInfo.bitmapsWidth[0]);
 	if (!result)
 	{
 		return false;
@@ -619,6 +556,81 @@ bool GraphicsClass::Render()
 	m_D3D->EndScene();
 
 	return true;
+}
+
+XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, AnimationInfo& anim)
+{
+	XMMATRIX worldMatrix, translateMatrix;
+	XMFLOAT3 cameraPosition;
+	double angle, tempAngle;
+	float billboardRotation;
+
+	m_D3D->GetWorldMatrix(worldMatrix);
+
+	// Get the position of the camera.
+	cameraPosition = XMFLOAT3(m_Camera->GetPosition().x, m_Camera->GetPosition().y, m_Camera->GetPosition().z);
+
+	// Calculate the rotation that needs to be applied to the billboard model to face the current camera position using the arc tangent function.
+	angle = atan2(enemy->GetPosition().x - cameraPosition.x, enemy->GetPosition().z - cameraPosition.z) * (180.0 / XM_PI);
+	// Convert rotation into radians.
+	billboardRotation = (float)angle * 0.0174532925f;
+
+	XMMATRIX tempWorldMatrix = worldMatrix;
+	// Setup the rotation the billboard at the origin using the world matrix.
+	tempWorldMatrix *= XMMatrixRotationY(billboardRotation);
+	// Setup the translation matrix from the billboard model.
+	translateMatrix = XMMatrixTranslation(enemy->GetPosition().x, enemy->GetPosition().y, enemy->GetPosition().z);
+	// Finally combine the rotation and translation matrices to create the final world matrix for the billboard model.
+	tempWorldMatrix = XMMatrixMultiply(tempWorldMatrix, translateMatrix);
+
+	// change animation
+	XMVECTOR enemyToPlayerVec = XMVector3Normalize(XMVectorSet(cameraPosition.x - enemy->GetPosition().x, 0,
+		cameraPosition.z - enemy->GetPosition().z, 0));
+	tempAngle = acos(XMVectorGetX(XMVector3Dot(enemyToPlayerVec, enemy->GetForwardVector()))) * (180.0 / XM_PI);
+	float tempCross = XMVectorGetY(XMVector3Cross(enemy->GetForwardVector(), enemyToPlayerVec));
+
+	// case Forward
+	if (tempAngle < 22.5f && tempAngle >= 0.0f)
+	{
+		anim.currentAnimationIndex = 0;
+	}
+	// case ForwardLeft
+	else if (tempAngle < 67.5f && tempAngle >= 22.5f && tempCross < 0)
+	{
+		anim.currentAnimationIndex = 1;
+	}
+	// case Left
+	else if (tempAngle < 112.5f && tempAngle >= 67.5f && tempCross < 0)
+	{
+		anim.currentAnimationIndex = 2;
+	}
+	// case BackLeft
+	else if (tempAngle < 157.5f && tempAngle >= 112.5f && tempCross < 0)
+	{
+		anim.currentAnimationIndex = 3;
+	}
+	// case Back
+	else if (tempAngle < 180.0f && tempAngle >= 157.5f)
+	{
+		anim.currentAnimationIndex = 4;
+	}
+	// case BackRight
+	else if (tempAngle < 157.5 && tempAngle >= 112.5f)
+	{
+		anim.currentAnimationIndex = 5;
+	}
+	// case Right
+	else if (tempAngle < 112.5f && tempAngle >= 67.5f)
+	{
+		anim.currentAnimationIndex = 6;
+	}
+	// case Back
+	else if (tempAngle < 67.5f && tempAngle >= 22.5f)
+	{
+		anim.currentAnimationIndex = 7;
+	}
+
+	return tempWorldMatrix;
 }
 
 void GraphicsClass::SetModel2DAnimInfo(AnimationInfo& anim, int animationCount, int maxFrame)

@@ -88,6 +88,7 @@ public:
 
 private:
 	bool Render();
+	XMMATRIX UpdateEnemyWalkingAnimation(EnemyClass*, AnimationInfo&);
 
 private:
 	D3DClass* m_D3D;
