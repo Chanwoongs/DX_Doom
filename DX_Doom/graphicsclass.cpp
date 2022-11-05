@@ -4,7 +4,7 @@
 #include "graphicsclass.h"
 
 
-GraphicsClass::GraphicsClass()
+GraphicsClass::GraphicsClass() 
 {
 	m_D3D = 0;
 	m_Camera = 0;	
@@ -68,7 +68,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	// Set the initial position of the camera.
 	m_Camera->SetPosition(0.0f, 2.0f, -5.0f);	// for cube
 	// Initialize a base view matrix with the camera for 2D user interface rendering.
-
 	m_Camera->Render();
 	m_Camera->GetViewMatrix(m_BaseViewMatrix);
 
@@ -174,99 +173,12 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
-	// Create the bitmap object.
-	m_Gun = new BitmapClass;
-	if (!m_Gun)
-	{
-		return false;
-	}
-	// Initialize the bitmap object.
-	result = m_Gun->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight,
-		L"./data/MT_Gun.dds", 150, 150);
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
-		return false;
-	}
 
-	/*
-	m_Enemy = new Model2DClass;
-	if (!m_Enemy)
-	{
-		return false;
-	}
-	m_textureFileNames = new const WCHAR*[m_Enemy->GetMaxFrame()];
-	m_textureFileNames[0] = L"./data/MT_Warewolf_0.dds";
-	m_textureFileNames[1] = L"./data/MT_Warewolf_1.dds";
-	m_textureFileNames[2] = L"./data/MT_Warewolf_0.dds";
-	m_textureFileNames[3] = L"./data/MT_Warewolf_2.dds";
-	// Initialize the bitmap object.
-	result = m_Enemy->Initialize(m_D3D->GetDevice(), 10, 10,
-		m_textureFileNames);
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
-		return false;
-	}
-	delete[] m_textureFileNames;
-	*/
+	SetModel2DAnimInfo(m_ZombieAnimInfo, 8, 4);
+	SetModels2DTextures();
 
-
-	m_zombieAnimationCount = 8;
-	m_zombieCurrentAnimationIndex = 0;
-	m_zombieMaxFrame = new int[m_zombieAnimationCount];
-	for (int i = 0; i < 8; i++)
-	{
-		m_zombieMaxFrame[i] = 4;
-	}
-	
-	m_zombieTextureNames = new const WCHAR**[m_zombieAnimationCount];
-	for (int i = 0; i < m_zombieAnimationCount; i++)
-	{
-		m_zombieTextureNames[i] = new const WCHAR*[m_zombieMaxFrame[i]];
-	}
-
-	m_zombieTextureNames[0][0] = L"./data/zombie/MT_Zombie_F_1.dds";
-	m_zombieTextureNames[0][1] = L"./data/zombie/MT_Zombie_F_2.dds";
-	m_zombieTextureNames[0][2] = L"./data/zombie/MT_Zombie_F_3.dds";
-	m_zombieTextureNames[0][3] = L"./data/zombie/MT_Zombie_F_4.dds";
-
-	m_zombieTextureNames[1][0] = L"./data/zombie/MT_Zombie_FL_1.dds";
-	m_zombieTextureNames[1][1] = L"./data/zombie/MT_Zombie_FL_2.dds";
-	m_zombieTextureNames[1][2] = L"./data/zombie/MT_Zombie_FL_3.dds";
-	m_zombieTextureNames[1][3] = L"./data/zombie/MT_Zombie_FL_4.dds";
-
-	m_zombieTextureNames[2][0] = L"./data/zombie/MT_Zombie_L_1.dds";
-	m_zombieTextureNames[2][1] = L"./data/zombie/MT_Zombie_L_2.dds";
-	m_zombieTextureNames[2][2] = L"./data/zombie/MT_Zombie_L_3.dds";
-	m_zombieTextureNames[2][3] = L"./data/zombie/MT_Zombie_L_4.dds";
-
-	m_zombieTextureNames[3][0] = L"./data/zombie/MT_Zombie_BL_1.dds";
-	m_zombieTextureNames[3][1] = L"./data/zombie/MT_Zombie_BL_2.dds";
-	m_zombieTextureNames[3][2] = L"./data/zombie/MT_Zombie_BL_3.dds";
-	m_zombieTextureNames[3][3] = L"./data/zombie/MT_Zombie_BL_4.dds";
-
-	m_zombieTextureNames[4][0] = L"./data/zombie/MT_Zombie_B_1.dds";
-	m_zombieTextureNames[4][1] = L"./data/zombie/MT_Zombie_B_2.dds";
-	m_zombieTextureNames[4][2] = L"./data/zombie/MT_Zombie_B_3.dds";
-	m_zombieTextureNames[4][3] = L"./data/zombie/MT_Zombie_B_4.dds";
-
-	m_zombieTextureNames[5][0] = L"./data/zombie/MT_Zombie_BR_1.dds";
-	m_zombieTextureNames[5][1] = L"./data/zombie/MT_Zombie_BR_2.dds";
-	m_zombieTextureNames[5][2] = L"./data/zombie/MT_Zombie_BR_3.dds";
-	m_zombieTextureNames[5][3] = L"./data/zombie/MT_Zombie_BR_4.dds";
-
-	m_zombieTextureNames[6][0] = L"./data/zombie/MT_Zombie_R_1.dds";
-	m_zombieTextureNames[6][1] = L"./data/zombie/MT_Zombie_R_2.dds";
-	m_zombieTextureNames[6][2] = L"./data/zombie/MT_Zombie_R_3.dds";
-	m_zombieTextureNames[6][3] = L"./data/zombie/MT_Zombie_R_4.dds";
-
-	m_zombieTextureNames[7][0] = L"./data/zombie/MT_Zombie_FR_1.dds";
-	m_zombieTextureNames[7][1] = L"./data/zombie/MT_Zombie_FR_2.dds";
-	m_zombieTextureNames[7][2] = L"./data/zombie/MT_Zombie_FR_3.dds";
-	m_zombieTextureNames[7][3] = L"./data/zombie/MT_Zombie_FR_4.dds";
-
-	m_Zombie = new EnemyClass(m_zombieAnimationCount, m_zombieMaxFrame, 3, 3, m_zombieTextureNames);
+	// Zombie
+	m_Zombie = new EnemyClass(m_ZombieAnimInfo.animationCount, m_ZombieAnimInfo.maxFrame, 3, 3, m_ZombieAnimInfo.textureNames);
 	m_Zombie->SetPosition(0, 0, 0);
 	m_Zombie->SetForwardVector(0, 0, -1);
 
@@ -276,11 +188,52 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
 		return false;
 	}
-	for (int i = 0; i < m_zombieAnimationCount; i++)
+	for (int i = 0; i < m_ZombieAnimInfo.animationCount; i++)
 	{
-		delete[] m_zombieTextureNames[i];
+		delete[] m_ZombieAnimInfo.textureNames[i];
 	}
-	delete[] m_zombieTextureNames;
+	delete[] m_ZombieAnimInfo.textureNames;
+
+	m_GunBitmapInfo.maxFrame = 4;
+	m_GunBitmapInfo.bitmapsWidth = new int[m_GunBitmapInfo.maxFrame];
+	m_GunBitmapInfo.bitmapsHeight = new int[m_GunBitmapInfo.maxFrame];
+
+	m_GunBitmapInfo.bitmapsWidth[0] = 116;
+	m_GunBitmapInfo.bitmapsHeight[0] = 62;
+	m_GunBitmapInfo.bitmapsWidth[1] = 116;
+	m_GunBitmapInfo.bitmapsHeight[1] = 120;
+	m_GunBitmapInfo.bitmapsWidth[2] = 84;
+	m_GunBitmapInfo.bitmapsHeight[2] = 148;
+	m_GunBitmapInfo.bitmapsWidth[3] = 112;
+	m_GunBitmapInfo.bitmapsHeight[3] = 128;
+
+	m_GunBitmapInfo.textureNames = new const WCHAR*[m_GunBitmapInfo.maxFrame];
+
+	m_GunBitmapInfo.textureNames[0] = L"./data/Gun/MT_Gun_1.dds";
+	m_GunBitmapInfo.textureNames[1] = L"./data/Gun/MT_Gun_2.dds";
+	m_GunBitmapInfo.textureNames[2] = L"./data/Gun/MT_Gun_3.dds";
+	m_GunBitmapInfo.textureNames[3] = L"./data/Gun/MT_Gun_4.dds";
+
+	m_Gun = new Bitmaps;
+
+	for (int i = 0; i < m_GunBitmapInfo.maxFrame; i++)
+	{
+		m_Gun->bitmaps.push_back(new BitmapClass());
+	}
+
+	// Initialize the bitmap object.
+	for (size_t i = 0; i < m_GunBitmapInfo.maxFrame; i++)
+	{
+		result = m_Gun->bitmaps.at(i)->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight,
+			m_GunBitmapInfo.textureNames[i], m_GunBitmapInfo.bitmapsWidth[i], m_GunBitmapInfo.bitmapsHeight[i]);
+		if (!result)
+		{
+			MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
+			return false;
+		}
+	}
+	
+
 
 	return true;
 }
@@ -326,6 +279,7 @@ void GraphicsClass::SetModelPosition()
 	m_planePosition[0] = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	m_stagePosition[0] = XMFLOAT3(0.0f, 0.0f, 0.0f);
 }
+
 
 CameraClass* GraphicsClass::GetCamera()
 {
@@ -384,7 +338,15 @@ void GraphicsClass::Shutdown()
 	// Release the model object.
 	if (m_Gun)
 	{
-		m_Gun->Shutdown();
+		delete[] m_GunBitmapInfo.bitmapsWidth;
+		delete[] m_GunBitmapInfo.bitmapsHeight;
+		delete[] m_GunBitmapInfo.textureNames;
+
+		for (int i = 0; i < m_GunBitmapInfo.maxFrame; i++)
+		{
+			m_Gun->bitmaps.at(i)->Shutdown();
+			delete m_Gun->bitmaps.at(i);
+		}
 		delete m_Gun;
 		m_Gun = 0;
 	}
@@ -418,8 +380,10 @@ void GraphicsClass::Shutdown()
 bool GraphicsClass::Frame(int fps, int cpu, float frameTime)
 {
 	bool result;
-	static float rotation = 0.0f;
+	static float bobAngle = 0.0f;
 
+	auto deltaTime = frameTime;
+	 
 	// Set the frames per second.
 	result = m_Text->SetFps(fps, m_D3D->GetDeviceContext());
 	if (!result)
@@ -433,17 +397,17 @@ bool GraphicsClass::Frame(int fps, int cpu, float frameTime)
 		return false;
 	}
 
-
 	// Update the rotation variable each frame.
-	rotation += XM_PI * 0.025f;
-	if (rotation > 360.0f)
+	bobAngle += XM_PI * 0.025f;
+
+	if (bobAngle > 360.0f)
 	{
-		rotation -= 360.0f;
+		bobAngle = 0.0f;
 	}
-	m_Camera->StartHeadbob(rotation);
+	m_Camera->StartHeadbob(bobAngle);
 
 	// Render the graphics scene.
-	result = Render(rotation);
+	result = Render();
 	if(!result)
 	{
 		return false;
@@ -452,13 +416,13 @@ bool GraphicsClass::Frame(int fps, int cpu, float frameTime)
 	return true;
 }
 
-bool GraphicsClass::Render(float rotation)
+bool GraphicsClass::Render()
 {
 	XMMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix, translateMatrix;
 	bool result;
 	XMFLOAT3 cameraPosition;
 	double angle, tempAngle;
-	float billboardRotation, tempRotation, temp;
+	float billboardRotation;
 	
 	// Clear the buffers to begin the scene.
 	m_D3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
@@ -527,42 +491,42 @@ bool GraphicsClass::Render(float rotation)
 	// case Forward
 	if (tempAngle < 22.5f && tempAngle >= 0.0f)
 	{
-		m_zombieCurrentAnimationIndex = 0;
+		m_ZombieAnimInfo.currentAnimationIndex = 0;
 	}
 	// case ForwardLeft
 	else if (tempAngle < 67.5f && tempAngle >= 22.5f && tempCross < 0)
 	{
-		m_zombieCurrentAnimationIndex = 1;
+		m_ZombieAnimInfo.currentAnimationIndex = 1;
 	}
 	// case Left
 	else if (tempAngle < 112.5f && tempAngle >= 67.5f && tempCross < 0)
 	{
-		m_zombieCurrentAnimationIndex = 2;
+		m_ZombieAnimInfo.currentAnimationIndex = 2;
 	}
 	// case BackLeft
 	else if (tempAngle < 157.5f && tempAngle >= 112.5f && tempCross < 0)
 	{
-		m_zombieCurrentAnimationIndex = 3;
+		m_ZombieAnimInfo.currentAnimationIndex = 3;
 	}
 	// case Back
 	else if (tempAngle < 180.0f && tempAngle >= 157.5f)
 	{
-		m_zombieCurrentAnimationIndex = 4;
+		m_ZombieAnimInfo.currentAnimationIndex = 4;
 	}
 	// case BackRight
 	else if (tempAngle < 157.5 && tempAngle >= 112.5f)
 	{
-		m_zombieCurrentAnimationIndex = 5;
+		m_ZombieAnimInfo.currentAnimationIndex = 5;
 	}
 	// case Right
 	else if (tempAngle < 112.5f && tempAngle >= 67.5f)
 	{
-		m_zombieCurrentAnimationIndex = 6;
+		m_ZombieAnimInfo.currentAnimationIndex = 6;
 	}
 	// case Back
 	else if (tempAngle < 67.5f && tempAngle >= 22.5f)
 	{
-		m_zombieCurrentAnimationIndex = 7;
+		m_ZombieAnimInfo.currentAnimationIndex = 7;
 	}
 
 
@@ -571,22 +535,22 @@ bool GraphicsClass::Render(float rotation)
 	m_D3D->TurnOnAlphaBlending();
 
 	// Put the bitmap vertex and index buffers on the graphics pipeline to prepare them for drawing.
-	result = m_Zombie->Render(m_D3D->GetDeviceContext(), 0, 0, m_zombieCurrentAnimationIndex, frameNum / 25);
+	result = m_Zombie->Render(m_D3D->GetDeviceContext(), 0, 0, m_ZombieAnimInfo.currentAnimationIndex, m_ZombieAnimInfo.currentFrameNum / 25);
 	if (!result)
 	{
 		return false;
 	}
-	if (frameNum + 1 == m_Zombie->GetModel()->GetMaxFrameNum(m_zombieCurrentAnimationIndex) * 25)
+	if (m_ZombieAnimInfo.currentFrameNum + 1 == m_Zombie->GetModel()->GetMaxFrameNum(m_ZombieAnimInfo.currentAnimationIndex) * 25)
 	{
-		frameNum = 0;
+		m_ZombieAnimInfo.currentFrameNum = 0;
 	}
-	else frameNum++;
+	else m_ZombieAnimInfo.currentFrameNum++;
 
 	// Render the bitmap with the texture shader.
 	result = m_TextureShader->Render(m_D3D->GetDeviceContext(), 
-		m_Zombie->GetModel()->GetSpriteIndexCount(m_zombieCurrentAnimationIndex, frameNum / 25),
+		m_Zombie->GetModel()->GetSpriteIndexCount(m_ZombieAnimInfo.currentAnimationIndex, m_ZombieAnimInfo.currentFrameNum / 25),
 		tempWorldMatrix, viewMatrix, projectionMatrix,
-		m_Zombie->GetModel()->GetSpriteTexture(m_zombieCurrentAnimationIndex, frameNum / 25));
+		m_Zombie->GetModel()->GetSpriteTexture(m_ZombieAnimInfo.currentAnimationIndex, m_ZombieAnimInfo.currentFrameNum / 25));
 	if (!result)
 	{
 		return false;
@@ -595,7 +559,7 @@ bool GraphicsClass::Render(float rotation)
 	// Turn off alpha blending after rendering the text.
 	m_D3D->TurnOffAlphaBlending();
 
-	/////////////////////////////////////////////////////// 2D Render
+	/////////////////////////////////////////////////////// 2D Image Render
 	// Turn off the Z buffer to begin all 2D rendering.
 	m_D3D->TurnZBufferOff();
 
@@ -617,14 +581,14 @@ bool GraphicsClass::Render(float rotation)
 	}
 
 	// Put the bitmap vertex and index buffers on the graphics pipeline to prepare them for drawing.
-	result = m_Gun->Render(m_D3D->GetDeviceContext(), m_ScreenWidth / 2 - 75, m_ScreenHeight - 150);
+	result = m_Gun->bitmaps.at(0)->Render(m_D3D->GetDeviceContext(), m_ScreenWidth / 2 - 75, m_ScreenHeight - 150);
 	if (!result)
 	{
 		return false;
 	}
 	// Render the bitmap with the texture shader.
-	result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Gun->GetIndexCount(),
-		worldMatrix, m_BaseViewMatrix, orthoMatrix, m_Gun->GetTexture());
+	result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Gun->bitmaps.at(0)->GetIndexCount(),
+		worldMatrix, m_BaseViewMatrix, orthoMatrix, m_Gun->bitmaps.at(0)->GetTexture());
 	if (!result)
 	{
 		return false;
@@ -632,6 +596,8 @@ bool GraphicsClass::Render(float rotation)
 
 	// Turn off alpha blending after rendering the text.
 	m_D3D->TurnOffAlphaBlending();
+
+	/////////////////////////////////////////////////////// 2D Text Render
 
 	// Turn on the alpha blending before rendering the text.
 	m_D3D->TurnOnAlphaBlending();
@@ -653,4 +619,67 @@ bool GraphicsClass::Render(float rotation)
 	m_D3D->EndScene();
 
 	return true;
+}
+
+void GraphicsClass::SetModel2DAnimInfo(AnimationInfo& anim, int animationCount, int maxFrame)
+{
+	anim.animationCount = animationCount;
+	anim.currentAnimationIndex = 0;
+	anim.maxFrame = new int[anim.animationCount];
+	for (int i = 0; i < anim.animationCount; i++)
+	{
+		anim.maxFrame[i] = maxFrame;
+	}
+
+	anim.textureNames = new const WCHAR**[anim.animationCount];
+	for (int i = 0; i < anim.animationCount; i++)
+	{
+		anim.textureNames[i] = new const WCHAR*[anim.maxFrame[i]];
+	}
+}
+
+
+void GraphicsClass::SetModels2DTextures()
+{
+	// Zombie
+	m_ZombieAnimInfo.textureNames[0][0] = L"./data/Zombie/MT_Zombie_F_1.dds";
+	m_ZombieAnimInfo.textureNames[0][1] = L"./data/Zombie/MT_Zombie_F_2.dds";
+	m_ZombieAnimInfo.textureNames[0][2] = L"./data/Zombie/MT_Zombie_F_3.dds";
+	m_ZombieAnimInfo.textureNames[0][3] = L"./data/Zombie/MT_Zombie_F_4.dds";
+
+	m_ZombieAnimInfo.textureNames[1][0] = L"./data/Zombie/MT_Zombie_FL_1.dds";
+	m_ZombieAnimInfo.textureNames[1][1] = L"./data/Zombie/MT_Zombie_FL_2.dds";
+	m_ZombieAnimInfo.textureNames[1][2] = L"./data/Zombie/MT_Zombie_FL_3.dds";
+	m_ZombieAnimInfo.textureNames[1][3] = L"./data/Zombie/MT_Zombie_FL_4.dds";
+
+	m_ZombieAnimInfo.textureNames[2][0] = L"./data/Zombie/MT_Zombie_L_1.dds";
+	m_ZombieAnimInfo.textureNames[2][1] = L"./data/Zombie/MT_Zombie_L_2.dds";
+	m_ZombieAnimInfo.textureNames[2][2] = L"./data/Zombie/MT_Zombie_L_3.dds";
+	m_ZombieAnimInfo.textureNames[2][3] = L"./data/Zombie/MT_Zombie_L_4.dds";
+
+	m_ZombieAnimInfo.textureNames[3][0] = L"./data/Zombie/MT_Zombie_BL_1.dds";
+	m_ZombieAnimInfo.textureNames[3][1] = L"./data/Zombie/MT_Zombie_BL_2.dds";
+	m_ZombieAnimInfo.textureNames[3][2] = L"./data/Zombie/MT_Zombie_BL_3.dds";
+	m_ZombieAnimInfo.textureNames[3][3] = L"./data/Zombie/MT_Zombie_BL_4.dds";
+
+	m_ZombieAnimInfo.textureNames[4][0] = L"./data/Zombie/MT_Zombie_B_1.dds";
+	m_ZombieAnimInfo.textureNames[4][1] = L"./data/Zombie/MT_Zombie_B_2.dds";
+	m_ZombieAnimInfo.textureNames[4][2] = L"./data/Zombie/MT_Zombie_B_3.dds";
+	m_ZombieAnimInfo.textureNames[4][3] = L"./data/Zombie/MT_Zombie_B_4.dds";
+
+	m_ZombieAnimInfo.textureNames[5][0] = L"./data/Zombie/MT_Zombie_BR_1.dds";
+	m_ZombieAnimInfo.textureNames[5][1] = L"./data/Zombie/MT_Zombie_BR_2.dds";
+	m_ZombieAnimInfo.textureNames[5][2] = L"./data/Zombie/MT_Zombie_BR_3.dds";
+	m_ZombieAnimInfo.textureNames[5][3] = L"./data/Zombie/MT_Zombie_BR_4.dds";
+
+	m_ZombieAnimInfo.textureNames[6][0] = L"./data/Zombie/MT_Zombie_R_1.dds";
+	m_ZombieAnimInfo.textureNames[6][1] = L"./data/Zombie/MT_Zombie_R_2.dds";
+	m_ZombieAnimInfo.textureNames[6][2] = L"./data/Zombie/MT_Zombie_R_3.dds";
+	m_ZombieAnimInfo.textureNames[6][3] = L"./data/Zombie/MT_Zombie_R_4.dds";
+
+	m_ZombieAnimInfo.textureNames[7][0] = L"./data/Zombie/MT_Zombie_FR_1.dds";
+	m_ZombieAnimInfo.textureNames[7][1] = L"./data/Zombie/MT_Zombie_FR_2.dds";
+	m_ZombieAnimInfo.textureNames[7][2] = L"./data/Zombie/MT_Zombie_FR_3.dds";
+	m_ZombieAnimInfo.textureNames[7][3] = L"./data/Zombie/MT_Zombie_FR_4.dds";
+
 }
