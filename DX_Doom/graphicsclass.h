@@ -35,6 +35,30 @@ const bool VSYNC_ENABLED = true;
 const float SCREEN_DEPTH = 1000.0f;
 const float SCREEN_NEAR = 0.1f;
 
+struct AnimationInfo
+{
+	const WCHAR*** textureNames;
+	int animationCount;
+	int currentAnimationIndex;
+	int* maxFrame;
+	int currentFrameNum;
+};
+
+struct Bitmaps
+{
+	vector <BitmapClass*> bitmaps;
+
+};
+
+struct BitmapInfo
+{
+	const WCHAR** textureNames;
+	int maxFrame;
+	int currentFrameNum;
+	int* bitmapsHeight;
+	int* bitmapsWidth;
+};
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // Class name: GraphicsClass
@@ -55,27 +79,23 @@ public:
 	void toggleSpecular();
 
 	void SetModelPosition();
+	
+	void SetModel2DAnimInfo(AnimationInfo&, int, int);
+
+	void SetModels2DTextures();
 
 	CameraClass* GetCamera();
 
 private:
-	bool Render(float);
+	bool Render();
 
 private:
 	D3DClass* m_D3D;
 	CameraClass* m_Camera;
 
-	ModelClass* m_Plane;
-	ModelClass* m_Stage;
+	int m_ScreenWidth, m_ScreenHeight;
 
 	TextureShaderClass* m_TextureShader;
-	XMMATRIX m_BaseViewMatrix;
-
-	int m_ScreenWidth, m_ScreenHeight;
-	BitmapClass* m_Crosshair;
-	BitmapClass* m_Gun;
-
-	TextClass* m_Text;
 
 	LightShaderClass* m_LightShader;
 	LightClass* m_Light;
@@ -84,21 +104,27 @@ private:
 	bool m_diffuse;
 	bool m_specular;
 
+	XMMATRIX m_BaseViewMatrix;
+
+	BitmapClass* m_Crosshair;
+
+	ModelClass* m_Plane;
+	ModelClass* m_Stage;
+
+	Bitmaps* m_Gun;
+	BitmapInfo m_GunBitmapInfo;
+
+	TextClass* m_Text;
+
 	XMFLOAT3* m_planePosition;
 	int m_planeCount;
 
 	XMFLOAT3* m_stagePosition;
 	int m_stageCount;
 
-	Model2DClass* m_Enemy;
-	const WCHAR** m_textureFileNames;
-
 	EnemyClass* m_Zombie;
-	const WCHAR*** m_zombieTextureNames;
-	int m_zombieAnimationCount;
-	int m_zombieCurrentAnimationIndex;
-	int* m_zombieMaxFrame;
-	int frameNum;
+	AnimationInfo m_ZombieAnimInfo;
+
 };
 
 #endif
