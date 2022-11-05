@@ -22,18 +22,16 @@ using namespace std;
 #include "textureclass.h"
 #include "spriteclass.h"
 
+struct Animation
+{
+	vector<SpriteClass*> sprites;
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 // Class name: Model2DClass
 ////////////////////////////////////////////////////////////////////////////////
 class Model2DClass
 {
-private:
-	struct Animation
-	{
-		vector<SpriteClass*> sprites;
-	};
-
 public:
 	Model2DClass();
 	Model2DClass(const Model2DClass&);

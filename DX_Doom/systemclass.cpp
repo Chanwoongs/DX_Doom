@@ -188,6 +188,22 @@ void SystemClass::Run()
 		{
 			done = true;
 		}
+		// Fire Gun
+		if (m_Input->IsLeftMouseButtonDown() == true)
+		{
+			// Start Shoot
+			m_Graphics->StartShoot();
+			// Instantiate Muzzle Fire and Play
+
+			// Muzzle Fire's Light Effect
+
+			// Play Gun Animation
+
+			// Shoot Projectile
+
+			// Finish Shoot
+			m_Graphics->FinishShoot();
+		}
 		if (m_Input->GetKeyboardState(key) == true)
 		{
 			if (key == 54 && !isKeyPressed)
@@ -236,7 +252,6 @@ void SystemClass::Run()
 			m_Graphics->GetCamera()->StopMove();
 			m_Graphics->GetCamera()->EndHeadbob(0.1f);
 		}
-
 	}
 
 	return;
