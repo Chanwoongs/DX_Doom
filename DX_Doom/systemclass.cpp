@@ -194,11 +194,13 @@ void SystemClass::Run()
 			// Start Shoot
 			m_Graphics->StartShoot();
 			// Instantiate Muzzle Fire and Play
-
+			 
 			// Muzzle Fire's Light Effect
 
 			// Play Gun Animation
 
+			// Play Shooting Sound
+			// 
 			// Shoot Projectile
 
 			// Finish Shoot

@@ -4,7 +4,7 @@
 #include "graphicsclass.h"
 
 
-GraphicsClass::GraphicsClass() 
+GraphicsClass::GraphicsClass()
 {
 	m_D3D = 0;
 	m_Camera = 0;	
@@ -166,54 +166,33 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 	// Initialize the bitmap object.
 	result = m_Crosshair->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight,
-		L"./data/MT_Crosshair.dds", 50, 50);
+		L"./data/MT_Crosshair.dds", 200, 200);
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
 		return false;
 	}
 
-
-	SetModel2DAnimInfo(m_ZombieAnimInfo, 8, 4);
-	SetModels2DTextures();
-
-	// Zombie
-	m_Zombie = new EnemyClass(m_ZombieAnimInfo.animationCount, m_ZombieAnimInfo.maxFrame, 3, 3, m_ZombieAnimInfo.textureNames);
-	m_Zombie->SetPosition(0, 0, 0);
-	m_Zombie->SetForwardVector(0, 0, -1);
-
-	result = m_Zombie->Initialize(m_D3D->GetDevice());
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
-		return false;
-	}
-	for (int i = 0; i < m_ZombieAnimInfo.animationCount; i++)
-	{
-		delete[] m_ZombieAnimInfo.textureNames[i];
-	}
-	delete[] m_ZombieAnimInfo.textureNames;
-
-
+	// Initialize Gun Info
 	m_GunBitmapInfo.maxFrame = 4;
 	m_GunBitmapInfo.bitmapsWidth = new int[m_GunBitmapInfo.maxFrame];
 	m_GunBitmapInfo.bitmapsHeight = new int[m_GunBitmapInfo.maxFrame];
-	m_GunBitmapInfo.bitmapsXPos = new int[m_GunBitmapInfo.maxFrame];
+	m_GunBitmapInfo.bitmapsPos = new Position[m_GunBitmapInfo.maxFrame];
 
 	m_GunBitmapInfo.bitmapsWidth[0] = 116;
 	m_GunBitmapInfo.bitmapsHeight[0] = 92;
-	m_GunBitmapInfo.bitmapsXPos[0] = m_ScreenWidth / 2 - (m_GunBitmapInfo.bitmapsWidth[0] / 2);
+	m_GunBitmapInfo.bitmapsPos[0].x = m_ScreenWidth / 2 - (m_GunBitmapInfo.bitmapsWidth[0] / 2);
 	m_GunBitmapInfo.bitmapsWidth[1] = 116;
 	m_GunBitmapInfo.bitmapsHeight[1] = 120;
-	m_GunBitmapInfo.bitmapsXPos[1] = m_ScreenWidth / 2 - (m_GunBitmapInfo.bitmapsWidth[1] / 2) - 50;
+	m_GunBitmapInfo.bitmapsPos[1].x = m_ScreenWidth / 2 - (m_GunBitmapInfo.bitmapsWidth[1] / 2) - 50;
 	m_GunBitmapInfo.bitmapsWidth[2] = 84;
 	m_GunBitmapInfo.bitmapsHeight[2] = 148;
-	m_GunBitmapInfo.bitmapsXPos[2] = m_ScreenWidth / 2 - (m_GunBitmapInfo.bitmapsWidth[2] / 2) - 100;
+	m_GunBitmapInfo.bitmapsPos[2].x = m_ScreenWidth / 2 - (m_GunBitmapInfo.bitmapsWidth[2] / 2) - 100;
 	m_GunBitmapInfo.bitmapsWidth[3] = 112;
 	m_GunBitmapInfo.bitmapsHeight[3] = 128;
-	m_GunBitmapInfo.bitmapsXPos[3] = m_ScreenWidth / 2 - (m_GunBitmapInfo.bitmapsWidth[3] / 2) - 150;
+	m_GunBitmapInfo.bitmapsPos[3].x = m_ScreenWidth / 2 - (m_GunBitmapInfo.bitmapsWidth[3] / 2) - 150;
 
-	m_GunBitmapInfo.textureNames = new const WCHAR*[m_GunBitmapInfo.maxFrame];
+	m_GunBitmapInfo.textureNames = new const WCHAR * [m_GunBitmapInfo.maxFrame];
 
 	m_GunBitmapInfo.textureNames[0] = L"./data/Gun/MT_Gun_1.dds";
 	m_GunBitmapInfo.textureNames[1] = L"./data/Gun/MT_Gun_2.dds";
@@ -238,8 +217,68 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 			return false;
 		}
 	}
-	
 
+	// Initialize Muzzle Flash Info
+	m_MuzzleFlashBitmapInfo.maxFrame = 2;
+	m_MuzzleFlashBitmapInfo.currentFrameNum = 0;
+	m_MuzzleFlashBitmapInfo.bitmapsWidth = new int[m_MuzzleFlashBitmapInfo.maxFrame];
+	m_MuzzleFlashBitmapInfo.bitmapsHeight = new int[m_MuzzleFlashBitmapInfo.maxFrame];
+	m_MuzzleFlashBitmapInfo.bitmapsPos = new Position[m_MuzzleFlashBitmapInfo.maxFrame];
+	
+	m_MuzzleFlashBitmapInfo.bitmapsWidth[0] = 80;
+	m_MuzzleFlashBitmapInfo.bitmapsHeight[0] = 50;
+	m_MuzzleFlashBitmapInfo.bitmapsPos[0] = Position(m_ScreenWidth / 2 - (m_MuzzleFlashBitmapInfo.bitmapsWidth[0] / 2) + 16,
+		m_ScreenHeight - 120);
+	m_MuzzleFlashBitmapInfo.bitmapsWidth[1] = 80;
+	m_MuzzleFlashBitmapInfo.bitmapsHeight[1] = 65;
+	m_MuzzleFlashBitmapInfo.bitmapsPos[1] = Position(m_ScreenWidth / 2 - (m_MuzzleFlashBitmapInfo.bitmapsWidth[1] / 2) + 13,
+		m_ScreenHeight - 125);
+
+	m_MuzzleFlashBitmapInfo.textureNames = new const WCHAR*[m_MuzzleFlashBitmapInfo.maxFrame];
+	m_MuzzleFlashBitmapInfo.textureNames[0] = L"./data/Gun/MT_MuzzleFlash_1.dds";
+	m_MuzzleFlashBitmapInfo.textureNames[1] = L"./data/Gun/MT_MuzzleFlash_2.dds";
+
+	m_MuzzleFlash = new Bitmaps;
+
+	for (int i = 0; i < m_MuzzleFlashBitmapInfo.maxFrame; i++)
+	{
+		m_MuzzleFlash->bitmaps.push_back(new BitmapClass());
+	}
+
+	// Initialize the bitmap object.
+	for (size_t i = 0; i < m_MuzzleFlashBitmapInfo.maxFrame; i++)
+	{
+		result = m_MuzzleFlash->bitmaps.at(i)->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight,
+			m_MuzzleFlashBitmapInfo.textureNames[i], m_MuzzleFlashBitmapInfo.bitmapsWidth[i],
+			m_MuzzleFlashBitmapInfo.bitmapsHeight[i]);
+		if (!result)
+		{
+			MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
+			return false;
+		}
+	}
+
+	// Initialize Enemies
+
+	SetModel2DAnimInfo(m_ZombieAnimInfo, 8, 4);
+	SetModels2DTextures();
+
+	// Zombie
+	m_Zombie = new EnemyClass(m_ZombieAnimInfo.animationCount, m_ZombieAnimInfo.maxFrame, 3, 3, m_ZombieAnimInfo.textureNames);
+	m_Zombie->SetPosition(0, 0, 0);
+	m_Zombie->SetForwardVector(0, 0, -1);
+
+	result = m_Zombie->Initialize(m_D3D->GetDevice());
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
+		return false;
+	}
+	for (int i = 0; i < m_ZombieAnimInfo.animationCount; i++)
+	{
+		delete[] m_ZombieAnimInfo.textureNames[i];
+	}
+	delete[] m_ZombieAnimInfo.textureNames;
 
 	return true;
 }
@@ -298,6 +337,7 @@ void GraphicsClass::StartShoot()
 	{
 		m_isShoot = true;
 		m_isGunAnimPlay = true;
+		PlayMuzzleFlashAnim();
 	}
 }
 
@@ -323,10 +363,19 @@ void GraphicsClass::PlayGunAnim()
 		{
 			m_isGunAnimPlay = false;
 			m_isGunAnimReversed = false;
+			m_isShoot = false;
+
+			m_MuzzleFlashBitmapInfo.currentFrameNum = 0;
+			m_isMuzzleAnimPlay = false;
 
 			return;
 		}
 	}
+}
+
+void GraphicsClass::PlayMuzzleFlashAnim()
+{
+	m_isMuzzleAnimPlay = true;
 }
 
 void GraphicsClass::FinishShoot()
@@ -370,9 +419,19 @@ void GraphicsClass::Shutdown()
 	// Release the model object.
 	if (m_Plane)
 	{
+		delete m_planePosition;
 		m_Plane->Shutdown();
 		delete m_Plane;
 		m_Plane = 0;
+	}
+
+	// Release the model object.
+	if (m_Stage)
+	{
+		delete m_stagePosition;
+		m_Stage->Shutdown();
+		delete m_Stage;
+		m_Stage = 0;
 	}
 
 	// Release the model object.
@@ -388,7 +447,7 @@ void GraphicsClass::Shutdown()
 	{
 		delete[] m_GunBitmapInfo.bitmapsWidth;
 		delete[] m_GunBitmapInfo.bitmapsHeight;
-		delete[] m_GunBitmapInfo.bitmapsXPos;
+		delete[] m_GunBitmapInfo.bitmapsPos;
 		delete[] m_GunBitmapInfo.textureNames;
 
 		for (int i = 0; i < m_GunBitmapInfo.maxFrame; i++)
@@ -398,6 +457,22 @@ void GraphicsClass::Shutdown()
 		}
 		delete m_Gun;
 		m_Gun = 0;
+	}
+
+	if (m_MuzzleFlash)
+	{
+		delete[] m_MuzzleFlashBitmapInfo.bitmapsWidth;
+		delete[] m_MuzzleFlashBitmapInfo.bitmapsHeight;
+		delete[] m_MuzzleFlashBitmapInfo.bitmapsPos;
+		delete[] m_MuzzleFlashBitmapInfo.textureNames;
+
+		for (int i = 0; i < m_MuzzleFlashBitmapInfo.maxFrame; i++)
+		{
+			m_MuzzleFlash->bitmaps.at(i)->Shutdown();
+			delete m_MuzzleFlash->bitmaps.at(i);
+		}
+		delete m_MuzzleFlash;
+		m_MuzzleFlash = 0;
 	}
 
 	// Release the model object.
@@ -568,7 +643,7 @@ bool GraphicsClass::Render()
 	m_D3D->TurnOnAlphaBlending();
 
 	// Put the bitmap vertex and index buffers on the graphics pipeline to prepare them for drawing.
-	result = m_Crosshair->Render(m_D3D->GetDeviceContext(), m_ScreenWidth / 2 - 25, m_ScreenHeight / 2 - 25);
+	result = m_Crosshair->Render(m_D3D->GetDeviceContext(), m_ScreenWidth / 2 - 100, m_ScreenHeight / 2 - 100);
 	if (!result)
 	{
 		return false;
@@ -581,9 +656,35 @@ bool GraphicsClass::Render()
 		return false;
 	}
 
+	// Play Muzzle Flash Anim
+	if (m_isMuzzleAnimPlay == true && m_MuzzleFlashBitmapInfo.currentFrameNum != -1)
+	{
+		// Put the bitmap vertex and index buffers on the graphics pipeline to prepare them for drawing.
+		result = m_MuzzleFlash->bitmaps.at(m_MuzzleFlashBitmapInfo.currentFrameNum / 10)->Render(m_D3D->GetDeviceContext(),
+			m_MuzzleFlashBitmapInfo.bitmapsPos[m_MuzzleFlashBitmapInfo.currentFrameNum / 10].x,
+			m_MuzzleFlashBitmapInfo.bitmapsPos[m_MuzzleFlashBitmapInfo.currentFrameNum / 10].y);
+		if (!result)
+		{
+			return false;
+		}
+		// Render the bitmap with the texture shader.
+		result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_MuzzleFlash->bitmaps.at(m_MuzzleFlashBitmapInfo.currentFrameNum / 10)->GetIndexCount(),
+			worldMatrix, m_BaseViewMatrix, orthoMatrix, m_MuzzleFlash->bitmaps.at(m_MuzzleFlashBitmapInfo.currentFrameNum / 10)->GetTexture());
+		if (!result)
+		{
+			return false;
+		}
+		m_MuzzleFlashBitmapInfo.currentFrameNum++;
+		if (m_MuzzleFlashBitmapInfo.currentFrameNum == m_MuzzleFlashBitmapInfo.maxFrame * 10)
+		{
+			m_isMuzzleAnimPlay = false;
+			m_MuzzleFlashBitmapInfo.currentFrameNum = -1;
+		}
+	}
+
 	// Put the bitmap vertex and index buffers on the graphics pipeline to prepare them for drawing.
 	result = m_Gun->bitmaps.at(m_GunBitmapInfo.currentFrameNum / 25)->Render(m_D3D->GetDeviceContext(),
-		m_GunBitmapInfo.bitmapsXPos[m_GunBitmapInfo.currentFrameNum / 25],
+		m_GunBitmapInfo.bitmapsPos[m_GunBitmapInfo.currentFrameNum / 25].x,
 		m_ScreenHeight - m_GunBitmapInfo.bitmapsHeight[m_GunBitmapInfo.currentFrameNum / 25]);
 	if (!result)
 	{

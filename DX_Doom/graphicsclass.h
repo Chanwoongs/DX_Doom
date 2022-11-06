@@ -25,6 +25,7 @@
 #include "spriteclass.h"
 #include "model2Dclass.h"
 #include "enemyclass.h"
+#include "position.h"
 
 
 /////////////
@@ -57,8 +58,7 @@ struct BitmapInfo
 	int currentFrameNum;
 	int* bitmapsHeight;
 	int* bitmapsWidth;
-	int* bitmapsXPos;
-	int* bitmapsYPos;
+	Position* bitmapsPos;
 };
 
 
@@ -90,6 +90,7 @@ public:
 
 	void StartShoot();
 	void PlayGunAnim();
+	void PlayMuzzleFlashAnim();
 	void FinishShoot();
 
 private:
@@ -120,6 +121,8 @@ private:
 
 	Bitmaps* m_Gun;
 	BitmapInfo m_GunBitmapInfo;
+	Bitmaps* m_MuzzleFlash;
+	BitmapInfo m_MuzzleFlashBitmapInfo;
 
 	TextClass* m_Text;
 
@@ -135,6 +138,7 @@ private:
 	bool m_isShoot;
 	bool m_isGunAnimPlay;
 	bool m_isGunAnimReversed;
+	bool m_isMuzzleAnimPlay;
 };
 
 #endif
