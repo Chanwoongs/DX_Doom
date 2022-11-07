@@ -78,3 +78,8 @@ void EnemyClass::SetForwardVector(XMVECTOR forwardVec)
 {
 	m_forwardVec = forwardVec;
 }
+
+void EnemyClass::AddPath(XMFLOAT3 path)
+{
+	m_path.push_back(path);
+}

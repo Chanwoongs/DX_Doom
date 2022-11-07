@@ -36,6 +36,15 @@ public:
 	void SetForwardVector(float ,float, float);
 	void SetForwardVector(XMVECTOR);
 
+	vector<XMFLOAT3> GetPath() { return m_path; }
+	void AddPath(XMFLOAT3);
+	int GetPathIndex() { return m_pathIndex; }
+	void SetPathIndex(int index) { m_pathIndex = index; }
+	
+	XMFLOAT3 GetCurrentTargetPath() { return m_currentTargetPath; }
+	void SetCurrentTargetPath(XMFLOAT3 path) { m_currentTargetPath = path; }
+
+
 private:
 	Model2DClass* m_model;
 	const WCHAR*** m_textureNames;
@@ -49,6 +58,10 @@ private:
 
 	XMFLOAT3 m_position;
 	XMVECTOR m_forwardVec;
+
+	vector<XMFLOAT3> m_path;
+	XMFLOAT3 m_currentTargetPath;
+	int m_pathIndex;
 };
 
 #endif
