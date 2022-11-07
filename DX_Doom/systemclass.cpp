@@ -200,7 +200,7 @@ void SystemClass::Run()
 			// Play Gun Animation
 
 			// Play Shooting Sound
-			// 
+
 			// Shoot Projectile
 
 			// Finish Shoot

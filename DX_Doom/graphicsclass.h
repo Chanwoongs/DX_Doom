@@ -94,7 +94,7 @@ public:
 	void FinishShoot();
 
 private:
-	bool Render();
+	bool Render(float);
 	XMMATRIX UpdateEnemyWalkingAnimation(EnemyClass*, AnimationInfo&);
 
 private:
@@ -134,6 +134,8 @@ private:
 
 	EnemyClass* m_Zombie;
 	AnimationInfo m_ZombieAnimInfo;
+
+	float m_acceptDistance;
 
 	bool m_isShoot;
 	bool m_isGunAnimPlay;
