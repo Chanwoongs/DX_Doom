@@ -3,6 +3,26 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "graphicsclass.h"
 
+#ifndef _ZOMBIE_TEXTURE_
+
+#define ZOMBIE_F 0
+#define ZOMBIE_FL 1
+#define ZOMBIE_L 2
+#define ZOMBIE_BL 3
+#define ZOMBIE_B 4
+#define ZOMBIE_BR 5
+#define ZOMBIE_R 6
+#define ZOMBIE_FR 7
+#define ZOMBIE_AF 8
+#define ZOMBIE_AFL 9
+#define ZOMBIE_AL 10
+#define ZOMBIE_ABL 11
+#define ZOMBIE_AB 12
+#define ZOMBIE_ABR 13
+#define ZOMBIE_AR 14
+#define ZOMBIE_AFR 15
+
+#endif 
 
 GraphicsClass::GraphicsClass()
 	: m_acceptDistance(2.0f)
@@ -67,7 +87,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	// Set the initial position of the camera.
-	m_Camera->SetPosition(0.0f, 2.0f, -5.0f);	// for cube
+	m_Camera->SetPosition(0.0f, 2.0f, -10.0f);	// for cube
 	// Initialize a base view matrix with the camera for 2D user interface rendering.
 	m_Camera->Render();
 	m_Camera->GetViewMatrix(m_BaseViewMatrix);
@@ -261,17 +281,19 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	// Initialize Enemies
 
-	SetModel2DAnimInfo(m_ZombieAnimInfo, 8, 4);
+	SetZombieAnimInfo(m_ZombieAnimInfo, 8);
 	SetModels2DTextures();
 
 	// Zombie
 	m_Zombie = new EnemyClass(m_ZombieAnimInfo.animationCount, m_ZombieAnimInfo.maxFrame, 3, 3, m_ZombieAnimInfo.textureNames);
-	m_Zombie->SetPosition(0, 0, 0);
+	m_Zombie->SetPosition(0, 0, 5);
 	m_Zombie->SetForwardVector(0, 0, -1);
-
+	m_Zombie->SetAcceptDistance(2.0f);
+	m_Zombie->SetDetectRange(10.0f);
+	m_Zombie->SetAttackRange(1.0f);
 	m_Zombie->AddPath(XMFLOAT3(10, 0, -10));
-	m_Zombie->AddPath(XMFLOAT3(-10, 0, 10));
 	m_Zombie->AddPath(XMFLOAT3(-10, 0, -10));
+	m_Zombie->AddPath(XMFLOAT3(-10, 0, 10));
 	m_Zombie->AddPath(XMFLOAT3(10, 0, 10));
 	m_Zombie->SetPathIndex(0);
 	m_Zombie->SetCurrentTargetPath(m_Zombie->GetPath().at(m_Zombie->GetPathIndex()));
@@ -541,6 +563,10 @@ bool GraphicsClass::Frame(int fps, int cpu, float frameTime)
 	// Play Gun Animation
 	PlayGunAnim();
 
+	// Update FSM
+	m_Zombie->SetTargetPosition(m_Camera->GetPosition());
+	m_Zombie->Update();
+
 	// Render the graphics scene.
 	result = Render(deltaTime);
 	if(!result)
@@ -606,46 +632,24 @@ bool GraphicsClass::Render(float deltaTime)
 	// billboarding Enemy
 
 	// Zombie
-	XMMATRIX zombieBillboardWorldMatrix = UpdateEnemyWalkingAnimation(m_Zombie, m_ZombieAnimInfo);
-	
+	XMMATRIX zombieBillboardWorldMatrix = UpdateEnemyWalkingAnimation(m_Zombie, m_ZombieAnimInfo, deltaTime);
 	// Update Zombie Path
-	// Patrol State
-	// if state == patrol
-		m_Zombie->SetCurrentTargetPath(m_Zombie->GetPath().at(m_Zombie->GetPathIndex()));
-		XMFLOAT3 zombiePos = m_Zombie->GetPosition();
-		XMVECTOR zombiePositionVec = XMLoadFloat3(&zombiePos);
-		XMFLOAT3 zombieCurrentPath = m_Zombie->GetCurrentTargetPath();
-		XMVECTOR zombieCurrentPathVec = XMLoadFloat3(&zombieCurrentPath);
+	//XMFLOAT3 zombiePos = m_Zombie->GetPosition();
+	//XMVECTOR zombiePositionVec = XMLoadFloat3(&zombiePos);
+	//XMFLOAT3 zombieCurrentPath = m_Zombie->GetCurrentTargetPath();
+	//XMVECTOR zombieCurrentPathVec = XMLoadFloat3(&zombieCurrentPath);
 
-		XMVECTOR diff = zombiePositionVec - zombieCurrentPathVec;
-		float distance = XMVectorGetX(XMVector3Length(diff));
-		if (distance < m_acceptDistance)
-		{
-			m_Zombie->SetPathIndex(m_Zombie->GetPathIndex() + 1);
-			if (m_Zombie->GetPathIndex() == m_Zombie->GetPath().size())
-			{
-				m_Zombie->SetPathIndex(0);
-			}
-		}
+	//XMVECTOR tempZombiePositionVec = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+	//XMVECTOR zombieDirection = zombieCurrentPathVec - zombiePositionVec;
+	//tempZombiePositionVec = (zombieDirection * (float)deltaTime / 10);
+	//XMMATRIX translation = XMMatrixTranslation(XMVectorGetX(tempZombiePositionVec), 0, XMVectorGetZ(tempZombiePositionVec));
 
-	// Approach State
-	// if state == approach
-		//m_Zombie->SetCurrentTargetPath(m_Zombie->GetPath().at(m_Zombie->GetPathIndex()));
-		//XMFLOAT3 zombiePos = m_Zombie->GetPosition();
-		//XMVECTOR zombiePositionVec = XMLoadFloat3(&zombiePos);
-		//XMFLOAT3 zombieCurrentPath = m_Zombie->GetCurrentTargetPath();
-		//XMVECTOR zombieCurrentPathVec = XMLoadFloat3(&zombieCurrentPath);
-
-		//XMVECTOR diff = zombiePositionVec - zombieCurrentPathVec;
-		//float distance = XMVectorGetX(XMVector3Length(diff));
-
-		//m_Zombie->SetCurrentTargetPath(XMFLOAT3(m_Camera->GetPosition().x, 0, m_Camera->GetPosition().z));
 
 	// Calculate Target Vector to Move Zombie to Target
-	zombiePositionVec = XMVectorLerp(zombiePositionVec, zombieCurrentPathVec, 0.01);
-	m_Zombie->SetForwardVector(XMVector3Normalize(zombieCurrentPathVec - zombiePositionVec));
-	XMStoreFloat3(&zombiePos, zombiePositionVec);
-	m_Zombie->SetPosition(zombiePos);
+	//zombiePositionVec = XMVectorLerp(zombiePositionVec, zombieCurrentPathVec, 0.01);
+	//XMStoreFloat3(&zombiePos, zombiePositionVec);
+	//m_Zombie->SetPosition(zombiePos);
+
 
 	// Put the bitmap vertex and index buffers on the graphics pipeline to prepare them for drawing.
 	result = m_Zombie->Render(m_D3D->GetDeviceContext(), 0, 0, m_ZombieAnimInfo.currentAnimationIndex, m_ZombieAnimInfo.currentFrameNum / 25);
@@ -662,7 +666,8 @@ bool GraphicsClass::Render(float deltaTime)
 	// Render the model using the light shader.
 	// 신축 회전 이동 순
 	result = m_LightShader->Render(m_D3D->GetDeviceContext(), 6, 1,
-		zombieBillboardWorldMatrix ,viewMatrix, projectionMatrix,
+		zombieBillboardWorldMatrix, 
+		viewMatrix, projectionMatrix,
 		m_Zombie->GetModel()->GetSpriteTexture(m_ZombieAnimInfo.currentAnimationIndex, m_ZombieAnimInfo.currentFrameNum / 25),
 		m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
 		m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower(),
@@ -765,7 +770,7 @@ bool GraphicsClass::Render(float deltaTime)
 	return true;
 }
 
-XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, AnimationInfo& anim)
+XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, AnimationInfo& anim, float deltaTime)
 {
 	XMMATRIX worldMatrix, translateMatrix;
 	XMFLOAT3 cameraPosition;
@@ -782,6 +787,21 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 
 	// Convert rotation into radians.
 	billboardRotation = (float)angle * 0.0174532925f;
+
+	// Update Zombie Path
+	XMFLOAT3 enemyPos = enemy->GetPosition();
+	XMVECTOR enemyPositionVec = XMLoadFloat3(&enemyPos);
+	XMFLOAT3 enemyCurrentPath = enemy->GetCurrentTargetPath();
+	XMVECTOR enemyCurrentPathVec = XMLoadFloat3(&enemyCurrentPath);
+
+	XMMATRIX enemyMoveMatrix = XMMatrixIdentity();
+	XMVECTOR enemyDirection = XMVector3Normalize(enemyCurrentPathVec - enemyPositionVec);
+	enemyMoveMatrix = XMMatrixTranslationFromVector(enemyDirection / deltaTime * 0.1f);
+	enemyPositionVec = XMVector3Transform(enemyPositionVec, enemyMoveMatrix);
+	XMFLOAT3 tempZombiePos;
+	XMStoreFloat3(&tempZombiePos, enemyPositionVec);
+	enemy->SetPosition(tempZombiePos);
+	enemy->SetForwardVector(XMVector3Normalize(enemyCurrentPathVec - enemyPositionVec));
 
 	XMMATRIX billboardWorldMatrix = worldMatrix;
 	// Setup the rotation the billboard at the origin using the world matrix.
@@ -841,19 +861,16 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 	return billboardWorldMatrix;
 }
 
-void GraphicsClass::SetModel2DAnimInfo(AnimationInfo& anim, int animationCount, int maxFrame)
+void GraphicsClass::SetZombieAnimInfo(AnimationInfo& anim, int animationCount)
 {
 	anim.animationCount = animationCount;
 	anim.currentAnimationIndex = 0;
-	anim.maxFrame = new int[anim.animationCount];
-	for (int i = 0; i < anim.animationCount; i++)
-	{
-		anim.maxFrame[i] = maxFrame;
-	}
-
 	anim.textureNames = new const WCHAR**[anim.animationCount];
-	for (int i = 0; i < anim.animationCount; i++)
+	anim.maxFrame = new int[anim.animationCount];
+
+	for (int i = ZOMBIE_F; i < ZOMBIE_FR + 1; i++)
 	{
+		anim.maxFrame[i] = 4;
 		anim.textureNames[i] = new const WCHAR*[anim.maxFrame[i]];
 	}
 }
@@ -861,45 +878,87 @@ void GraphicsClass::SetModel2DAnimInfo(AnimationInfo& anim, int animationCount, 
 
 void GraphicsClass::SetModels2DTextures()
 {
-	// Zombie
-	m_ZombieAnimInfo.textureNames[0][0] = L"./data/Zombie/MT_Zombie_F_1.dds";
-	m_ZombieAnimInfo.textureNames[0][1] = L"./data/Zombie/MT_Zombie_F_2.dds";
-	m_ZombieAnimInfo.textureNames[0][2] = L"./data/Zombie/MT_Zombie_F_3.dds";
-	m_ZombieAnimInfo.textureNames[0][3] = L"./data/Zombie/MT_Zombie_F_4.dds";
+	// Zombie Move
+	m_ZombieAnimInfo.textureNames[ZOMBIE_F][0] = L"./data/Zombie/MT_Zombie_F_1.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_F][1] = L"./data/Zombie/MT_Zombie_F_2.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_F][2] = L"./data/Zombie/MT_Zombie_F_3.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_F][3] = L"./data/Zombie/MT_Zombie_F_4.dds";
 
-	m_ZombieAnimInfo.textureNames[1][0] = L"./data/Zombie/MT_Zombie_FL_1.dds";
-	m_ZombieAnimInfo.textureNames[1][1] = L"./data/Zombie/MT_Zombie_FL_2.dds";
-	m_ZombieAnimInfo.textureNames[1][2] = L"./data/Zombie/MT_Zombie_FL_3.dds";
-	m_ZombieAnimInfo.textureNames[1][3] = L"./data/Zombie/MT_Zombie_FL_4.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_FL][0] = L"./data/Zombie/MT_Zombie_FL_1.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_FL][1] = L"./data/Zombie/MT_Zombie_FL_2.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_FL][2] = L"./data/Zombie/MT_Zombie_FL_3.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_FL][3] = L"./data/Zombie/MT_Zombie_FL_4.dds";
 
-	m_ZombieAnimInfo.textureNames[2][0] = L"./data/Zombie/MT_Zombie_L_1.dds";
-	m_ZombieAnimInfo.textureNames[2][1] = L"./data/Zombie/MT_Zombie_L_2.dds";
-	m_ZombieAnimInfo.textureNames[2][2] = L"./data/Zombie/MT_Zombie_L_3.dds";
-	m_ZombieAnimInfo.textureNames[2][3] = L"./data/Zombie/MT_Zombie_L_4.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_L][0] = L"./data/Zombie/MT_Zombie_L_1.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_L][1] = L"./data/Zombie/MT_Zombie_L_2.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_L][2] = L"./data/Zombie/MT_Zombie_L_3.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_L][3] = L"./data/Zombie/MT_Zombie_L_4.dds";
 
-	m_ZombieAnimInfo.textureNames[3][0] = L"./data/Zombie/MT_Zombie_BL_1.dds";
-	m_ZombieAnimInfo.textureNames[3][1] = L"./data/Zombie/MT_Zombie_BL_2.dds";
-	m_ZombieAnimInfo.textureNames[3][2] = L"./data/Zombie/MT_Zombie_BL_3.dds";
-	m_ZombieAnimInfo.textureNames[3][3] = L"./data/Zombie/MT_Zombie_BL_4.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_BL][0] = L"./data/Zombie/MT_Zombie_BL_1.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_BL][1] = L"./data/Zombie/MT_Zombie_BL_2.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_BL][2] = L"./data/Zombie/MT_Zombie_BL_3.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_BL][3] = L"./data/Zombie/MT_Zombie_BL_4.dds";
 
-	m_ZombieAnimInfo.textureNames[4][0] = L"./data/Zombie/MT_Zombie_B_1.dds";
-	m_ZombieAnimInfo.textureNames[4][1] = L"./data/Zombie/MT_Zombie_B_2.dds";
-	m_ZombieAnimInfo.textureNames[4][2] = L"./data/Zombie/MT_Zombie_B_3.dds";
-	m_ZombieAnimInfo.textureNames[4][3] = L"./data/Zombie/MT_Zombie_B_4.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_B][0] = L"./data/Zombie/MT_Zombie_B_1.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_B][1] = L"./data/Zombie/MT_Zombie_B_2.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_B][2] = L"./data/Zombie/MT_Zombie_B_3.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_B][3] = L"./data/Zombie/MT_Zombie_B_4.dds";
 
-	m_ZombieAnimInfo.textureNames[5][0] = L"./data/Zombie/MT_Zombie_BR_1.dds";
-	m_ZombieAnimInfo.textureNames[5][1] = L"./data/Zombie/MT_Zombie_BR_2.dds";
-	m_ZombieAnimInfo.textureNames[5][2] = L"./data/Zombie/MT_Zombie_BR_3.dds";
-	m_ZombieAnimInfo.textureNames[5][3] = L"./data/Zombie/MT_Zombie_BR_4.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_BR][0] = L"./data/Zombie/MT_Zombie_BR_1.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_BR][1] = L"./data/Zombie/MT_Zombie_BR_2.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_BR][2] = L"./data/Zombie/MT_Zombie_BR_3.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_BR][3] = L"./data/Zombie/MT_Zombie_BR_4.dds";
 
-	m_ZombieAnimInfo.textureNames[6][0] = L"./data/Zombie/MT_Zombie_R_1.dds";
-	m_ZombieAnimInfo.textureNames[6][1] = L"./data/Zombie/MT_Zombie_R_2.dds";
-	m_ZombieAnimInfo.textureNames[6][2] = L"./data/Zombie/MT_Zombie_R_3.dds";
-	m_ZombieAnimInfo.textureNames[6][3] = L"./data/Zombie/MT_Zombie_R_4.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_R][0] = L"./data/Zombie/MT_Zombie_R_1.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_R][1] = L"./data/Zombie/MT_Zombie_R_2.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_R][2] = L"./data/Zombie/MT_Zombie_R_3.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_R][3] = L"./data/Zombie/MT_Zombie_R_4.dds";
 
-	m_ZombieAnimInfo.textureNames[7][0] = L"./data/Zombie/MT_Zombie_FR_1.dds";
-	m_ZombieAnimInfo.textureNames[7][1] = L"./data/Zombie/MT_Zombie_FR_2.dds";
-	m_ZombieAnimInfo.textureNames[7][2] = L"./data/Zombie/MT_Zombie_FR_3.dds";
-	m_ZombieAnimInfo.textureNames[7][3] = L"./data/Zombie/MT_Zombie_FR_4.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_FR][0] = L"./data/Zombie/MT_Zombie_FR_1.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_FR][1] = L"./data/Zombie/MT_Zombie_FR_2.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_FR][2] = L"./data/Zombie/MT_Zombie_FR_3.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_FR][3] = L"./data/Zombie/MT_Zombie_FR_4.dds";
+
+	// Zombie Attack
+	m_ZombieAnimInfo.textureNames[ZOMBIE_AF][0] = L"./data/Zombie/MT_Zombie_AF_1.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_AF][1] = L"./data/Zombie/MT_Zombie_AF_2.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_AF][2] = L"./data/Zombie/MT_Zombie_AF_3.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_AF][3] = L"./data/Zombie/MT_Zombie_AF_4.dds";
+																			
+	m_ZombieAnimInfo.textureNames[ZOMBIE_AFL][0] = L"./data/Zombie/MT_Zombie_AFL_1.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_AFL][1] = L"./data/Zombie/MT_Zombie_AFL_2.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_AFL][2] = L"./data/Zombie/MT_Zombie_AFL_3.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_AFL][3] = L"./data/Zombie/MT_Zombie_AFL_4.dds";
+										 
+	m_ZombieAnimInfo.textureNames[ZOMBIE_AL][0] = L"./data/Zombie/MT_Zombie_AL_1.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_AL][1] = L"./data/Zombie/MT_Zombie_AL_2.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_AL][2] = L"./data/Zombie/MT_Zombie_AL_3.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_AL][3] = L"./data/Zombie/MT_Zombie_AL_4.dds";
+										 
+	m_ZombieAnimInfo.textureNames[ZOMBIE_ABL][0] = L"./data/Zombie/MT_Zombie_ABL_1.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_ABL][1] = L"./data/Zombie/MT_Zombie_ABL_2.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_ABL][2] = L"./data/Zombie/MT_Zombie_ABL_3.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_ABL][3] = L"./data/Zombie/MT_Zombie_ABL_4.dds";
+										 
+	m_ZombieAnimInfo.textureNames[ZOMBIE_AB][0] = L"./data/Zombie/MT_Zombie_AB_1.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_AB][1] = L"./data/Zombie/MT_Zombie_AB_2.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_AB][2] = L"./data/Zombie/MT_Zombie_AB_3.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_AB][3] = L"./data/Zombie/MT_Zombie_AB_4.dds";
+										 
+	m_ZombieAnimInfo.textureNames[ZOMBIE_ABR][0] = L"./data/Zombie/MT_Zombie_ABR_1.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_ABR][1] = L"./data/Zombie/MT_Zombie_ABR_2.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_ABR][2] = L"./data/Zombie/MT_Zombie_ABR_3.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_ABR][3] = L"./data/Zombie/MT_Zombie_ABR_4.dds";
+										 
+	m_ZombieAnimInfo.textureNames[ZOMBIE_AR][0] = L"./data/Zombie/MT_Zombie_AR_1.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_AR][1] = L"./data/Zombie/MT_Zombie_AR_2.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_AR][2] = L"./data/Zombie/MT_Zombie_AR_3.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_AR][3] = L"./data/Zombie/MT_Zombie_AR_4.dds";
+										 
+	m_ZombieAnimInfo.textureNames[ZOMBIE_AFR][0] = L"./data/Zombie/MT_Zombie_AFR_1.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_AFR][1] = L"./data/Zombie/MT_Zombie_AFR_2.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_AFR][2] = L"./data/Zombie/MT_Zombie_AFR_3.dds";
+	m_ZombieAnimInfo.textureNames[ZOMBIE_AFR][3] = L"./data/Zombie/MT_Zombie_AFR_4.dds";
+
 
 }

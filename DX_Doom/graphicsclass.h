@@ -48,7 +48,6 @@ struct AnimationInfo
 struct Bitmaps
 {
 	vector <BitmapClass*> bitmaps;
-
 };
 
 struct BitmapInfo
@@ -82,7 +81,7 @@ public:
 
 	void SetModelPosition();
 	
-	void SetModel2DAnimInfo(AnimationInfo&, int, int);
+	void SetZombieAnimInfo(AnimationInfo&, int);
 
 	void SetModels2DTextures();
 
@@ -95,7 +94,7 @@ public:
 
 private:
 	bool Render(float);
-	XMMATRIX UpdateEnemyWalkingAnimation(EnemyClass*, AnimationInfo&);
+	XMMATRIX UpdateEnemyWalkingAnimation(EnemyClass*, AnimationInfo&, float);
 
 private:
 	D3DClass* m_D3D;

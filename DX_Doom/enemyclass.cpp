@@ -9,10 +9,19 @@ EnemyClass::EnemyClass(int animationCount, int maxFrame[], int modelWidth, int m
 	m_modelWidth(modelWidth), m_modelHeight(modelHeight), m_textureNames(textureFilenames)
 {
 	m_model = new Model2DClass();
+
+	m_pStateMachine = new StateMachine<EnemyClass>(this);
+
+	m_pStateMachine->SetCurrentState(Patrol::Instance());
 }
 
 EnemyClass::~EnemyClass()
 {
+}
+
+void EnemyClass::Update()
+{
+	m_pStateMachine->Update();
 }
 
 bool EnemyClass::Initialize(ID3D11Device* device)
@@ -35,6 +44,7 @@ void EnemyClass::Shutdown()
 	// ¸ðµ¨ »èÁ¦
 	m_model->Shutdown();
 
+	delete m_pStateMachine;
 	delete m_model;
 
 	return;
