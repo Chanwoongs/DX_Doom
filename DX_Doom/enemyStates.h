@@ -3,14 +3,24 @@
 
 #include "State.h"
 
+#ifndef StateID
+
+#define PATROL 1
+#define APPROACH 2
+#define ATTACK 3
+#define HITTED 4
+
+#endif
+
+
 class EnemyClass;
 
 class Patrol : public State<EnemyClass>
 {
 private:
   
-	Patrol(){}
-
+	Patrol() {}
+	
 	Patrol(const Patrol&);
 	Patrol& operator=(const Patrol&);
 
@@ -24,6 +34,8 @@ public:
   virtual void Execute(EnemyClass* woong);
 
   virtual void Exit(EnemyClass* woong);
+
+  virtual int GetStateID();
 
 };
 
@@ -46,6 +58,8 @@ public:
   virtual void Execute(EnemyClass* woong);
 
   virtual void Exit(EnemyClass* woong);
+
+  virtual int GetStateID();
 };
 
 class Attack : public State<EnemyClass>
@@ -67,6 +81,8 @@ public:
   virtual void Execute(EnemyClass* woong);
 
   virtual void Exit(EnemyClass* woong);
+
+  virtual int GetStateID();
 };
 
 class Hitted : public State<EnemyClass>
@@ -88,6 +104,8 @@ public:
   virtual void Execute(EnemyClass* woong);
 
   virtual void Exit(EnemyClass* woong);
+
+  virtual int GetStateID();
 };
 
 
