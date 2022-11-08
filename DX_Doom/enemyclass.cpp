@@ -58,7 +58,7 @@ bool EnemyClass::Render(ID3D11DeviceContext* deviceContext, int positionX, int p
 	m_positionX = positionX;
 	m_positionY = positionY;
 
-	result = m_model->Render(deviceContext, positionX, positionY, animationIndex, frameIndex);
+	result = m_model->Render(deviceContext, m_positionX, m_positionY, animationIndex, frameIndex);
 	if (!result)
 	{
 		return false;
