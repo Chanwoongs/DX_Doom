@@ -68,6 +68,11 @@ void Patrol::Exit(EnemyClass* pEnemyClass)
     return;
 }
 
+int Patrol::GetStateID()
+{
+	return PATROL;
+}
+
 //------------------------------------------------------------------------methods for Approach
 
 Approach* Approach::Instance()
@@ -117,6 +122,11 @@ void Approach::Exit(EnemyClass* pEnemyClass)
     return;
 }
 
+int Approach::GetStateID()
+{
+	return APPROACH;
+}
+
 //------------------------------------------------------------------------methods for Attack
 
 Attack* Attack::Instance()
@@ -143,6 +153,11 @@ void Attack::Exit(EnemyClass* pEnemyClass)
     return;
 }
 
+int Attack::GetStateID()
+{
+	return ATTACK;
+}
+
 //------------------------------------------------------------------------methods for Hitted
 
 Hitted* Hitted::Instance()
@@ -167,4 +182,9 @@ void Hitted::Execute(EnemyClass* pEnemyClass)
 void Hitted::Exit(EnemyClass* pEnemyClass)
 {
     return;
+}
+
+int Hitted::GetStateID()
+{
+	return HITTED;
 }
