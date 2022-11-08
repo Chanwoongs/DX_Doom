@@ -35,28 +35,21 @@ bool Model2DClass::Initialize(ID3D11Device* device, int animationCount, int maxF
 	}
 
 	// 애니메이션 안에 있는 이미지들 생성
-	for (auto ani : m_animations)
-	{
-		for (int i = 0; i < m_maxFrame[i]; i++)
-		{
-			ani->sprites.push_back(new SpriteClass());
-		}
-	}
-
-	/*
-	for (int i = 0; i < animationCount; i++)
-	{
-		for (int j = 0; j < m_maxFrame[i]; j++)
-		{
-			m_animations[i]->sprites =
-		}
-	}*/
-	
-	// 애니메이션 안에 있는 이미지들 초기화
 	int j = 0;
 	for (auto ani : m_animations)
 	{
-		for (int i = 0; i < m_maxFrame[i]; i++)
+		for (int i = 0; i < m_maxFrame[j]; i++)
+		{
+			ani->sprites.push_back(new SpriteClass());
+		}
+		j++;
+	}
+
+	// 애니메이션 안에 있는 이미지들 초기화
+	j = 0;
+	for (auto ani : m_animations)
+	{
+		for (int i = 0; i < m_maxFrame[j]; i++)
 		{
 			result = ani->sprites.at(i)->Initialize(device, spriteWidth, spriteHeight, textureFilenames[j][i]);
 			if (!result)
@@ -74,14 +67,16 @@ bool Model2DClass::Initialize(ID3D11Device* device, int animationCount, int maxF
 void Model2DClass::Shutdown()
 {
 	// 애니메이션의 이미지들 삭제
+	int j = 0;
 	for (auto ani : m_animations)
 	{
-		for (int i = 0; i < m_maxFrame[i]; i++)
+		for (int i = 0; i < m_maxFrame[j]; i++)
 		{
 			ani->sprites.at(i)->Shutdown();
 			delete ani->sprites.at(i);
 			ani->sprites.at(i) = 0;
 		}
+		j++;
 	}
 	// 애니메이션 삭제
 	for (int i = 0; i < m_animationCount; i++)
