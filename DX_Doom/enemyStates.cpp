@@ -31,16 +31,17 @@ void Patrol::Enter(EnemyClass* pEnemyClass)
 void Patrol::Execute(EnemyClass* pEnemyClass)
 {
 	pEnemyClass->SetCurrentTargetPath(pEnemyClass->GetPath().at(pEnemyClass->GetPathIndex()));
-	XMFLOAT3 zombiePos = pEnemyClass->GetPosition();
-	XMVECTOR zombiePositionVec = XMLoadFloat3(&zombiePos);
-	XMFLOAT3 zombieCurrentPath = pEnemyClass->GetCurrentTargetPath();
-	XMVECTOR zombieCurrentPathVec = XMLoadFloat3(&zombieCurrentPath);
+	pEnemyClass->SetSpeed(1.0f);
+	XMFLOAT3 enemyPos = pEnemyClass->GetPosition();
+	XMVECTOR enemyPositionVec = XMLoadFloat3(&enemyPos);
+	XMFLOAT3 enemyCurrentPath = pEnemyClass->GetCurrentTargetPath();
+	XMVECTOR enemyCurrentPathVec = XMLoadFloat3(&enemyCurrentPath);
 	XMFLOAT3 targetPos = pEnemyClass->GetTargetPosition();
 	XMVECTOR targetPositionVec = XMLoadFloat3(&targetPos);
 
-	XMVECTOR diff = zombiePositionVec - zombieCurrentPathVec;
+	XMVECTOR diff = enemyPositionVec - enemyCurrentPathVec;
 	float distance = XMVectorGetX(XMVector3Length(diff));
-	if (distance < pEnemyClass->GetAcceptDistance())
+	if (distance <= pEnemyClass->GetAcceptDistance())
 	{
 		pEnemyClass->SetPathIndex(pEnemyClass->GetPathIndex() + 1);
 		if (pEnemyClass->GetPathIndex() == pEnemyClass->GetPath().size())
@@ -49,7 +50,7 @@ void Patrol::Execute(EnemyClass* pEnemyClass)
 		}
 	}
 
-	diff = zombiePositionVec - targetPositionVec;
+	diff = enemyPositionVec - targetPositionVec;
 	distance = XMVectorGetX(XMVector3Length(diff));
 	if (distance < pEnemyClass->GetDetectRange())
 	{
@@ -91,21 +92,22 @@ void Approach::Enter(EnemyClass* pEnemyClass)
 void Approach::Execute(EnemyClass* pEnemyClass)
 {
 	pEnemyClass->SetCurrentTargetPath(XMFLOAT3(pEnemyClass->GetTargetPosition().x, 0, pEnemyClass->GetTargetPosition().z));
-	XMFLOAT3 zombiePos = pEnemyClass->GetPosition();
-	XMVECTOR zombiePositionVec = XMLoadFloat3(&zombiePos);
-	XMFLOAT3 zombieCurrentPath = pEnemyClass->GetCurrentTargetPath();
-	XMVECTOR zombieCurrentPathVec = XMLoadFloat3(&zombieCurrentPath);
+	pEnemyClass->SetSpeed(2.5f);
+	XMFLOAT3 enemyPos = pEnemyClass->GetPosition();
+	XMVECTOR enemyPositionVec = XMLoadFloat3(&enemyPos);
+	XMFLOAT3 enemyCurrentPath = pEnemyClass->GetCurrentTargetPath();
+	XMVECTOR enemyCurrentPathVec = XMLoadFloat3(&enemyCurrentPath);
 	XMFLOAT3 targetPos = pEnemyClass->GetTargetPosition();
 	XMVECTOR targetPositionVec = XMLoadFloat3(&targetPos);
 
-	XMVECTOR diff = zombiePositionVec - zombieCurrentPathVec;
+	XMVECTOR diff = enemyPositionVec - enemyCurrentPathVec;
 	float distance = XMVectorGetX(XMVector3Length(diff));
 
-	if (distance > pEnemyClass->GetDetectRange())
+	if (distance >= pEnemyClass->GetDetectRange())
 	{
 		pEnemyClass->GetFSM()->ChangeState(Patrol::Instance());
 	}
-	else if (distance < pEnemyClass->GetAttackRange())
+	else if (distance <= pEnemyClass->GetAttackRange())
 	{
 		pEnemyClass->GetFSM()->ChangeState(Attack::Instance());
 	}
@@ -145,6 +147,24 @@ void Attack::Enter(EnemyClass* pEnemyClass)
 
 void Attack::Execute(EnemyClass* pEnemyClass)
 {
+	pEnemyClass->SetCurrentTargetPath(XMFLOAT3(pEnemyClass->GetTargetPosition().x, 0, pEnemyClass->GetTargetPosition().z));
+	pEnemyClass->SetSpeed(0.0f);
+	XMFLOAT3 enemyPos = pEnemyClass->GetPosition();
+	XMVECTOR enemyPositionVec = XMLoadFloat3(&enemyPos);
+	XMFLOAT3 enemyCurrentPath = pEnemyClass->GetCurrentTargetPath();
+	XMVECTOR enemyCurrentPathVec = XMLoadFloat3(&enemyCurrentPath);
+	XMFLOAT3 targetPos = pEnemyClass->GetTargetPosition();
+	XMVECTOR targetPositionVec = XMLoadFloat3(&targetPos);
+
+	XMVECTOR diff = enemyPositionVec - targetPositionVec;
+	float distance = XMVectorGetX(XMVector3Length(diff));
+
+	if (distance >= pEnemyClass->GetAttackRange() + 1.0f)
+	{
+		pEnemyClass->GetFSM()->ChangeState(Approach::Instance());
+	}
+
+	pEnemyClass->SetAttacking(true);
     return;
 }
 

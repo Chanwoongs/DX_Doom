@@ -64,6 +64,12 @@ public:
 	XMFLOAT3 GetAttackPosition() { return m_attackPosition; }
 	void SetAttackPosition(XMFLOAT3 pos) { m_attackPosition = pos; }
 
+	float GetSpeed() { return m_speed; }
+	void SetSpeed(float speed) { m_speed = speed; }
+
+	bool IsAttacking() { return m_isAttacking == true; }
+	void SetAttacking(bool attack) { m_isAttacking = attack; }
+
 private:
 	StateMachine<EnemyClass>* m_pStateMachine;
 
@@ -86,9 +92,13 @@ private:
 	float m_acceptDistance;
 	float m_detectRange;
 	float m_attackRange;
+	float m_speed;
 
 	XMFLOAT3 m_targetPosition;
 	XMFLOAT3 m_attackPosition;
+
+	bool m_isAttacking;
+
 
 };
 

@@ -87,7 +87,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	// Set the initial position of the camera.
-	m_Camera->SetPosition(0.0f, 2.0f, -10.0f);	// for cube
+	m_Camera->SetPosition(0.0f, 2.0f, -20.0f);	// for cube
 	// Initialize a base view matrix with the camera for 2D user interface rendering.
 	m_Camera->Render();
 	m_Camera->GetViewMatrix(m_BaseViewMatrix);
@@ -289,8 +289,9 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Zombie->SetPosition(0, 0, 5);
 	m_Zombie->SetForwardVector(0, 0, -1);
 	m_Zombie->SetAcceptDistance(2.0f);
-	m_Zombie->SetDetectRange(10.0f);
-	m_Zombie->SetAttackRange(1.0f);
+	m_Zombie->SetDetectRange(20.0f);
+	m_Zombie->SetAttackRange(3.0f);
+	m_Zombie->SetSpeed(1.0f);
 	m_Zombie->AddPath(XMFLOAT3(10, 0, -10));
 	m_Zombie->AddPath(XMFLOAT3(-10, 0, -10));
 	m_Zombie->AddPath(XMFLOAT3(-10, 0, 10));
@@ -775,11 +776,13 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 	XMFLOAT3 enemyPos = enemy->GetPosition();
 	XMVECTOR enemyPositionVec = XMLoadFloat3(&enemyPos);
 	XMFLOAT3 enemyCurrentPath = enemy->GetCurrentTargetPath();
-	XMVECTOR enemyCurrentPathVec = XMLoadFloat3(&enemyCurrentPath);
+	XMVECTOR enemyCurrentPathVec = XMLoadFloat3(&enemyCurrentPath);	
+	XMFLOAT3 targetPos = enemy->GetTargetPosition();
+	XMVECTOR targetPositionVec = XMLoadFloat3(&targetPos);
 
 	XMMATRIX enemyMoveMatrix = XMMatrixIdentity();
 	XMVECTOR enemyDirection = XMVector3Normalize(enemyCurrentPathVec - enemyPositionVec);
-	enemyMoveMatrix = XMMatrixTranslationFromVector(enemyDirection / deltaTime * 0.1f);
+	enemyMoveMatrix = XMMatrixTranslationFromVector(enemyDirection / deltaTime * enemy->GetSpeed() * 0.1f);
 	enemyPositionVec = XMVector3Transform(enemyPositionVec, enemyMoveMatrix);
 	XMFLOAT3 tempZombiePos;
 	XMStoreFloat3(&tempZombiePos, enemyPositionVec);
@@ -809,7 +812,8 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 		}
 		else if (enemy->GetFSM()->CurrentState()->GetStateID() == ATTACK)
 		{
- 			if (anim.currentFrameNum / 25 == 3) anim.currentFrameNum = 0;
+ 			if (anim.currentFrameNum / 25 >= 3) anim.currentFrameNum = 0;
+			if (anim.currentFrameNum / 25 == 2) enemy->SetAttacking(false);
 
 			anim.currentAnimationIndex = ZOMBIE_AF;
 		}
@@ -823,7 +827,8 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 		}
 		else if (enemy->GetFSM()->CurrentState()->GetStateID() == ATTACK)
 		{
-			if (anim.currentFrameNum / 25 == 3) anim.currentFrameNum = 0;
+			if (anim.currentFrameNum / 25 >= 3) anim.currentFrameNum = 0;
+			if (anim.currentFrameNum / 25 == 2) enemy->SetAttacking(false);
 
 			anim.currentAnimationIndex = ZOMBIE_AFL;
 		}
@@ -837,7 +842,8 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 		}
 		else if (enemy->GetFSM()->CurrentState()->GetStateID() == ATTACK)
 		{
-			if (anim.currentFrameNum / 25 == 3) anim.currentFrameNum = 0;
+			if (anim.currentFrameNum / 25 >= 3) anim.currentFrameNum = 0;
+			if (anim.currentFrameNum / 25 == 2) enemy->SetAttacking(false);
 
 			anim.currentAnimationIndex = ZOMBIE_AL;
 		}
@@ -851,7 +857,8 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 		}
 		else if (enemy->GetFSM()->CurrentState()->GetStateID() == ATTACK)
 		{
-			if (anim.currentFrameNum / 25 == 3) anim.currentFrameNum = 0;
+			if (anim.currentFrameNum / 25 >= 3) anim.currentFrameNum = 0;
+			if (anim.currentFrameNum / 25 == 2) enemy->SetAttacking(false);
 
 			anim.currentAnimationIndex = ZOMBIE_ABL;
 		}
@@ -865,7 +872,8 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 		}
 		else if (enemy->GetFSM()->CurrentState()->GetStateID() == ATTACK)
 		{
-			if (anim.currentFrameNum / 25 == 3) anim.currentFrameNum = 0;
+			if (anim.currentFrameNum / 25 >= 3) anim.currentFrameNum = 0;
+			if (anim.currentFrameNum / 25 == 2) enemy->SetAttacking(false);
 
 			anim.currentAnimationIndex = ZOMBIE_AB;
 		}
@@ -879,7 +887,8 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 		}
 		else if (enemy->GetFSM()->CurrentState()->GetStateID() == ATTACK)
 		{
-			if (anim.currentFrameNum / 25 == 3) anim.currentFrameNum = 0;
+			if (anim.currentFrameNum / 25 >= 3) anim.currentFrameNum = 0;
+			if (anim.currentFrameNum / 25 == 2) enemy->SetAttacking(false);
 
 			anim.currentAnimationIndex = ZOMBIE_ABR;
 		}
@@ -893,7 +902,8 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 		}
 		else if (enemy->GetFSM()->CurrentState()->GetStateID() == ATTACK)
 		{
-			if (anim.currentFrameNum / 25 == 3) anim.currentFrameNum = 0;
+			if (anim.currentFrameNum / 25 >= 3) anim.currentFrameNum = 0;
+			if (anim.currentFrameNum / 25 == 2) enemy->SetAttacking(false);
 
 			anim.currentAnimationIndex = ZOMBIE_AR;
 		}
@@ -907,7 +917,8 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 		}
 		else if (enemy->GetFSM()->CurrentState()->GetStateID() == ATTACK)
 		{
-			if (anim.currentFrameNum / 25 == 3) anim.currentFrameNum = 0;
+			if (anim.currentFrameNum / 25 >= 3) anim.currentFrameNum = 0;
+			if (anim.currentFrameNum / 25 == 2) enemy->SetAttacking(false);
 
 			anim.currentAnimationIndex = ZOMBIE_AFR;
 		}
