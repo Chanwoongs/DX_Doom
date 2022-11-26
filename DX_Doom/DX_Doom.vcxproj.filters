@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Resource Files\Zombie">
+      <UniqueIdentifier>{b694c439-e633-417d-8b8a-d10a561541f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Gun">
+      <UniqueIdentifier>{1624fd90-085f-4f96-a2eb-7a864fd9cdc6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\light.ps">
@@ -101,6 +107,21 @@
     <ClCompile Include="enemyclass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cpuclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="fpsclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="timerclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="position.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="enemyStates.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlignedAllocationPolicy.h">
@@ -163,16 +184,217 @@
     <ClInclude Include="enemyclass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="cpuclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fpsclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="timerclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="position.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="enemyStates.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="state.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stateMachine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="data\ET_Seafloor.dds">
-      <Filter>Resource Files</Filter>
+    <Image Include="data\Zombie\MT_Zombie_F_1.dds">
+      <Filter>Resource Files\Zombie</Filter>
     </Image>
-    <Image Include="data\ET_Plane.dds">
-      <Filter>Resource Files</Filter>
+    <Image Include="data\Zombie\MT_Zombie_F_2.dds">
+      <Filter>Resource Files\Zombie</Filter>
     </Image>
-    <Image Include="data\MT_Gun.dds">
-      <Filter>Resource Files</Filter>
+    <Image Include="data\Zombie\MT_Zombie_F_3.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_F_4.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_R_2.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_R_3.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_R_4.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_B_1.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_B_2.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_B_3.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_B_4.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_BL_1.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_BL_2.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_BL_3.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_BL_4.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_BR_1.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_BR_2.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_BR_3.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_BR_4.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_FL_1.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_FL_2.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_FL_3.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_FL_4.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_FR_1.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_FR_2.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_FR_3.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_FR_4.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_L_1.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_L_2.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_L_3.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_L_4.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_R_1.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Gun\MT_Gun_1.dds">
+      <Filter>Resource Files\Gun</Filter>
+    </Image>
+    <Image Include="data\Gun\MT_Gun_2.dds">
+      <Filter>Resource Files\Gun</Filter>
+    </Image>
+    <Image Include="data\Gun\MT_Gun_3.dds">
+      <Filter>Resource Files\Gun</Filter>
+    </Image>
+    <Image Include="data\Gun\MT_Gun_4.dds">
+      <Filter>Resource Files\Gun</Filter>
+    </Image>
+    <Image Include="data\Gun\MT_MuzzleFlash_1.dds">
+      <Filter>Resource Files\Gun</Filter>
+    </Image>
+    <Image Include="data\Gun\MT_MuzzleFlash_2.dds">
+      <Filter>Resource Files\Gun</Filter>
+    </Image>
+    <Image Include="data\MT_Crosshair.dds">
+      <Filter>Resource Files\Gun</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_AR_3.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_AB_1.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_AB_2.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_AB_3.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_ABL_1.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_ABL_2.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_ABL_3.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_ABR_1.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_ABR_2.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_ABR_3.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_AF_1.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_AF_2.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_AF_3.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_AFL_1.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_AFL_2.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_AFL_3.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_AFR_1.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_AFR_2.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_AFR_3.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_AL_1.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_AL_2.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_AL_3.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_AR_1.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_AR_2.dds">
+      <Filter>Resource Files\Zombie</Filter>
     </Image>
   </ItemGroup>
 </Project>
