@@ -151,6 +151,19 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
 	m_Light->SetSpecularPower(32.0f);
 
+	m_Navmesh = new NavmeshClass(111, 206);
+	if (!m_Navmesh)
+	{
+		return false;
+	}
+	// Initialize the model object.
+	result = m_Navmesh->Initialize(m_D3D->GetDevice(), hwnd);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the navmesh object.", L"Error", MB_OK);
+		return false;
+	}
+
 	// Create the model object.
 	SetModelPosition();
 	m_Plane = new ModelClass(m_planePosition, m_planeCount);
@@ -178,6 +191,21 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
 		return false;
 	}
+
+	//// Create the model object.
+	//m_Sphere = new SphereClass;
+	//if (!m_Sphere)
+	//{
+	//	return false;
+	//}
+
+	//// Initialize the model object.
+	//result = m_Sphere->Initialize(m_D3D->GetDevice(), L"./data/ET_Seafloor.dds", 10, 10);
+	//if (!result)
+	//{
+	//	MessageBox(hwnd, L"Could not initialize the sphere object.", L"Error", MB_OK);
+	//	return false;
+	//}
 
 	// Create the bitmap object.
 	m_Crosshair = new BitmapClass;
@@ -448,6 +476,14 @@ void GraphicsClass::Shutdown()
 	}
 
 	// Release the model object.
+	if (m_Navmesh)
+	{
+		m_Navmesh->Shutdown();
+		delete m_Navmesh;
+		m_Navmesh = 0;
+	}
+
+	// Release the model object.
 	if (m_Plane)
 	{
 		delete m_planePosition;
@@ -464,6 +500,14 @@ void GraphicsClass::Shutdown()
 		delete m_Stage;
 		m_Stage = 0;
 	}
+
+	//// Release the model object.
+	//if (m_Sphere)
+	//{
+	//	m_Sphere->Shutdown();
+	//	delete m_Sphere;
+	//	m_Sphere = 0;
+	//}
 
 	// Release the model object.
 	if (m_Crosshair)
@@ -552,9 +596,8 @@ bool GraphicsClass::Frame(int fps, int cpu, float frameTime)
 		return false;
 	}
 
-	// Update the rotation variable each frame.
+	// update camera Headbob
 	bobAngle += XM_PI * 0.025f;
-
 	if (bobAngle > 360.0f)
 	{
 		bobAngle = 0.0f;
@@ -598,6 +641,16 @@ bool GraphicsClass::Render(float deltaTime)
 	m_Camera->GetViewMatrix(viewMatrix);
 
 	/////////////////////////////////////////////////////// 3D Render
+	//vector<NodeClass*>::iterator iter;
+	//iter = m_Navmesh->GetNodes().begin();
+	//for (; iter != m_Navmesh->GetNodes().end(); iter++)
+	//{
+	//	(*iter)->GetModel()->Render(m_D3D->GetDeviceContext());
+
+	//	result = m_TextureShader->Render(m_D3D->GetDeviceContext(), (*iter)->GetModel()->GetIndexCount(),
+	//		worldMatrix, viewMatrix, projectionMatrix, (*iter)->GetModel()->GetTexture());
+	//}
+
 	m_Plane->Render(m_D3D->GetDeviceContext());
 
 	// Render the model using the light shader.
@@ -625,6 +678,18 @@ bool GraphicsClass::Render(float deltaTime)
 	{
 		return false;
 	}
+
+	//// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
+	//m_Sphere->Render(m_D3D->GetDeviceContext());
+
+	//// Render the model using the texture shader.
+	//result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Sphere->GetIndexCount() * 3, worldMatrix, viewMatrix, projectionMatrix,
+	//	m_Sphere->GetTexture());
+	//if (!result)
+	//{
+	//	return false;
+	//}
+
 
 	/////////////////////////////////////////////////////// 2.5D Render
 	// Turn on the alpha blending before rendering the text.

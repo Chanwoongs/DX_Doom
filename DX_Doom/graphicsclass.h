@@ -10,7 +10,6 @@
 //////////////
 #include <vector>
 
-
 ///////////////////////
 // MY CLASS INCLUDES //
 ///////////////////////
@@ -26,7 +25,10 @@
 #include "model2Dclass.h"
 #include "enemyclass.h"
 #include "position.h"
-
+#include "sphereclass.h"
+#include "astarclass.h"
+#include "nodeclass.h"
+#include "navmeshclass.h"
 
 /////////////
 // GLOBALS //
@@ -115,8 +117,12 @@ private:
 
 	BitmapClass* m_Crosshair;
 
+	NavmeshClass* m_Navmesh;
+
 	ModelClass* m_Plane;
 	ModelClass* m_Stage;
+	SphereClass* m_Sphere;
+
 
 	Bitmaps* m_Gun;
 	BitmapInfo m_GunBitmapInfo;
