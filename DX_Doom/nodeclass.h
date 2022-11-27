@@ -18,9 +18,7 @@ using namespace DirectX;
 ///////////////////////
 #include "textureclass.h"
 #include "modelclass.h"
-#include "astarclass.h"
 
-#include <fstream>
 using namespace std;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -29,24 +27,18 @@ using namespace std;
 class NodeClass
 {
 public:
-	NodeClass(XMFLOAT3, XMFLOAT3, NodeClass*);
+	NodeClass(XMFLOAT3);
 	NodeClass(const NodeClass&);
 	~NodeClass();
-	
-	friend class AStarClass;
 
 	bool Initialize(ID3D11Device*, const WCHAR*, const WCHAR*, HWND);
 	void Shutdown();
 
+	ModelClass* GetModel() { return m_Model; }
+
 private:
 	ModelClass* m_Model;
-
-	NodeClass* m_Parent;
 	XMFLOAT3 m_position;
-	XMFLOAT3 m_endPoint;
-	float m_fValue;
-	float m_gValue;
-	float m_hValue;
 	bool m_isVaild;
 };
 
