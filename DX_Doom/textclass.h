@@ -41,6 +41,7 @@ public:
 
 	bool SetFps(int, ID3D11DeviceContext*);
 	bool SetCpu(int, ID3D11DeviceContext*);
+	bool SetPosition(XMFLOAT3, ID3D11DeviceContext*);
 
 private:
 	bool InitializeSentence(SentenceType**, int, ID3D11Device*);
@@ -55,6 +56,7 @@ private:
 	XMMATRIX m_baseViewMatrix;
 	SentenceType* m_sentence1;
 	SentenceType* m_sentence2;
+	SentenceType* m_sentence3;
 };
 
 #endif

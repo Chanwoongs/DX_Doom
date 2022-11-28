@@ -81,7 +81,7 @@ bool TextClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 		return false;
 	}
 
-	// Initialize the first sentence.
+	// Initialize the second sentence.
 	result = InitializeSentence(&m_sentence2, 16, device);
 	if(!result)
 	{
@@ -91,6 +91,20 @@ bool TextClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	// Now update the sentence vertex buffer with the new string information.
 	result = UpdateSentence(m_sentence2, "Goodbye", 100, 200, 1.0f, 1.0f, 0.0f, deviceContext);
 	if(!result)
+	{
+		return false;
+	}
+
+	// Initialize the third sentence.
+	result = InitializeSentence(&m_sentence3, 16, device);
+	if (!result)
+	{
+		return false;
+	}
+
+	// Now update the sentence vertex buffer with the new string information.
+	result = UpdateSentence(m_sentence3, "Goodbye", 100, 200, 1.0f, 1.0f, 0.0f, deviceContext);
+	if (!result)
 	{
 		return false;
 	}
@@ -106,6 +120,9 @@ void TextClass::Shutdown()
 
 	// Release the second sentence.
 	ReleaseSentence(&m_sentence2);
+
+	// Release the second sentence.
+	ReleaseSentence(&m_sentence3);
 
 	// Release the font shader object.
 	if(m_FontShader)
@@ -142,6 +159,13 @@ bool TextClass::Render(ID3D11DeviceContext* deviceContext, XMMATRIX worldMatrix,
 	// Draw the second sentence.
 	result = RenderSentence(deviceContext, m_sentence2, worldMatrix, orthoMatrix);
 	if(!result)
+	{
+		return false;
+	}
+
+	// Draw the third sentence.
+	result = RenderSentence(deviceContext, m_sentence3, worldMatrix, orthoMatrix);
+	if (!result)
 	{
 		return false;
 	}
@@ -442,6 +466,33 @@ bool TextClass::SetCpu(int cpu, ID3D11DeviceContext* deviceContext)
 	strcat_s(cpuString, "%");
 	// Update the sentence vertex buffer with the new string information.
 	result = UpdateSentence(m_sentence2, cpuString, 20, 40, 0.0f, 1.0f, 0.0f, deviceContext);
+	if (!result)
+	{
+		return false;
+	}
+	return true;
+}
+
+bool TextClass::SetPosition(XMFLOAT3 position, ID3D11DeviceContext* deviceContext)
+{
+	char tempString1[16];
+	char tempString2[16];
+	char tempString3[16];
+	char posString[32];
+	bool result;
+	// Convert the cpu integer to string format.
+	_itoa_s(position.x, tempString1, 10);
+	_itoa_s(position.y, tempString2, 10);
+	_itoa_s(position.z, tempString3, 10);
+	// Setup the cpu string.
+	strcpy_s(posString, "Pos: ");
+	strcat_s(posString, tempString1);
+	strcat_s(posString, ", ");
+	strcat_s(posString, tempString2);
+	strcat_s(posString, ", ");
+	strcat_s(posString, tempString3);
+	// Update the sentence vertex buffer with the new string information.
+	result = UpdateSentence(m_sentence3, posString, 20, 60, 0.0f, 1.0f, 0.0f, deviceContext);
 	if (!result)
 	{
 		return false;
