@@ -45,6 +45,9 @@ GraphicsClass::GraphicsClass()
 
 	m_stageCount = 1;
 	m_stagePosition = new XMFLOAT3[1];
+
+	m_navmeshCount = 1;
+	m_navmeshPosition = new XMFLOAT3[1];
 }
 
 
@@ -87,7 +90,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	// Set the initial position of the camera.
-	m_Camera->SetPosition(0.0f, 2.0f, -20.0f);	// for cube
+	m_Camera->SetPosition(0.0f, 2.0f, -5.0f);	// for cube
 	// Initialize a base view matrix with the camera for 2D user interface rendering.
 	m_Camera->Render();
 	m_Camera->GetViewMatrix(m_BaseViewMatrix);
@@ -152,6 +155,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Light->SetSpecularPower(32.0f);
 
 	m_Navmesh = new NavmeshClass(111, 206);
+	//m_Navmesh = new NavmeshClass(10, 10);
 	if (!m_Navmesh)
 	{
 		return false;
@@ -166,7 +170,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	// Create the model object.
 	SetModelPosition();
-	m_Plane = new ModelClass(m_planePosition, m_planeCount);
+	m_Plane = new ModelClass(m_planePosition, m_planeCount, false);
 	if (!m_Plane)
 	{
 		return false;
@@ -179,13 +183,26 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
-	m_Stage = new ModelClass(m_stagePosition, m_stageCount);
+	m_Stage = new ModelClass(m_stagePosition, m_stageCount, false);
 	if (!m_Stage)
 	{
 		return false;
 	}
 	// Initialize the model object.
 	result = m_Stage->Initialize(m_D3D->GetDevice(), L"./data/EM_Stage.obj", L"./data/ET_Seafloor.dds");
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
+		return false;
+	}
+
+	m_NavmeshModel = new ModelClass(m_navmeshPosition, m_navmeshCount, true);
+	if (!m_NavmeshModel)
+	{
+		return false;
+	}
+	// Initialize the model object.
+	result = m_NavmeshModel->Initialize(m_D3D->GetDevice(), L"./data/EM_Navmesh.obj", L"./data/ET_Seafloor.dds");
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
@@ -314,16 +331,14 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	// Zombie
 	m_Zombie = new EnemyClass(m_ZombieAnimInfo.animationCount, m_ZombieAnimInfo.maxFrame, 3, 3, m_ZombieAnimInfo.textureNames);
-	m_Zombie->SetPosition(0, 0, 5);
+	m_Zombie->SetPosition(4, 0, 30);
 	m_Zombie->SetForwardVector(0, 0, -1);
 	m_Zombie->SetAcceptDistance(2.0f);
 	m_Zombie->SetDetectRange(20.0f);
 	m_Zombie->SetAttackRange(3.0f);
 	m_Zombie->SetSpeed(1.0f);
-	m_Zombie->AddPath(XMFLOAT3(10, 0, -10));
-	m_Zombie->AddPath(XMFLOAT3(-10, 0, -10));
-	m_Zombie->AddPath(XMFLOAT3(-10, 0, 10));
-	m_Zombie->AddPath(XMFLOAT3(10, 0, 10));
+	m_Zombie->AddPath(XMFLOAT3(0, 0, 29));
+	m_Zombie->AddPath(XMFLOAT3(0, 0, 1));
 	m_Zombie->SetPathIndex(0);
 	m_Zombie->SetCurrentTargetPath(m_Zombie->GetPath().at(m_Zombie->GetPathIndex()));
 
@@ -338,6 +353,12 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		delete[] m_ZombieAnimInfo.textureNames[i];
 	}
 	delete[] m_ZombieAnimInfo.textureNames;
+
+	//int correction = 45;
+	//AStarClass m_AStar(XMFLOAT3(m_Camera->GetPosition().x, 0.0f, m_Camera->GetPosition().z),
+	//	XMFLOAT3(m_Zombie->GetPosition().x, 0.0f, m_Zombie->GetPosition().z), correction);
+	//m_AStar.FindPath();
+	//list<XMFLOAT3*> path = m_AStar.GetPath();
 
 	return true;
 }
@@ -382,6 +403,7 @@ void GraphicsClass::SetModelPosition()
 {
 	m_planePosition[0] = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	m_stagePosition[0] = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	m_navmeshPosition[0] = XMFLOAT3(0.0f, -8.0f, 0.0f);
 }
 
 
@@ -442,6 +464,34 @@ void GraphicsClass::FinishShoot()
 	m_isShoot = false;
 }
 
+bool GraphicsClass::SameSide(XMFLOAT3 p1, XMFLOAT3 p2, XMFLOAT3 a, XMFLOAT3 b)
+{
+	XMVECTOR p1V, p2V, aV, bV;
+	p1V = XMLoadFloat3(&p1);
+	p2V = XMLoadFloat3(&p2);
+	aV = XMLoadFloat3(&a);
+	bV = XMLoadFloat3(&b);
+
+	auto cp1 = XMVector3Cross(bV - aV, p1V - aV);
+	auto cp2 = XMVector3Cross(bV - aV, p2V - aV);
+
+	if (XMVectorGetX(XMVector3Dot(cp1, cp2)) >= 0.0f)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool GraphicsClass::PointInTriangle(XMFLOAT3 p, XMFLOAT3 a, XMFLOAT3 b, XMFLOAT3 c)
+{
+	if (SameSide(p, a, b, c) && SameSide(p, b, a, c) && SameSide(p, c, a, b))
+	{
+		return true;
+	}
+	return false;
+}
+
 void GraphicsClass::Shutdown()
 {
 	// Release the D3D object.
@@ -499,6 +549,15 @@ void GraphicsClass::Shutdown()
 		m_Stage->Shutdown();
 		delete m_Stage;
 		m_Stage = 0;
+	}
+
+	// Release the model object.
+	if (m_NavmeshModel)
+	{
+		delete m_navmeshPosition;
+		m_NavmeshModel->Shutdown();
+		delete m_NavmeshModel;
+		m_NavmeshModel = 0;
 	}
 
 	//// Release the model object.
@@ -595,6 +654,12 @@ bool GraphicsClass::Frame(int fps, int cpu, float frameTime)
 	{
 		return false;
 	}
+	// Set the position.
+	result = m_Text->SetPosition(m_Camera->GetPosition() , m_D3D->GetDeviceContext());
+	if (!result)
+	{
+		return false;
+	}
 
 	// update camera Headbob
 	bobAngle += XM_PI * 0.025f;
@@ -609,7 +674,7 @@ bool GraphicsClass::Frame(int fps, int cpu, float frameTime)
 
 	// Update FSM
 	m_Zombie->SetTargetPosition(m_Camera->GetPosition());
-	m_Zombie->Update();
+	m_Zombie->Update(deltaTime);
 
 	// Render the graphics scene.
 	result = Render(deltaTime);
@@ -641,16 +706,6 @@ bool GraphicsClass::Render(float deltaTime)
 	m_Camera->GetViewMatrix(viewMatrix);
 
 	/////////////////////////////////////////////////////// 3D Render
-	//vector<NodeClass*>::iterator iter;
-	//iter = m_Navmesh->GetNodes().begin();
-	//for (; iter != m_Navmesh->GetNodes().end(); iter++)
-	//{
-	//	(*iter)->GetModel()->Render(m_D3D->GetDeviceContext());
-
-	//	result = m_TextureShader->Render(m_D3D->GetDeviceContext(), (*iter)->GetModel()->GetIndexCount(),
-	//		worldMatrix, viewMatrix, projectionMatrix, (*iter)->GetModel()->GetTexture());
-	//}
-
 	m_Plane->Render(m_D3D->GetDeviceContext());
 
 	// Render the model using the light shader.
@@ -659,7 +714,7 @@ bool GraphicsClass::Render(float deltaTime)
 		m_Plane->GetTexture(),
 		m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
 		m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower(),
-		m_Light->GetAmbientToggle(), m_Light->GetDiffuseToggle(), m_Light->GetSpecularToggle());
+		m_Light->GetAmbientToggle(), m_Light->GetDiffuseToggle(), m_Light->GetSpecularToggle(), 10);
 	if (!result)
 	{
 		return false;
@@ -673,7 +728,7 @@ bool GraphicsClass::Render(float deltaTime)
 		m_Stage->GetTexture(),
 		m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
 		m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower(),
-		m_Light->GetAmbientToggle(), m_Light->GetDiffuseToggle(), m_Light->GetSpecularToggle());
+		m_Light->GetAmbientToggle(), m_Light->GetDiffuseToggle(), m_Light->GetSpecularToggle(), 10);
 	if (!result)
 	{
 		return false;
@@ -720,7 +775,7 @@ bool GraphicsClass::Render(float deltaTime)
 		m_Zombie->GetModel()->GetSpriteTexture(m_ZombieAnimInfo.currentAnimationIndex, m_ZombieAnimInfo.currentFrameNum / 25),
 		m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
 		m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower(),
-		m_Light->GetAmbientToggle(), m_Light->GetDiffuseToggle(), m_Light->GetSpecularToggle());
+		m_Light->GetAmbientToggle(), m_Light->GetDiffuseToggle(), m_Light->GetSpecularToggle(), 1);
 	if (!result)
 	{
 		return false;

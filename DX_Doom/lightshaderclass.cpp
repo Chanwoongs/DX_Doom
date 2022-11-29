@@ -54,7 +54,7 @@ bool LightShaderClass::Render(ID3D11DeviceContext* deviceContext, int vertexCoun
 	ID3D11ShaderResourceView* texture, 
 	XMFLOAT3 lightDirection, XMFLOAT4 ambientColor, XMFLOAT4 diffuseColor,
 	XMFLOAT3 cameraPosition, XMFLOAT4 specularColor, float specularPower,
-	float ambientToggle, float diffuseToggle, float specularToggle)
+	float ambientToggle, float diffuseToggle, float specularToggle, int textureTile)
 {
 	bool result;
 
@@ -62,7 +62,7 @@ bool LightShaderClass::Render(ID3D11DeviceContext* deviceContext, int vertexCoun
 	// Set the shader parameters that it will use for rendering.
 	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, texture, 
 		lightDirection, ambientColor, diffuseColor, cameraPosition, specularColor, specularPower,
-		ambientToggle, diffuseToggle, specularToggle);
+		ambientToggle, diffuseToggle, specularToggle, textureTile);
 	if(!result)
 	{
 		return false;
@@ -85,6 +85,7 @@ bool LightShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, const W
 	unsigned int numElements;
     D3D11_SAMPLER_DESC samplerDesc;
 	D3D11_BUFFER_DESC matrixBufferDesc;
+	D3D11_BUFFER_DESC numBufferDesc;
 	D3D11_BUFFER_DESC lightBufferDesc;
 	D3D11_BUFFER_DESC cameraBufferDesc;
 
@@ -234,6 +235,19 @@ bool LightShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, const W
 		return false;
 	}
 
+	numBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	numBufferDesc.ByteWidth = sizeof(NumBufferType);
+	numBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	numBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	numBufferDesc.MiscFlags = 0;
+	numBufferDesc.StructureByteStride = 0;
+
+	result = device->CreateBuffer(&matrixBufferDesc, NULL, &m_numBuffer);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
 	// Setup the description of the light dynamic constant buffer that is in the pixel shader.
 	// Note that ByteWidth always needs to be a multiple of 16 if using D3D11_BIND_CONSTANT_BUFFER or CreateBuffer will fail.
 	lightBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
@@ -283,6 +297,12 @@ void LightShaderClass::ShutdownShader()
 	{
 		m_matrixBuffer->Release();
 		m_matrixBuffer = 0;
+	}
+
+	if (m_numBuffer)
+	{
+		m_numBuffer->Release();
+		m_numBuffer = 0;
 	}
 
 	// Release the sampler state.
@@ -364,14 +384,16 @@ bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext,
 	XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, 
 	ID3D11ShaderResourceView* texture, 
 	XMFLOAT3 lightDirection, XMFLOAT4 ambientColor, XMFLOAT4 diffuseColor, XMFLOAT3 cameraPosition, XMFLOAT4 specularColor, float specularPower,
-	float ambientToggle, float diffuseToggle, float specularToggle)
+	float ambientToggle, float diffuseToggle, float specularToggle, int textureTile)
 {
 	HRESULT result;
     D3D11_MAPPED_SUBRESOURCE mappedResource;
+    D3D11_MAPPED_SUBRESOURCE mappedResource0;
 	unsigned int bufferNumber;
 	MatrixBufferType* dataPtr;
 	LightBufferType* dataPtr2;
 	CameraBufferType* dataPtr3;
+	NumBufferType* dataPtr4;
 
 	// Transpose the matrices to prepare them for the shader.
 	worldMatrix = XMMatrixTranspose(worldMatrix);
@@ -456,6 +478,28 @@ bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext,
 
 	// Now set the camera constant buffer in the vertex shader with the updated values.
 	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_cameraBuffer);
+
+	// Lock the constant buffer so it can be written to.
+	result = deviceContext->Map(m_numBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource0);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	// Get a pointer to the data in the constant buffer.
+	dataPtr4 = (NumBufferType*)mappedResource0.pData;
+
+	dataPtr4->textureTile = textureTile;
+
+	// Unlock the constant buffer.
+	deviceContext->Unmap(m_numBuffer, 0);
+
+	// Set the position of the constant buffer in the vertex shader.
+	bufferNumber = 2;
+
+	// Now set the constant buffer in the vertex shader with the updated values.
+	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_numBuffer);
+
 
 	return true;
 }

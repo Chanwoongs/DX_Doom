@@ -94,6 +94,9 @@ public:
 	void PlayMuzzleFlashAnim();
 	void FinishShoot();
 
+	bool SameSide(XMFLOAT3, XMFLOAT3, XMFLOAT3, XMFLOAT3);
+	bool PointInTriangle(XMFLOAT3, XMFLOAT3, XMFLOAT3, XMFLOAT3);
+
 private:
 	bool Render(float);
 	XMMATRIX UpdateEnemyWalkingAnimation(EnemyClass*, AnimationInfo&, float);
@@ -121,6 +124,7 @@ private:
 
 	ModelClass* m_Plane;
 	ModelClass* m_Stage;
+	ModelClass* m_NavmeshModel;
 	SphereClass* m_Sphere;
 
 
@@ -136,6 +140,9 @@ private:
 
 	XMFLOAT3* m_stagePosition;
 	int m_stageCount;
+
+	XMFLOAT3* m_navmeshPosition;
+	int m_navmeshCount;
 
 	EnemyClass* m_Zombie;
 	AnimationInfo m_ZombieAnimInfo;

@@ -38,6 +38,11 @@ struct PixelInputType
 	float3 viewDirection : TEXCOORD1;
 };
 
+cbuffer NumBuffer
+{
+    int textureTile;
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // Vertex Shader
@@ -67,7 +72,7 @@ PixelInputType LightVertexShader(VertexInputType input)
     output.position = mul(output.position, projectionMatrix);
 
 	// Store the texture coordinates for the pixel shader.
-	output.tex = input.tex;
+	output.tex = input.tex * textureTile;
     
 	// Calculate the normal vector against the world matrix only.
     output.normal = mul(input.normal, (float3x3)mul(rotMatrix, worldMatrix));
