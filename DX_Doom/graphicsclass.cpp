@@ -148,7 +148,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	// Initialize the light object.
-	m_Light->SetAmbientColor(0.5f, 0.5f, 0.5f, 1.0f);
+	m_Light->SetAmbientColor(0.3f, 0.3f, 0.3f, 1.0f);
 	m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
 	m_Light->SetDirection(1.0f, -1.0f, 1.0f);
 	m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -176,7 +176,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 	// Initialize the model object.
-	result = m_Plane->Initialize(m_D3D->GetDevice(), L"./data/EM_Cube.obj", L"./data/ET_Plane.dds");
+	result = m_Plane->Initialize(m_D3D->GetDevice(), L"./data/EM_Cube.obj", L"./data/ET_Plane.dds", L"./data/ET_Dirt.dds");
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
@@ -189,20 +189,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 	// Initialize the model object.
-	result = m_Stage->Initialize(m_D3D->GetDevice(), L"./data/EM_Stage.obj", L"./data/ET_Seafloor.dds");
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
-		return false;
-	}
-
-	m_NavmeshModel = new ModelClass(m_navmeshPosition, m_navmeshCount, true);
-	if (!m_NavmeshModel)
-	{
-		return false;
-	}
-	// Initialize the model object.
-	result = m_NavmeshModel->Initialize(m_D3D->GetDevice(), L"./data/EM_Navmesh.obj", L"./data/ET_Seafloor.dds");
+	result = m_Stage->Initialize(m_D3D->GetDevice(), L"./data/EM_Stage.obj", L"./data/ET_Stone.dds", L"./data/ET_Dirt.dds");
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
@@ -710,8 +697,8 @@ bool GraphicsClass::Render(float deltaTime)
 
 	// Render the model using the light shader.
 	result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Plane->GetVertexCount(), m_Plane->GetInstanceCount(),
-		worldMatrix * XMMatrixScaling(100.0f, 0.01f, 100.0f) * XMMatrixTranslation(0.0f, 0.0f, 0.0f), viewMatrix, projectionMatrix,
-		m_Plane->GetTexture(),
+		worldMatrix * XMMatrixScaling(150.0f, 0.01f, 500.0f) * XMMatrixTranslation(0.0f, 0.0f, 100.0f), viewMatrix, projectionMatrix,
+		m_Plane->GetTextureArray(),
 		m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
 		m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower(),
 		m_Light->GetAmbientToggle(), m_Light->GetDiffuseToggle(), m_Light->GetSpecularToggle(), 10);
@@ -725,7 +712,7 @@ bool GraphicsClass::Render(float deltaTime)
 	// Render the model using the light shader.
 	result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Stage->GetVertexCount(), m_Stage->GetInstanceCount(),
 		worldMatrix * XMMatrixScaling(0.5f, 0.2f, 0.5f) * XMMatrixTranslation(0.0f, 0.0f, 0.0f), viewMatrix, projectionMatrix,
-		m_Stage->GetTexture(),
+		m_Stage->GetTextureArray(),
 		m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
 		m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower(),
 		m_Light->GetAmbientToggle(), m_Light->GetDiffuseToggle(), m_Light->GetSpecularToggle(), 10);
@@ -767,19 +754,19 @@ bool GraphicsClass::Render(float deltaTime)
 	}
 	else m_ZombieAnimInfo.currentFrameNum++;
 
-	// Render the model using the light shader.
-	// 신축 회전 이동 순
-	result = m_LightShader->Render(m_D3D->GetDeviceContext(), 6, 1,
-		zombieBillboardWorldMatrix, 
-		viewMatrix, projectionMatrix,
-		m_Zombie->GetModel()->GetSpriteTexture(m_ZombieAnimInfo.currentAnimationIndex, m_ZombieAnimInfo.currentFrameNum / 25),
-		m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
-		m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower(),
-		m_Light->GetAmbientToggle(), m_Light->GetDiffuseToggle(), m_Light->GetSpecularToggle(), 1);
-	if (!result)
-	{
-		return false;
-	}
+	//// Render the model using the light shader.
+	//// 신축 회전 이동 순
+	//result = m_LightShader->Render(m_D3D->GetDeviceContext(), 6, 1,
+	//	zombieBillboardWorldMatrix, 
+	//	viewMatrix, projectionMatrix,
+	//	m_Zombie->GetModel()->GetSpriteTexture(m_ZombieAnimInfo.currentAnimationIndex, m_ZombieAnimInfo.currentFrameNum / 25),
+	//	m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
+	//	m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower(),
+	//	m_Light->GetAmbientToggle(), m_Light->GetDiffuseToggle(), m_Light->GetSpecularToggle(), 1);
+	//if (!result)
+	//{
+	//	return false;
+	//}
 
 	// Turn off alpha blending after rendering the text.
 	m_D3D->TurnOffAlphaBlending();

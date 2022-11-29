@@ -4,12 +4,13 @@
 #include "modelclass.h"
 
 
-ModelClass::ModelClass(XMFLOAT3* m_positions, int m_instanceCount)
+ModelClass::ModelClass(XMFLOAT3* m_positions, int m_instanceCount, bool needVertices)
 {
 	m_vertexBuffer = 0;
 	m_indexBuffer = 0;
 	m_instanceBuffer = 0;
 	m_Texture = 0;
+	m_TextureArray = 0;
 	m_model = 0;
 
 	m_textureCount = 0;
@@ -23,6 +24,8 @@ ModelClass::ModelClass(XMFLOAT3* m_positions, int m_instanceCount)
 	{
 		m_instancePosition[i] = m_positions[i];
 	}
+
+	m_needVertices = needVertices;
 }
 
 
@@ -36,7 +39,7 @@ ModelClass::~ModelClass()
 }
 
 
-bool ModelClass::Initialize(ID3D11Device* device, const WCHAR* modelFilename, const WCHAR* textureFilename)
+bool ModelClass::Initialize(ID3D11Device* device, const WCHAR* modelFilename, const WCHAR* textureFilename, const WCHAR* multiTextureFilename)
 {
 	bool result;
 
@@ -55,7 +58,7 @@ bool ModelClass::Initialize(ID3D11Device* device, const WCHAR* modelFilename, co
 	}
 
 	// Load the texture for this model.
-	result = LoadTexture(device, textureFilename);
+	result = LoadTextures(device, textureFilename, multiTextureFilename);
 	if(!result)
 	{
 		return false;
@@ -69,6 +72,9 @@ void ModelClass::Shutdown()
 {
 	// Release the model texture.
 	ReleaseTexture();
+
+	// Release the model texture.
+	ReleaseTextures();
 
 	// Shutdown the vertex and index buffers.
 	ShutdownBuffers();
@@ -86,6 +92,11 @@ void ModelClass::Render(ID3D11DeviceContext* deviceContext)
 	RenderBuffers(deviceContext);
 
 	return;
+}
+
+ID3D11ShaderResourceView** ModelClass::GetTextureArray()
+{
+	return m_TextureArray->GetTextureArray();
 }
 
 
@@ -141,6 +152,11 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 		vertices[i].position = XMFLOAT3(m_model[i].x, m_model[i].y, m_model[i].z);
 		vertices[i].texture = XMFLOAT2(m_model[i].tu, m_model[i].tv);
 		vertices[i].normal = XMFLOAT3(m_model[i].nx, m_model[i].ny, m_model[i].nz);
+
+		if (m_needVertices)
+		{
+			m_Vertices.push_back(XMFLOAT3(m_model[i].x, m_model[i].y, m_model[i].z));
+		}
 
 		indices[i] = i;
 	}
@@ -271,7 +287,7 @@ void ModelClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
     
 	// 포인터의 배열을 정점 버퍼와 인스턴스 버퍼로 설정합니다.
 	ID3D11Buffer* bufferPointers[2] = { m_vertexBuffer, m_instanceBuffer };
-
+	 
 	// Set the vertex buffer to active in the input assembler so it can be rendered.
 	deviceContext->IASetVertexBuffers(0, 2, bufferPointers, strides, offsets);
 
@@ -307,6 +323,24 @@ bool ModelClass::LoadTexture(ID3D11Device* device, const WCHAR* filename)
 	return true;
 }
 
+bool ModelClass::LoadTextures(ID3D11Device* device, const WCHAR* filename1, const WCHAR* filename2)
+{
+	bool result;
+	// Create the texture array object.
+	m_TextureArray = new TextureArrayClass;
+	if (!m_TextureArray)
+	{
+		return false;
+	}
+	// Initialize the texture array object.
+	result = m_TextureArray->Initialize(device, filename1, filename2);
+	if (!result)
+	{
+		return false;
+	}
+	return true;
+}
+
 
 void ModelClass::ReleaseTexture()
 {
@@ -319,6 +353,33 @@ void ModelClass::ReleaseTexture()
 	}
 
 	return;
+}
+
+void ModelClass::ReleaseTextures()
+{
+	// Release the texture array object.
+	if (m_TextureArray)
+	{
+		m_TextureArray->Shutdown();
+		delete m_TextureArray;
+		m_TextureArray = 0;
+	}
+	return;
+}
+
+void ModelClass::SetVerticesToWorld(XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix)
+{
+	vector<XMFLOAT3>::iterator iter;
+	iter = m_Vertices.begin();
+	for (; iter != m_Vertices.end(); iter++)
+	{
+		XMVECTOR tempVec = XMLoadFloat3(&(*iter));
+		XMVECTOR resultVec = XMVector3Transform(tempVec, worldMatrix);
+		//resultVec = XMVector3Transform(resultVec, viewMatrix);
+		//resultVec = XMVector3Transform(resultVec, projectionMatrix);
+		XMStoreFloat3(&(*iter), resultVec);
+		(*iter).y = 0.0f;
+	}
 }
 
 bool ModelClass::LoadModel(const WCHAR* filename)

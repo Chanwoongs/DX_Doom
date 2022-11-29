@@ -51,7 +51,7 @@ void LightShaderClass::Shutdown()
 
 bool LightShaderClass::Render(ID3D11DeviceContext* deviceContext, int vertexCount, int instanceCount, 
 	XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, 
-	ID3D11ShaderResourceView* texture, 
+	ID3D11ShaderResourceView** textureArray, 
 	XMFLOAT3 lightDirection, XMFLOAT4 ambientColor, XMFLOAT4 diffuseColor,
 	XMFLOAT3 cameraPosition, XMFLOAT4 specularColor, float specularPower,
 	float ambientToggle, float diffuseToggle, float specularToggle, int textureTile)
@@ -60,7 +60,7 @@ bool LightShaderClass::Render(ID3D11DeviceContext* deviceContext, int vertexCoun
 
 
 	// Set the shader parameters that it will use for rendering.
-	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, texture, 
+	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, textureArray, 
 		lightDirection, ambientColor, diffuseColor, cameraPosition, specularColor, specularPower,
 		ambientToggle, diffuseToggle, specularToggle, textureTile);
 	if(!result)
@@ -382,7 +382,7 @@ void LightShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND h
 // The SetShaderParameters function now takes in lightDirection and diffuseColor as inputs.
 bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, 
 	XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, 
-	ID3D11ShaderResourceView* texture, 
+	ID3D11ShaderResourceView** textureArray, 
 	XMFLOAT3 lightDirection, XMFLOAT4 ambientColor, XMFLOAT4 diffuseColor, XMFLOAT3 cameraPosition, XMFLOAT4 specularColor, float specularPower,
 	float ambientToggle, float diffuseToggle, float specularToggle, int textureTile)
 {
@@ -425,7 +425,7 @@ bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext,
     deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
 
 	// Set shader texture resource in the pixel shader.
-	deviceContext->PSSetShaderResources(0, 1, &texture);
+	deviceContext->PSSetShaderResources(0, 2, textureArray);
 
 	// Lock the light constant buffer so it can be written to.
 	result = deviceContext->Map(m_lightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
