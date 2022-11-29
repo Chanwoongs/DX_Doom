@@ -4,6 +4,7 @@
 #ifndef _ASTARCLASS_H_
 #define _ASTARCLASS_H_
 
+#define _CRT_SECURE_NO_WARNINGS
 
 //////////////
 // INCLUDES //
@@ -44,25 +45,23 @@ public:
 	class Map // 맵 클래스
 	{
 	public:
-		int sizeX, sizeY;
+		int row, col;
 		int** map;
 	public:
-		void Copy(Map*); // 매개변수를 Map 으로 받아오면 매개변수에서 얕은복사가 일어남.
-		void PrintMap();
-	public:
-		Map(int, int);
+		Map();
 		~Map();
 	};
 
 public:
-	AStarClass(XMFLOAT3 startPoint, XMFLOAT3 endPoint, int sizeX, int sizeY)
+	AStarClass(XMFLOAT3 startPoint, XMFLOAT3 endPoint, int correction)
 	{
-		m_startPoint.x = startPoint.x;
-		m_startPoint.y = startPoint.y;
-		m_endPoint.x = endPoint.x;
-		m_endPoint.y = endPoint.y;
+		m_correction = correction;
+		m_startPoint.x = (int)startPoint.x + m_correction;
+		m_startPoint.z = (int)startPoint.z;
+		m_endPoint.x = (int)endPoint.x + m_correction;
+		m_endPoint.z = (int)endPoint.z;
 
-		m_Navi = new Map(sizeX, sizeY);
+		m_Navi = new Map();
 	}
 	~AStarClass()
 	{ // path 동적할당 해제
@@ -90,9 +89,10 @@ public:
 	list<XMFLOAT3*> GetPath() { return m_path; } // 경로를 XMFLOAT3* 리스트로 통째로 받아옴
 
 private:
-	int m_sizeX;
-	int m_sizeY;
+	int m_row;
+	int m_col;
 
+	int m_correction;
 	XMFLOAT3 m_startPoint; // 출발지점
 	XMFLOAT3 m_endPoint; // 목표지점
 	list<XMFLOAT3*> m_path; // 경로
@@ -102,3 +102,5 @@ private:
 };
 
 #endif
+
+
