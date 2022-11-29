@@ -1,10 +1,10 @@
 ////////////////////////////////////////////////////////////////////////////////
-// Filename: triangleclass.cpp
+// Filename: lineclass.cpp
 ////////////////////////////////////////////////////////////////////////////////
-#include "triangleclass.h"
+#include "lineclass.h"
 
 
-TriangleClass::TriangleClass()
+LineClass::LineClass()
 {
 	m_vertexBuffer = 0;
 	m_indexBuffer = 0;
@@ -12,17 +12,17 @@ TriangleClass::TriangleClass()
 }
 
 
-TriangleClass::TriangleClass(const TriangleClass& other)
+LineClass::LineClass(const LineClass& other)
 {
 }
 
 
-TriangleClass::~TriangleClass()
+LineClass::~LineClass()
 {
 }
 
 
-bool TriangleClass::Initialize(ID3D11Device* device, XMFLOAT3 position)
+bool LineClass::Initialize(ID3D11Device* device, XMFLOAT3 position)
 {
 	bool result;
 
@@ -37,7 +37,7 @@ bool TriangleClass::Initialize(ID3D11Device* device, XMFLOAT3 position)
 }
 
 
-void TriangleClass::Shutdown()
+void LineClass::Shutdown()
 {
 	// Release the model texture.
 	ReleaseTexture();
@@ -49,7 +49,7 @@ void TriangleClass::Shutdown()
 }
 
 
-void TriangleClass::Render(ID3D11DeviceContext* deviceContext)
+void LineClass::Render(ID3D11DeviceContext* deviceContext)
 {
 	// Put the vertex and index buffers on the graphics pipeline to prepare them for drawing.
 	RenderBuffers(deviceContext);
@@ -58,19 +58,19 @@ void TriangleClass::Render(ID3D11DeviceContext* deviceContext)
 }
 
 
-int TriangleClass::GetIndexCount()
+int LineClass::GetIndexCount()
 {
 	return m_indexCount;
 }
 
 
-ID3D11ShaderResourceView* TriangleClass::GetTexture()
+ID3D11ShaderResourceView* LineClass::GetTexture()
 {
 	return m_Texture->GetTexture();
 }
 
 
-bool TriangleClass::InitializeBuffers(ID3D11Device* device, XMFLOAT3 position)
+bool LineClass::InitializeBuffers(ID3D11Device* device, XMFLOAT3 position)
 {
 	VertexType* vertices;
 	unsigned long* indices;
@@ -80,10 +80,10 @@ bool TriangleClass::InitializeBuffers(ID3D11Device* device, XMFLOAT3 position)
 
 
 	// Set the number of vertices in the vertex array.
-	m_vertexCount = 3;
+	m_vertexCount = 2;
 
 	// Set the number of indices in the index array.
-	m_indexCount = 3;
+	m_indexCount = 2;
 
 	// Create the vertex array.
 	vertices = new VertexType[m_vertexCount];
@@ -100,19 +100,15 @@ bool TriangleClass::InitializeBuffers(ID3D11Device* device, XMFLOAT3 position)
 	}
 
 	// Load the vertex array with data.
-	vertices[0].position = XMFLOAT3(-0.1f + position.x, 0.0f + position.y, 0.0f + position.z);  // Bottom left.
+	vertices[0].position = XMFLOAT3(position.x, 0.0f, position.z);  
 	vertices[0].texture = XMFLOAT2(0.0f, 1.0f);
 
-	vertices[1].position = XMFLOAT3(0.0f + position.x, 0.5f + position.y, 0.0f + position.z);  // Top middle.
+	vertices[1].position = XMFLOAT3(position.x, 0.5f, position.z);  
 	vertices[1].texture = XMFLOAT2(0.5f, 0.0f);
 
-	vertices[2].position = XMFLOAT3(0.1f + position.x, 0.0f + position.y, 0.0f + position.z);  // Bottom right.
-	vertices[2].texture = XMFLOAT2(1.0f, 1.0f);
-
 	// Load the index array with data.
-	indices[0] = 0;  // Bottom left.
-	indices[1] = 1;  // Top middle.
-	indices[2] = 2;  // Bottom right.
+	indices[0] = 0;  
+	indices[1] = 1;  
 
 	// Set up the description of the static vertex buffer.
 	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -165,7 +161,7 @@ bool TriangleClass::InitializeBuffers(ID3D11Device* device, XMFLOAT3 position)
 }
 
 
-void TriangleClass::ShutdownBuffers()
+void LineClass::ShutdownBuffers()
 {
 	// Release the index buffer.
 	if (m_indexBuffer)
@@ -185,7 +181,7 @@ void TriangleClass::ShutdownBuffers()
 }
 
 
-void TriangleClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
+void LineClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
 {
 	unsigned int stride;
 	unsigned int offset;
@@ -202,13 +198,13 @@ void TriangleClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
 	deviceContext->IASetIndexBuffer(m_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
 	// Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
-	deviceContext->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	deviceContext->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
 
 	return;
 }
 
 
-bool TriangleClass::LoadTexture(ID3D11Device* device, const WCHAR* filename)
+bool LineClass::LoadTexture(ID3D11Device* device, const WCHAR* filename)
 {
 	bool result;
 
@@ -231,7 +227,7 @@ bool TriangleClass::LoadTexture(ID3D11Device* device, const WCHAR* filename)
 }
 
 
-void TriangleClass::ReleaseTexture()
+void LineClass::ReleaseTexture()
 {
 	// Release the texture object.
 	if (m_Texture)
@@ -244,9 +240,9 @@ void TriangleClass::ReleaseTexture()
 	return;
 }
 
-bool TriangleClass::UpdateTexture(ID3D11Device* device, const WCHAR* textureFilename)
-{	
-	bool result; 
+bool LineClass::UpdateTexture(ID3D11Device* device, const WCHAR* textureFilename)
+{
+	bool result;
 
 	ReleaseTexture();
 

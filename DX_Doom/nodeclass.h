@@ -16,8 +16,6 @@ using namespace DirectX;
 ///////////////////////
 // MY CLASS INCLUDES //
 ///////////////////////
-#include "textureclass.h"
-#include "modelclass.h"
 
 using namespace std;
 
@@ -31,13 +29,14 @@ public:
 	NodeClass(const NodeClass&);
 	~NodeClass();
 
-	bool Initialize(ID3D11Device*, const WCHAR*, const WCHAR*, HWND);
+	bool Initialize();
 	void Shutdown();
-
-	ModelClass* GetModel() { return m_Model; }
+	
+	XMVECTOR GetUpVector() { return m_upVec; }
+	XMFLOAT3 GetPosition() { return m_position; }
 
 private:
-	ModelClass* m_Model;
+	XMVECTOR m_upVec;
 	XMFLOAT3 m_position;
 	bool m_isVaild;
 };

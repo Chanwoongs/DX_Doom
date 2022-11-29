@@ -42,14 +42,16 @@ bool NavmeshClass::Initialize(ID3D11Device* device, HWND hwnd)
 
 	vector<NodeClass*>::iterator iter;
 	iter = m_Nodes.begin();
+	int i = 0;
 	for (; iter != m_Nodes.end(); iter++)
 	{
-		result = (*iter)->Initialize(device, L"./data/EM_Pyramid.obj", L"./data/ET_Seafloor.dds", hwnd);
+		result = (*iter)->Initialize();
 		if (!result)
 		{
 			MessageBox(hwnd, L"Could not initialize the node object.", L"Error", MB_OK);
 			return false;
 		}
+		i++;
 	}
 
 	return true;
@@ -82,9 +84,9 @@ void NavmeshClass::SetNodePositions()
 	{
 		for (int j = 0; j < m_sizeX; j++)
 		{
-			m_nodePositions[10 * i + j].x = -(m_sizeX / 2) + j;
-			m_nodePositions[10 * i + j].y = i;
-			m_nodePositions[10 * i + j].z = 0.0f;
+			m_nodePositions[m_sizeX * i + j].x = -(m_sizeX / 2) + j;
+			m_nodePositions[m_sizeX * i + j].y = 0.0f;
+			m_nodePositions[m_sizeX * i + j].z = i;
 		}
 	}
 }

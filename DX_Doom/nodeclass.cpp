@@ -20,24 +20,20 @@ NodeClass::~NodeClass()
 }
 
 
-bool NodeClass::Initialize(ID3D11Device* device, const WCHAR* modelFilename, const WCHAR* textureFilename, HWND hwnd)
+bool NodeClass::Initialize()
 {
 	bool result;
 
-	m_Model = new ModelClass(&m_position, 1);
-	if (!m_Model)
-	{
-		return false;
-	}
+	XMVECTOR positionVec = XMLoadFloat3(&m_position);
+	XMVECTOR posToZeroVec = XMVectorZero() - positionVec;
 
-	// Initialize the model object.
-	result = m_Model->Initialize(device, L"./data/EM_Cube.obj", L"./data/ET_Seafloor.dds");
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
+	XMFLOAT3 tempPos = XMFLOAT3(m_position.x, m_position.y, m_position.z + 1);
+	XMVECTOR tempPosVec = XMLoadFloat3(&tempPos);
+	XMVECTOR posToTempVec = tempPosVec - positionVec;
 
-		return false;
-	}
+	XMVECTOR upVec = XMVector3Cross(XMVector3Normalize(tempPosVec), XMVector3Normalize(posToZeroVec));
+
+	m_upVec = XMVector3Normalize(upVec);
 
 	return true;
 }
@@ -45,7 +41,6 @@ bool NodeClass::Initialize(ID3D11Device* device, const WCHAR* modelFilename, con
 
 void NodeClass::Shutdown()
 {
-	delete m_Model;
 
 	return;
 }
