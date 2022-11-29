@@ -19,9 +19,9 @@ EnemyClass::~EnemyClass()
 {
 }
 
-void EnemyClass::Update()
+void EnemyClass::Update(float deltaTime)
 {
-	m_pStateMachine->Update();
+	m_pStateMachine->Update(deltaTime);
 }
 
 bool EnemyClass::Initialize(ID3D11Device* device)

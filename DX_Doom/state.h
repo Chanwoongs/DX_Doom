@@ -11,7 +11,7 @@ public:
 	virtual void Enter(type*)=0;
 
 	//this is the states normal update function
-	virtual void Execute(type*)=0;
+	virtual void Execute(type*, float)=0;
 
 	//this will execute when the state is exited. (My word, isn't
 	//life full of surprises... ;o))

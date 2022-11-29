@@ -24,22 +24,65 @@ Patrol* Patrol::Instance()
 
 void Patrol::Enter(EnemyClass* pEnemyClass)
 {
+	timer = 0.0f;
     return;
 }
 
 
-void Patrol::Execute(EnemyClass* pEnemyClass)
+void Patrol::Execute(EnemyClass* pEnemyClass, float deltaTime)
 {
-	pEnemyClass->SetCurrentTargetPath(pEnemyClass->GetPath().at(pEnemyClass->GetPathIndex()));
+	// Get Enemy's destination node position
+	XMFLOAT3 destination = pEnemyClass->GetPath().at(pEnemyClass->GetPathIndex());
 	pEnemyClass->SetSpeed(1.0f);
+
+	timer += deltaTime;
+	if (timer > 200.0f)
+	{
+		// Find Path to destionation
+		int correction = 45;
+		AStarClass AStar(pEnemyClass->GetPosition(), destination, correction);
+		AStar.FindPath();
+		list<XMFLOAT3*> path = AStar.GetPath();
+
+		if (path.size() == 0) return;
+
+		pEnemyClass->SetShortestPath(path);
+		XMFLOAT3 target;
+
+		if (path.size() > 1)
+			path.pop_front();
+		if (path.size() > 1)
+			path.pop_front();
+
+		target = *path.front();
+
+		XMFLOAT3 enemyPos = pEnemyClass->GetPosition();
+		XMVECTOR enemyPositionVec = XMLoadFloat3(&enemyPos);
+		XMVECTOR targetVec = XMLoadFloat3(&target);
+		XMVECTOR diff = enemyPositionVec - targetVec;
+		float distance = XMVectorGetX(XMVector3Length(diff));
+		if (distance <= 0.1f)
+		{
+			if (path.size() > 1)
+				path.pop_front();
+			if (path.size() > 1)
+				path.pop_front();
+
+			target = *path.front();
+		}
+
+		// Set next current target node to enemy's path
+		pEnemyClass->SetCurrentTargetPath(target);
+		timer = 0.0f;
+	}
+
 	XMFLOAT3 enemyPos = pEnemyClass->GetPosition();
 	XMVECTOR enemyPositionVec = XMLoadFloat3(&enemyPos);
-	XMFLOAT3 enemyCurrentPath = pEnemyClass->GetCurrentTargetPath();
-	XMVECTOR enemyCurrentPathVec = XMLoadFloat3(&enemyCurrentPath);
+	XMVECTOR enemyDestPathVec = XMLoadFloat3(&destination);
 	XMFLOAT3 targetPos = pEnemyClass->GetTargetPosition();
 	XMVECTOR targetPositionVec = XMLoadFloat3(&targetPos);
 
-	XMVECTOR diff = enemyPositionVec - enemyCurrentPathVec;
+	XMVECTOR diff = enemyPositionVec - enemyDestPathVec;
 	float distance = XMVectorGetX(XMVector3Length(diff));
 	if (distance <= pEnemyClass->GetAcceptDistance())
 	{
@@ -89,18 +132,60 @@ void Approach::Enter(EnemyClass* pEnemyClass)
 }
 
 
-void Approach::Execute(EnemyClass* pEnemyClass)
+void Approach::Execute(EnemyClass* pEnemyClass, float deltaTime)
 {
-	pEnemyClass->SetCurrentTargetPath(XMFLOAT3(pEnemyClass->GetTargetPosition().x, 0, pEnemyClass->GetTargetPosition().z));
-	pEnemyClass->SetSpeed(2.5f);
+	XMFLOAT3 destination = XMFLOAT3(pEnemyClass->GetTargetPosition().x, 0, pEnemyClass->GetTargetPosition().z);
+	pEnemyClass->SetSpeed(1.0f);
+
+	timer += deltaTime;
+	if (timer > 200.0f)
+	{
+		// Find Path to destionation
+		int correction = 45;
+		AStarClass AStar(pEnemyClass->GetPosition(), destination, correction);
+		AStar.FindPath();
+		list<XMFLOAT3*> path = AStar.GetPath();
+
+		if (path.size() == 0) return;
+
+		pEnemyClass->SetShortestPath(path);
+		XMFLOAT3 target;
+
+		if (path.size() > 1)
+			path.pop_front();
+		if (path.size() > 1)
+			path.pop_front();
+
+		target = *path.front();
+
+		XMFLOAT3 enemyPos = pEnemyClass->GetPosition();
+		XMVECTOR enemyPositionVec = XMLoadFloat3(&enemyPos);
+		XMVECTOR targetVec = XMLoadFloat3(&target);
+		XMVECTOR diff = enemyPositionVec - targetVec;
+		float distance = XMVectorGetX(XMVector3Length(diff));
+		if (distance <= 0.1f)
+		{
+			if (path.size() > 1)
+				path.pop_front();
+			if (path.size() > 1)
+				path.pop_front();
+
+			target = *path.front();
+		}
+
+		// Set next current target node to enemy's path
+		pEnemyClass->SetCurrentTargetPath(target);
+		timer = 0.0f;
+	}
+
+
 	XMFLOAT3 enemyPos = pEnemyClass->GetPosition();
 	XMVECTOR enemyPositionVec = XMLoadFloat3(&enemyPos);
-	XMFLOAT3 enemyCurrentPath = pEnemyClass->GetCurrentTargetPath();
-	XMVECTOR enemyCurrentPathVec = XMLoadFloat3(&enemyCurrentPath);
+	XMVECTOR enemyDestPathVec = XMLoadFloat3(&destination);
 	XMFLOAT3 targetPos = pEnemyClass->GetTargetPosition();
 	XMVECTOR targetPositionVec = XMLoadFloat3(&targetPos);
 
-	XMVECTOR diff = enemyPositionVec - enemyCurrentPathVec;
+	XMVECTOR diff = enemyPositionVec - enemyDestPathVec;
 	float distance = XMVectorGetX(XMVector3Length(diff));
 
 	if (distance >= pEnemyClass->GetDetectRange())
@@ -145,7 +230,7 @@ void Attack::Enter(EnemyClass* pEnemyClass)
 	return;
 }
 
-void Attack::Execute(EnemyClass* pEnemyClass)
+void Attack::Execute(EnemyClass* pEnemyClass, float deltaTime)
 {
 	pEnemyClass->SetCurrentTargetPath(XMFLOAT3(pEnemyClass->GetTargetPosition().x, 0, pEnemyClass->GetTargetPosition().z));
 	pEnemyClass->SetSpeed(0.0f);
@@ -194,7 +279,7 @@ void Hitted::Enter(EnemyClass* pEnemyClass)
 }
 
 
-void Hitted::Execute(EnemyClass* pEnemyClass)
+void Hitted::Execute(EnemyClass* pEnemyClass, float deltaTime)
 {
     return;
 }

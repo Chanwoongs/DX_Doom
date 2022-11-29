@@ -27,7 +27,7 @@ public:
 	EnemyClass(const EnemyClass&);
 	~EnemyClass();
 
-	void Update();
+	void Update(float);
 
 	StateMachine<EnemyClass>* GetFSM()const { return m_pStateMachine; }
 
@@ -48,6 +48,9 @@ public:
 	void AddPath(XMFLOAT3);
 	int GetPathIndex() { return m_pathIndex; }
 	void SetPathIndex(int index) { m_pathIndex = index; }
+
+	list<XMFLOAT3*> GetShortestPath() { return m_shortestPath; }
+	void SetShortestPath(list<XMFLOAT3*> path) { m_shortestPath = path; }
 
 	float GetAcceptDistance() { return m_acceptDistance; }
 	void SetAcceptDistance(float acceptDistance) { m_acceptDistance = acceptDistance; }
@@ -88,6 +91,7 @@ private:
 
 	vector<XMFLOAT3> m_path;
 	XMFLOAT3 m_currentTargetPath;
+	list<XMFLOAT3*> m_shortestPath;
 	int m_pathIndex;
 	float m_acceptDistance;
 	float m_detectRange;

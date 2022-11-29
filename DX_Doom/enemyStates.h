@@ -2,6 +2,7 @@
 #define ENEMYSTATES_H
 
 #include "State.h"
+#include "astarclass.h"
 
 #ifndef StateID
 
@@ -24,6 +25,9 @@ private:
 	Patrol(const Patrol&);
 	Patrol& operator=(const Patrol&);
 
+	float timer;
+
+
 public:
 
   //this is a singleton
@@ -31,7 +35,7 @@ public:
 
   virtual void Enter(EnemyClass* woong);
 
-  virtual void Execute(EnemyClass* woong);
+  virtual void Execute(EnemyClass* woong, float deltaTime);
 
   virtual void Exit(EnemyClass* woong);
 
@@ -47,6 +51,8 @@ private:
 
 	Approach(const Approach&);
 	Approach& operator=(const Approach&);
+
+	float timer;
  
 public:
 
@@ -55,7 +61,7 @@ public:
 
   virtual void Enter(EnemyClass* woong);
 
-  virtual void Execute(EnemyClass* woong);
+  virtual void Execute(EnemyClass* woong, float deltaTime);
 
   virtual void Exit(EnemyClass* woong);
 
@@ -78,7 +84,7 @@ public:
 
   virtual void Enter(EnemyClass* woong);
 
-  virtual void Execute(EnemyClass* woong);
+  virtual void Execute(EnemyClass* woong, float deltaTime);
 
   virtual void Exit(EnemyClass* woong);
 
@@ -101,7 +107,7 @@ public:
 
   virtual void Enter(EnemyClass* woong);
 
-  virtual void Execute(EnemyClass* woong);
+  virtual void Execute(EnemyClass* woong, float deltaTime);
 
   virtual void Exit(EnemyClass* woong);
 

@@ -39,13 +39,13 @@ public:
   void SetPreviousState(State<type>* s){m_pPreviousState = s;}
   
   //call this to update the FSM
-  void  Update()const
+  void  Update(float deltaTime)const
   {
     //if a global state exists, call its execute method, else do nothing
-    if(m_pGlobalState)   m_pGlobalState->Execute(m_pOwner);
+    if(m_pGlobalState)   m_pGlobalState->Execute(m_pOwner, deltaTime);
 
     //same for the current state
-    if (m_pCurrentState) m_pCurrentState->Execute(m_pOwner);
+    if (m_pCurrentState) m_pCurrentState->Execute(m_pOwner, deltaTime);
   }
 
   //change to a new state
