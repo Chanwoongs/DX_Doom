@@ -74,7 +74,7 @@ int SphereClass::GetIndexCount()
 
 ID3D11ShaderResourceView* SphereClass::GetTexture()
 {
-	return m_Texture->GetTexture();
+	return smrv;
 }
 
 
@@ -91,7 +91,7 @@ bool SphereClass::InitializeBuffers(ID3D11Device* device, int latLines, int long
 	float sphereYaw = 0.0f;
 	float spherePitch = 0.0f;
 
-	std::vector<VertexType> vertices(m_vertexCount);
+	std::vector<Vertex> vertices(m_vertexCount);
 
 	XMVECTOR currVertPos = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 
@@ -122,7 +122,7 @@ bool SphereClass::InitializeBuffers(ID3D11Device* device, int latLines, int long
 	ZeroMemory(&vertexBufferDesc, sizeof(vertexBufferDesc));
 
 	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	vertexBufferDesc.ByteWidth = sizeof(VertexType) *m_vertexCount;
+	vertexBufferDesc.ByteWidth = sizeof(Vertex) *m_vertexCount;
 	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	vertexBufferDesc.CPUAccessFlags = 0;
 	vertexBufferDesc.MiscFlags = 0;
@@ -237,9 +237,8 @@ void SphereClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
 	unsigned int stride;
 	unsigned int offset;
 
-
 	// Set vertex buffer stride and offset.
-	stride = sizeof(VertexType);
+	stride = sizeof(Vertex);
 	offset = 0;
 
 	// Set the vertex buffer to active in the input assembler so it can be rendered.
@@ -257,22 +256,43 @@ void SphereClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
 
 bool SphereClass::LoadTexture(ID3D11Device* device, const WCHAR* filename)
 {
-	bool result;
+	HRESULT result;
 
+	ID3D11Texture2D* SMTexture = 0;
 
-	// Create the texture object.
-	m_Texture = new TextureClass;
-	if (!m_Texture)
+	result = CreateDDSTextureFromFileEx(device, L"./data/skyboxbox.dds", 0, D3D11_USAGE_IMMUTABLE, D3D11_BIND_SHADER_RESOURCE,
+		0, D3D11_RESOURCE_MISC_TEXTURECUBE, false, (ID3D11Resource**)&SMTexture, nullptr);
+	if (FAILED(result))
 	{
 		return false;
 	}
 
-	// Initialize the texture object.
-	result = m_Texture->Initialize(device, filename);
-	if (!result)
+	// Create the textures description
+	// Next we get the description of our texture so we can create a resource view description that matches the 
+	// texture we loaded in.
+	D3D11_TEXTURE2D_DESC SMTextureDesc;
+	SMTexture->GetDesc(&SMTextureDesc);
+
+	// Tell D3D We have a cube texture, which is an array of 2D textures
+	// Now we will create the shader resource view description. We will say that this resource view is a texture cube,
+	// or an array of 2D textures, so when the pixel shader is texturing a pixel, it will know how to use the 3D 
+	// coordinates we give it, which are used to find the texel on the texture cube. Remember a 2D texture uses (u, v)
+	// coordinates, well a 3D texture uses (u, v, w) coordinates.
+	D3D11_SHADER_RESOURCE_VIEW_DESC SMViewDesc;
+	SMViewDesc.Format = SMTextureDesc.Format;
+	SMViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
+	SMViewDesc.TextureCube.MipLevels = SMTextureDesc.MipLevels;
+	SMViewDesc.TextureCube.MostDetailedMip = 0;
+
+	// Create the Resource view
+	// And finally we create the resource view using the texture we loaded in from a file, the shader resource views 
+	// description, and storing the shader resource view in smrv.
+	result = device->CreateShaderResourceView(SMTexture, &SMViewDesc, &smrv);
+	if (FAILED(result))
 	{
 		return false;
 	}
+
 
 	return true;
 }

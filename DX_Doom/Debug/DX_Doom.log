@@ -1,14 +1,17 @@
-﻿  graphicsclass.cpp
+﻿  inputclass.cpp
+  main.cpp
 C:\Users\Chanwoongs\Desktop\Project\DX_Doom\DX_Doom\astarclass.h(59,38): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
 C:\Users\Chanwoongs\Desktop\Project\DX_Doom\DX_Doom\astarclass.h(60,35): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
 C:\Users\Chanwoongs\Desktop\Project\DX_Doom\DX_Doom\astarclass.h(61,34): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
 C:\Users\Chanwoongs\Desktop\Project\DX_Doom\DX_Doom\astarclass.h(62,31): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-C:\Users\Chanwoongs\Desktop\Project\DX_Doom\DX_Doom\graphicsclass.cpp(263,23): warning C4018: '<': signed/unsigned mismatch
-C:\Users\Chanwoongs\Desktop\Project\DX_Doom\DX_Doom\graphicsclass.cpp(302,23): warning C4018: '<': signed/unsigned mismatch
-C:\Users\Chanwoongs\Desktop\Project\DX_Doom\DX_Doom\graphicsclass.cpp(320,124): warning C4316: 'EnemyClass': object allocated on the heap may not be aligned 16
-C:\Users\Chanwoongs\Desktop\Project\DX_Doom\DX_Doom\graphicsclass.cpp(682,11): warning C4101: 'cameraPosition': unreferenced local variable
-C:\Users\Chanwoongs\Desktop\Project\DX_Doom\DX_Doom\graphicsclass.cpp(683,16): warning C4101: 'tempAngle': unreferenced local variable
-C:\Users\Chanwoongs\Desktop\Project\DX_Doom\DX_Doom\graphicsclass.cpp(684,8): warning C4101: 'billboardRotation': unreferenced local variable
-C:\Users\Chanwoongs\Desktop\Project\DX_Doom\DX_Doom\graphicsclass.cpp(683,9): warning C4101: 'angle': unreferenced local variable
-C:\Users\Chanwoongs\Desktop\Project\DX_Doom\DX_Doom\graphicsclass.cpp(680,67): warning C4101: 'translateMatrix': unreferenced local variable
+  systemclass.cpp
+C:\Users\Chanwoongs\Desktop\Project\DX_Doom\DX_Doom\astarclass.h(59,38): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Users\Chanwoongs\Desktop\Project\DX_Doom\DX_Doom\astarclass.h(60,35): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Users\Chanwoongs\Desktop\Project\DX_Doom\DX_Doom\astarclass.h(61,34): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Users\Chanwoongs\Desktop\Project\DX_Doom\DX_Doom\astarclass.h(62,31): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Users\Chanwoongs\Desktop\Project\DX_Doom\DX_Doom\systemclass.cpp(51,32): warning C4316: 'GraphicsClass': object allocated on the heap may not be aligned 16
+C:\Users\Chanwoongs\Desktop\Project\DX_Doom\DX_Doom\systemclass.cpp(184,21): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\Chanwoongs\Desktop\Project\DX_Doom\DX_Doom\systemclass.cpp(283,63): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\Chanwoongs\Desktop\Project\DX_Doom\DX_Doom\systemclass.cpp(283,48): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+  Generating Code...
   DX_Doom.vcxproj -> C:\Users\Chanwoongs\Desktop\Project\DX_Doom\DX_Doom\Debug\DX_Doom.exe

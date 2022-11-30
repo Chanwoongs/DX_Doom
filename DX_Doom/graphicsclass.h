@@ -29,6 +29,7 @@
 #include "astarclass.h"
 #include "nodeclass.h"
 #include "navmeshclass.h"
+#include "skyboxshaderclass.h"
 
 /////////////
 // GLOBALS //
@@ -112,6 +113,9 @@ private:
 	LightShaderClass* m_LightShader;
 	LightClass* m_Light;
 
+	SkyboxShaderClass* m_SkyboxShader;
+	SphereClass* m_Sphere;
+
 	bool m_ambient;
 	bool m_diffuse;
 	bool m_specular;
@@ -125,8 +129,6 @@ private:
 	ModelClass* m_Plane;
 	ModelClass* m_Stage;
 	ModelClass* m_NavmeshModel;
-	SphereClass* m_Sphere;
-
 
 	Bitmaps* m_Gun;
 	BitmapInfo m_GunBitmapInfo;

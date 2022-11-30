@@ -154,17 +154,18 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
 	m_Light->SetSpecularPower(32.0f);
 
-	m_Navmesh = new NavmeshClass(111, 206);
-	//m_Navmesh = new NavmeshClass(10, 10);
-	if (!m_Navmesh)
+	// Create the skybox shader object.
+	m_SkyboxShader = new SkyboxShaderClass;
+	if (!m_SkyboxShader)
 	{
 		return false;
 	}
-	// Initialize the model object.
-	result = m_Navmesh->Initialize(m_D3D->GetDevice(), hwnd);
+
+	// Initialize the skybox shader object.
+	result = m_SkyboxShader->Initialize(m_D3D->GetDevice(), hwnd);
 	if (!result)
 	{
-		MessageBox(hwnd, L"Could not initialize the navmesh object.", L"Error", MB_OK);
+		MessageBox(hwnd, L"Could not initialize the skybox shader object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -196,20 +197,20 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
-	//// Create the model object.
-	//m_Sphere = new SphereClass;
-	//if (!m_Sphere)
-	//{
-	//	return false;
-	//}
+	// Create the model object.
+	m_Sphere = new SphereClass;
+	if (!m_Sphere)
+	{
+		return false;
+	}
 
-	//// Initialize the model object.
-	//result = m_Sphere->Initialize(m_D3D->GetDevice(), L"./data/ET_Seafloor.dds", 10, 10);
-	//if (!result)
-	//{
-	//	MessageBox(hwnd, L"Could not initialize the sphere object.", L"Error", MB_OK);
-	//	return false;
-	//}
+	// Initialize the model object.
+	result = m_Sphere->Initialize(m_D3D->GetDevice(), L"./data/ET_Skybox.dds", 10, 10);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the sphere object.", L"Error", MB_OK);
+		return false;
+	}
 
 	// Create the bitmap object.
 	m_Crosshair = new BitmapClass;
@@ -677,7 +678,7 @@ bool GraphicsClass::Frame(int fps, int cpu, float frameTime)
 
 bool GraphicsClass::Render(float deltaTime)
 {
-	XMMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix, translateMatrix;
+	XMMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix, translateMatrix, skyboxMatrix;
 	bool result;
 	XMFLOAT3 cameraPosition;
 	double angle, tempAngle;
@@ -693,6 +694,29 @@ bool GraphicsClass::Render(float deltaTime)
 	m_D3D->GetProjectionMatrix(projectionMatrix);
 	m_D3D->GetOrthoMatrix(orthoMatrix);
 	m_Camera->GetViewMatrix(viewMatrix);
+
+	// Skybox rendering
+	m_D3D->TurnOffCulling();
+	m_D3D->TurnOnDS();
+
+	// Reset skyboxMatrix
+	skyboxMatrix = XMMatrixIdentity();
+	skyboxMatrix = XMMatrixScaling(5.0f, 5.0f, 5.0f) * 
+		XMMatrixTranslation(m_Camera->GetPosition().x, m_Camera->GetPosition().y, m_Camera->GetPosition().z);
+
+	// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
+	m_Sphere->Render(m_D3D->GetDeviceContext());
+
+	// Render the model using the texture shader.
+	result = m_SkyboxShader->Render(m_D3D->GetDeviceContext(), m_Sphere->GetFaceCount(), 
+		skyboxMatrix, viewMatrix, projectionMatrix,	m_Sphere->GetTexture());
+	if (!result)
+	{
+		return false;
+	}
+
+	m_D3D->TurnOnCulling();
+	m_D3D->TurnOffDS();
 
 	/////////////////////////////////////////////////////// 3D Render
 	m_Plane->Render(m_D3D->GetDeviceContext());
@@ -722,18 +746,6 @@ bool GraphicsClass::Render(float deltaTime)
 	{
 		return false;
 	}
-
-	//// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
-	//m_Sphere->Render(m_D3D->GetDeviceContext());
-
-	//// Render the model using the texture shader.
-	//result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Sphere->GetIndexCount() * 3, worldMatrix, viewMatrix, projectionMatrix,
-	//	m_Sphere->GetTexture());
-	//if (!result)
-	//{
-	//	return false;
-	//}
-
 
 	/////////////////////////////////////////////////////// 2.5D Render
 	// Turn on the alpha blending before rendering the text.

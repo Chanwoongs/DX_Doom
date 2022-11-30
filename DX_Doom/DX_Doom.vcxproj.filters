@@ -146,6 +146,9 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="skyboxshaderclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlignedAllocationPolicy.h">
@@ -257,6 +260,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DxDefine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="skyboxshaderclass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -457,6 +463,12 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="data\ET_Stone.dds">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\skymap.dds">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\skyboxbox.dds">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

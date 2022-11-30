@@ -19,6 +19,7 @@ using namespace DirectX;
 // MY CLASS INCLUDES //
 ///////////////////////
 #include "textureclass.h"
+#include "DDSTextureLoader.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Class name: SphereClass
@@ -26,10 +27,10 @@ using namespace DirectX;
 class SphereClass
 {
 private:
-	struct VertexType
+	struct Vertex
 	{
-		VertexType() {}
-		VertexType(float x, float y, float z,
+		Vertex() {}
+		Vertex(float x, float y, float z,
 			float u, float v,
 			float nx, float ny, float nz)
 			: pos(x, y, z), texCoord(u, v), normal(nx, ny, nz) {}
@@ -48,6 +49,7 @@ public:
 	void Render(ID3D11DeviceContext*);
 
 	int GetIndexCount();
+	int GetFaceCount() { return m_faceCount; }
 	ID3D11ShaderResourceView* GetTexture();
 	 
 
@@ -63,6 +65,7 @@ private:
 	ID3D11Buffer* m_vertexBuffer, * m_indexBuffer;
 	int m_vertexCount, m_faceCount;
 	TextureClass* m_Texture;
+	ID3D11ShaderResourceView* smrv;
 };
 
 #endif

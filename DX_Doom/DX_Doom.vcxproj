@@ -173,6 +173,7 @@
     <ClCompile Include="navmeshclass.cpp" />
     <ClCompile Include="nodeclass.cpp" />
     <ClCompile Include="position.cpp" />
+    <ClCompile Include="skyboxshaderclass.cpp" />
     <ClCompile Include="sphereclass.cpp" />
     <ClCompile Include="spriteclass.cpp" />
     <ClCompile Include="stdafx.cpp" />
@@ -208,6 +209,7 @@
     <ClInclude Include="navmeshclass.h" />
     <ClInclude Include="nodeclass.h" />
     <ClInclude Include="position.h" />
+    <ClInclude Include="skyboxshaderclass.h" />
     <ClInclude Include="sphereclass.h" />
     <ClInclude Include="spriteclass.h" />
     <ClInclude Include="state.h" />
@@ -234,6 +236,8 @@
     <Image Include="data\MT_Crosshair.dds" />
     <Image Include="data\MT_White.dds" />
     <Image Include="data\NT_Stone.dds" />
+    <Image Include="data\skyboxbox.dds" />
+    <Image Include="data\skymap.dds" />
     <Image Include="data\Zombie\MT_Zombie_ABL_1.dds" />
     <Image Include="data\Zombie\MT_Zombie_ABL_2.dds" />
     <Image Include="data\Zombie\MT_Zombie_ABL_3.dds" />

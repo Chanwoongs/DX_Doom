@@ -15,6 +15,7 @@ D3DClass::D3DClass()
 	m_depthDisabledStencilState = 0;
 	m_depthStencilView = 0;
 	m_rasterState = 0;
+	m_rasterStateNoCulling = 0;
 	m_alphaEnableBlendingState = 0;
 	m_alphaDisableBlendingState = 0;
 }
@@ -47,6 +48,7 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	D3D11_TEXTURE2D_DESC depthBufferDesc;
 	D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
 	D3D11_DEPTH_STENCIL_DESC depthDisabledStencilDesc;
+	D3D11_DEPTH_STENCIL_DESC dssDesc;
 	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
 	D3D11_RASTERIZER_DESC rasterDesc;
 	D3D11_BLEND_DESC blendStateDescription;
@@ -312,6 +314,13 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	{
 		return false;
 	}
+	
+	ZeroMemory(&dssDesc, sizeof(D3D11_DEPTH_STENCIL_DESC));
+	dssDesc.DepthEnable = true;
+	dssDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	dssDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+
+	m_device->CreateDepthStencilState(&dssDesc, &DSLessEqual);
 
 	// Initialize the depth stencil view.
 	ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
@@ -353,6 +362,16 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	// Now set the rasterizer state.
 	m_deviceContext->RSSetState(m_rasterState);
 	
+	// Setup a raster description which turns off back face culling.
+	rasterDesc.CullMode = D3D11_CULL_NONE;
+
+	// Create the no culling rasterizer state.
+	result = m_device->CreateRasterizerState(&rasterDesc, &m_rasterStateNoCulling);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
 	// Setup the viewport for rendering.
     viewport.Width = (float)screenWidth;
     viewport.Height = (float)screenHeight;
@@ -435,6 +454,12 @@ void D3DClass::Shutdown()
 	{
 		m_rasterState->Release();
 		m_rasterState = 0;
+	}
+
+	if (m_rasterStateNoCulling)
+	{
+		m_rasterStateNoCulling->Release();
+		m_rasterStateNoCulling = 0;
 	}
 
 	if(m_depthStencilView)
@@ -605,5 +630,37 @@ void D3DClass::TurnOffAlphaBlending()
 	blendFactor[3] = 0.0f;
 	// Turn off the alpha blending.
 	m_deviceContext->OMSetBlendState(m_alphaDisableBlendingState, blendFactor, 0xffffffff);
+	return;
+}
+
+void D3DClass::TurnOnCulling()
+{
+	// Set the culling rasterizer state.
+	m_deviceContext->RSSetState(m_rasterState);
+
+	return;
+}
+
+
+void D3DClass::TurnOffCulling()
+{
+	// Set the no back face culling rasterizer state.
+	m_deviceContext->RSSetState(m_rasterStateNoCulling);
+
+	return;
+}
+
+void D3DClass::TurnOnDS()
+{
+	m_deviceContext->OMSetDepthStencilState(DSLessEqual, 0);
+
+	return;
+}
+
+
+void D3DClass::TurnOffDS()
+{
+	m_deviceContext->OMSetDepthStencilState(NULL, 0);
+
 	return;
 }

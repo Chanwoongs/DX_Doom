@@ -96,7 +96,7 @@ bool TextClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 	}
 
 	// Initialize the third sentence.
-	result = InitializeSentence(&m_sentence3, 16, device);
+	result = InitializeSentence(&m_sentence3, 50, device);
 	if (!result)
 	{
 		return false;
@@ -475,10 +475,10 @@ bool TextClass::SetCpu(int cpu, ID3D11DeviceContext* deviceContext)
 
 bool TextClass::SetPosition(XMFLOAT3 position, ID3D11DeviceContext* deviceContext)
 {
-	char tempString1[16];
-	char tempString2[16];
-	char tempString3[16];
-	char posString[32];
+	char tempString1[50];
+	char tempString2[50];
+	char tempString3[50];
+	char posString[100];
 	bool result;
 	// Convert the cpu integer to string format.
 	_itoa_s(position.x, tempString1, 10);
