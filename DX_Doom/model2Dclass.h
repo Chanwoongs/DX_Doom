@@ -38,7 +38,7 @@ public:
 	Model2DClass(const Model2DClass&);
 	~Model2DClass();
 
-	bool Initialize(ID3D11Device*, int, int[], int, int, const WCHAR**[], const WCHAR*);
+	bool Initialize(ID3D11Device*, int, int[], int, int, const WCHAR**[], const WCHAR*, const WCHAR*);
 	void Shutdown();
 	bool Render(ID3D11DeviceContext*, int, int, int, int);
 
@@ -47,8 +47,8 @@ public:
 	int GetSpriteIndexCount(int, int);
 	ID3D11ShaderResourceView* GetSpriteTexture(int, int);
 	ID3D11ShaderResourceView** GetTextureArray() { return m_TextureArray->GetTextureArray(); }
-	bool  UpdateTextures(ID3D11Device*, const WCHAR*);
-	bool LoadTextures(ID3D11Device*, const WCHAR*, const WCHAR*);
+	bool UpdateTextures(ID3D11Device*, const WCHAR*);
+	bool LoadTextures(ID3D11Device*, const WCHAR*, const WCHAR*, const WCHAR*);
 
 
 private:
@@ -64,6 +64,7 @@ private:
 
 	TextureArrayClass* m_TextureArray;
 	const WCHAR* m_multiTextureFilename;
+	const WCHAR* m_bumpTextureFilename;
 
 };
 

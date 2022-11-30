@@ -224,6 +224,7 @@
     <ClInclude Include="triangleclass.h" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="data\ET_Stone.dds" />
     <Image Include="data\Gun\MT_Gun_1.dds" />
     <Image Include="data\Gun\MT_Gun_2.dds" />
     <Image Include="data\Gun\MT_Gun_3.dds" />
@@ -232,6 +233,7 @@
     <Image Include="data\Gun\MT_MuzzleFlash_2.dds" />
     <Image Include="data\MT_Crosshair.dds" />
     <Image Include="data\MT_White.dds" />
+    <Image Include="data\NT_Stone.dds" />
     <Image Include="data\Zombie\MT_Zombie_ABL_1.dds" />
     <Image Include="data\Zombie\MT_Zombie_ABL_2.dds" />
     <Image Include="data\Zombie\MT_Zombie_ABL_3.dds" />

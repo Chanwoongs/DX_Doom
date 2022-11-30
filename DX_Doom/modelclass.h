@@ -35,6 +35,8 @@ private:
 		XMFLOAT3 position;
 	    XMFLOAT2 texture;
 		XMFLOAT3 normal;
+		XMFLOAT3 tangent;
+		XMFLOAT3 binormal;
 	};
 
 	struct FaceType
@@ -44,11 +46,25 @@ private:
 		int nIndex1, nIndex2, nIndex3;
 	};
 
+	struct TempVertexType
+	{
+		float x, y, z;
+		float tu, tv;
+		float nx, ny, nz;
+	};
+
+	struct VectorType
+	{
+		float x, y, z;
+	};
+
 	struct ModelType
 	{
 		float x, y, z;
 		float tu, tv;
 		float nx, ny, nz;
+		float tx, ty, tz;
+		float bx, by, bz;
 	};
 
 	struct InstanceType // instance에 필요한 정보 추가 가능
@@ -61,7 +77,7 @@ public:
 	ModelClass(const ModelClass&);
 	~ModelClass();
 
-	bool Initialize(ID3D11Device*, const WCHAR*, const WCHAR*, const WCHAR*);
+	bool Initialize(ID3D11Device*, const WCHAR*, const WCHAR*, const WCHAR*, const WCHAR*);
 	void Shutdown();
 	void Render(ID3D11DeviceContext*);
 
@@ -71,8 +87,6 @@ public:
 	ID3D11ShaderResourceView* GetTexture();
 	ID3D11ShaderResourceView** GetTextureArray();
 	XMFLOAT3* GetPosition() { return m_instancePosition; }
-	vector<XMFLOAT3> GetVertices() { return m_Vertices; }
-	void SetVerticesToWorld(XMMATRIX, XMMATRIX, XMMATRIX);
 
 	bool LoadModel(const WCHAR*);
 	void ReleaseModel();
@@ -83,12 +97,16 @@ private:
 	void RenderBuffers(ID3D11DeviceContext*);
 
 	bool LoadTexture(ID3D11Device*, const WCHAR*);
-	bool LoadTextures(ID3D11Device*, const WCHAR*, const WCHAR*);
+	bool LoadTextures(ID3D11Device*, const WCHAR*, const WCHAR*, const WCHAR*);
 	void ReleaseTexture();
 	void ReleaseTextures();
 
 	bool ReadFileCounts(const WCHAR*);
 	bool LoadDataStructures(const WCHAR*, int, int, int, int);
+
+	void CalculateModelVectors();
+	void CalculateTangentBinormal(TempVertexType, TempVertexType, TempVertexType, VectorType&, VectorType&);
+	void CalculateNormal(VectorType, VectorType, VectorType&);
 
 private:
 	ID3D11Buffer *m_vertexBuffer, *m_indexBuffer, *m_instanceBuffer;
@@ -97,11 +115,8 @@ private:
 	TextureArrayClass* m_TextureArray;
 
 	ModelType* m_model;
-	vector<XMFLOAT3> m_Vertices;
 
 	XMFLOAT3* m_instancePosition;
-
-	bool m_needVertices;
 };
 
 #endif

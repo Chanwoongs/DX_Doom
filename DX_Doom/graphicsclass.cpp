@@ -176,7 +176,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 	// Initialize the model object.
-	result = m_Plane->Initialize(m_D3D->GetDevice(), L"./data/EM_Cube.obj", L"./data/ET_Plane.dds", L"./data/ET_Dirt.dds");
+	result = m_Plane->Initialize(m_D3D->GetDevice(), L"./data/EM_Cube.obj", L"./data/ET_Plane.dds", L"./data/ET_Dirt.dds", L"./data/MT_White.dds");
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
@@ -189,7 +189,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 	// Initialize the model object.
-	result = m_Stage->Initialize(m_D3D->GetDevice(), L"./data/EM_Stage.obj", L"./data/ET_Stone.dds", L"./data/ET_Dirt.dds");
+	result = m_Stage->Initialize(m_D3D->GetDevice(), L"./data/EM_Stage.obj", L"./data/ET_Stone.dds", L"./data/ET_Dirt.dds", L"./data/NT_Stone.dds");
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);

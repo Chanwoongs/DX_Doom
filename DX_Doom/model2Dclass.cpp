@@ -22,7 +22,7 @@ Model2DClass::~Model2DClass()
 
 
 bool Model2DClass::Initialize(ID3D11Device* device, int animationCount, int maxFrame[], int spriteWidth, int spriteHeight, 
-	const WCHAR** textureFilenames[], const WCHAR* multiTexstureFilename)
+	const WCHAR** textureFilenames[], const WCHAR* multiTexstureFilename, const WCHAR* bumpTextureFilename)
 {
 	bool result;
 
@@ -62,6 +62,7 @@ bool Model2DClass::Initialize(ID3D11Device* device, int animationCount, int maxF
 	}
 
 	m_multiTextureFilename = multiTexstureFilename;
+	m_bumpTextureFilename = bumpTextureFilename;
 
 	return true;
 }
@@ -123,14 +124,14 @@ bool Model2DClass::UpdateTextures(ID3D11Device* device, const WCHAR* fileName)
 	bool result;
 
 	// Load the texture for this model.
-	result = LoadTextures(device, fileName, m_multiTextureFilename);
+	result = LoadTextures(device, fileName, m_multiTextureFilename, m_bumpTextureFilename);
 	if (!result)
 	{
 		return false;
 	}
 }
 
-bool Model2DClass::LoadTextures(ID3D11Device* device, const WCHAR* filename1, const WCHAR* filename2)
+bool Model2DClass::LoadTextures(ID3D11Device* device, const WCHAR* filename1, const WCHAR* filename2, const WCHAR* filename3)
 {
 	bool result;
 	// Create the texture array object.
@@ -140,7 +141,7 @@ bool Model2DClass::LoadTextures(ID3D11Device* device, const WCHAR* filename1, co
 		return false;
 	}
 	// Initialize the texture array object.
-	result = m_TextureArray->Initialize(device, filename1, filename2);
+	result = m_TextureArray->Initialize(device, filename1, filename2, filename3);
 	if (!result)
 	{
 		return false;

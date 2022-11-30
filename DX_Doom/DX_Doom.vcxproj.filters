@@ -453,6 +453,12 @@
     <Image Include="data\MT_White.dds">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="data\NT_Stone.dds">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\ET_Stone.dds">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="data\map.txt">
