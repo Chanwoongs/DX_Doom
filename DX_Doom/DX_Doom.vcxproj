@@ -150,6 +150,7 @@
     <None Include="data\texture.vs" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="astarclass.cpp" />
     <ClCompile Include="bitmapclass.cpp" />
     <ClCompile Include="cameraclass.cpp" />
     <ClCompile Include="colorshaderclass.cpp" />
@@ -165,25 +166,34 @@
     <ClCompile Include="inputclass.cpp" />
     <ClCompile Include="lightclass.cpp" />
     <ClCompile Include="lightshaderclass.cpp" />
+    <ClCompile Include="lineclass.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="model2Dclass.cpp" />
     <ClCompile Include="modelclass.cpp" />
+    <ClCompile Include="navmeshclass.cpp" />
+    <ClCompile Include="nodeclass.cpp" />
     <ClCompile Include="position.cpp" />
+    <ClCompile Include="sphereclass.cpp" />
     <ClCompile Include="spriteclass.cpp" />
+    <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="systemclass.cpp" />
     <ClCompile Include="textclass.cpp" />
+    <ClCompile Include="texturearrayclass.cpp" />
     <ClCompile Include="textureclass.cpp" />
     <ClCompile Include="textureshaderclass.cpp" />
     <ClCompile Include="timerclass.cpp" />
+    <ClCompile Include="triangleclass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlignedAllocationPolicy.h" />
+    <ClInclude Include="astarclass.h" />
     <ClInclude Include="bitmapclass.h" />
     <ClInclude Include="cameraclass.h" />
     <ClInclude Include="colorshaderclass.h" />
     <ClInclude Include="cpuclass.h" />
     <ClInclude Include="d3dclass.h" />
     <ClInclude Include="DDSTextureLoader.h" />
+    <ClInclude Include="DxDefine.h" />
     <ClInclude Include="enemyclass.h" />
     <ClInclude Include="fontclass.h" />
     <ClInclude Include="fontshaderclass.h" />
@@ -192,18 +202,26 @@
     <ClInclude Include="inputclass.h" />
     <ClInclude Include="lightclass.h" />
     <ClInclude Include="lightshaderclass.h" />
+    <ClInclude Include="lineclass.h" />
     <ClInclude Include="model2Dclass.h" />
     <ClInclude Include="modelclass.h" />
+    <ClInclude Include="navmeshclass.h" />
+    <ClInclude Include="nodeclass.h" />
     <ClInclude Include="position.h" />
+    <ClInclude Include="sphereclass.h" />
     <ClInclude Include="spriteclass.h" />
     <ClInclude Include="state.h" />
     <ClInclude Include="stateMachine.h" />
+    <ClInclude Include="stdafx.h" />
     <ClInclude Include="systemclass.h" />
+    <ClInclude Include="targetver.h" />
     <ClInclude Include="textclass.h" />
+    <ClInclude Include="texturearrayclass.h" />
     <ClInclude Include="textureclass.h" />
     <ClInclude Include="textureshaderclass.h" />
     <ClInclude Include="timerclass.h" />
     <ClInclude Include="enemyStates.h" />
+    <ClInclude Include="triangleclass.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="data\Gun\MT_Gun_1.dds" />
@@ -213,6 +231,7 @@
     <Image Include="data\Gun\MT_MuzzleFlash_1.dds" />
     <Image Include="data\Gun\MT_MuzzleFlash_2.dds" />
     <Image Include="data\MT_Crosshair.dds" />
+    <Image Include="data\MT_White.dds" />
     <Image Include="data\Zombie\MT_Zombie_ABL_1.dds" />
     <Image Include="data\Zombie\MT_Zombie_ABL_2.dds" />
     <Image Include="data\Zombie\MT_Zombie_ABL_3.dds" />
@@ -269,6 +288,9 @@
     <Image Include="data\Zombie\MT_Zombie_R_2.dds" />
     <Image Include="data\Zombie\MT_Zombie_R_3.dds" />
     <Image Include="data\Zombie\MT_Zombie_R_4.dds" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="data\map.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -20,6 +20,7 @@ using namespace std;
 // MY CLASS INCLUDES //
 ///////////////////////
 #include "textureclass.h"
+#include "texturearrayclass.h"
 #include "spriteclass.h"
 
 struct Animation
@@ -37,7 +38,7 @@ public:
 	Model2DClass(const Model2DClass&);
 	~Model2DClass();
 
-	bool Initialize(ID3D11Device*, int, int[], int, int, const WCHAR**[]);
+	bool Initialize(ID3D11Device*, int, int[], int, int, const WCHAR**[], const WCHAR*);
 	void Shutdown();
 	bool Render(ID3D11DeviceContext*, int, int, int, int);
 
@@ -45,6 +46,10 @@ public:
 	int GetMaxFrameNum(int animationIndex) { return m_maxFrame[animationIndex]; }
 	int GetSpriteIndexCount(int, int);
 	ID3D11ShaderResourceView* GetSpriteTexture(int, int);
+	ID3D11ShaderResourceView** GetTextureArray() { return m_TextureArray->GetTextureArray(); }
+	bool  UpdateTextures(ID3D11Device*, const WCHAR*);
+	bool LoadTextures(ID3D11Device*, const WCHAR*, const WCHAR*);
+
 
 private:
 	ID3D11Buffer* m_vertexBuffer, * m_indexBuffer;
@@ -56,6 +61,9 @@ private:
 	int* m_maxFrame;
 	int m_currentAnimationIndex;
 	int m_currentSpriteIndex;
+
+	TextureArrayClass* m_TextureArray;
+	const WCHAR* m_multiTextureFilename;
 
 };
 

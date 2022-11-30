@@ -335,11 +335,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
 		return false;
 	}
-	for (int i = 0; i < m_ZombieAnimInfo.animationCount; i++)
-	{
-		delete[] m_ZombieAnimInfo.textureNames[i];
-	}
-	delete[] m_ZombieAnimInfo.textureNames;
+
 
 	//int correction = 45;
 	//AStarClass m_AStar(XMFLOAT3(m_Camera->GetPosition().x, 0.0f, m_Camera->GetPosition().z),
@@ -599,6 +595,12 @@ void GraphicsClass::Shutdown()
 	// Release the model object.
 	if (m_Zombie)
 	{
+		for (int i = 0; i < m_ZombieAnimInfo.animationCount; i++)
+		{
+			delete[] m_ZombieAnimInfo.textureNames[i];
+		}
+		delete[] m_ZombieAnimInfo.textureNames;
+
 		m_Zombie->Shutdown();
 		delete m_Zombie;
 		m_Zombie = 0;
@@ -754,19 +756,25 @@ bool GraphicsClass::Render(float deltaTime)
 	}
 	else m_ZombieAnimInfo.currentFrameNum++;
 
-	//// Render the model using the light shader.
-	//// 신축 회전 이동 순
-	//result = m_LightShader->Render(m_D3D->GetDeviceContext(), 6, 1,
-	//	zombieBillboardWorldMatrix, 
-	//	viewMatrix, projectionMatrix,
-	//	m_Zombie->GetModel()->GetSpriteTexture(m_ZombieAnimInfo.currentAnimationIndex, m_ZombieAnimInfo.currentFrameNum / 25),
-	//	m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
-	//	m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower(),
-	//	m_Light->GetAmbientToggle(), m_Light->GetDiffuseToggle(), m_Light->GetSpecularToggle(), 1);
-	//if (!result)
-	//{
-	//	return false;
-	//}
+	result = m_Zombie->GetModel()->UpdateTextures(m_D3D->GetDevice(), 
+		m_ZombieAnimInfo.textureNames[m_ZombieAnimInfo.currentAnimationIndex][m_ZombieAnimInfo.currentFrameNum / 25]);
+	if (!result)
+	{
+		return false;
+	}
+	// Render the model using the light shader.
+	// 신축 회전 이동 순
+	result = m_LightShader->Render(m_D3D->GetDeviceContext(), 6, 1,
+		zombieBillboardWorldMatrix, 
+		viewMatrix, projectionMatrix,
+		m_Zombie->GetModel()->GetTextureArray(),
+		m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
+		m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower(),
+		m_Light->GetAmbientToggle(), m_Light->GetDiffuseToggle(), m_Light->GetSpecularToggle(), 1);
+	if (!result)
+	{
+		return false;
+	}
 
 	// Turn off alpha blending after rendering the text.
 	m_D3D->TurnOffAlphaBlending();

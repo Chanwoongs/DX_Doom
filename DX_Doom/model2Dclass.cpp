@@ -21,7 +21,8 @@ Model2DClass::~Model2DClass()
 }
 
 
-bool Model2DClass::Initialize(ID3D11Device* device, int animationCount, int maxFrame[], int spriteWidth, int spriteHeight, const WCHAR** textureFilenames[])
+bool Model2DClass::Initialize(ID3D11Device* device, int animationCount, int maxFrame[], int spriteWidth, int spriteHeight, 
+	const WCHAR** textureFilenames[], const WCHAR* multiTexstureFilename)
 {
 	bool result;
 
@@ -59,6 +60,8 @@ bool Model2DClass::Initialize(ID3D11Device* device, int animationCount, int maxF
 		}
 		j++;
 	}
+
+	m_multiTextureFilename = multiTexstureFilename;
 
 	return true;
 }
@@ -113,4 +116,34 @@ int Model2DClass::GetSpriteIndexCount(int animationIndex, int spriteIndex)
 ID3D11ShaderResourceView* Model2DClass::GetSpriteTexture(int animationIndex, int spriteIndex)
 {
 	return m_animations.at(m_currentAnimationIndex)->sprites.at(m_currentSpriteIndex)->GetTexture();
+}
+
+bool Model2DClass::UpdateTextures(ID3D11Device* device, const WCHAR* fileName)
+{
+	bool result;
+
+	// Load the texture for this model.
+	result = LoadTextures(device, fileName, m_multiTextureFilename);
+	if (!result)
+	{
+		return false;
+	}
+}
+
+bool Model2DClass::LoadTextures(ID3D11Device* device, const WCHAR* filename1, const WCHAR* filename2)
+{
+	bool result;
+	// Create the texture array object.
+	m_TextureArray = new TextureArrayClass;
+	if (!m_TextureArray)
+	{
+		return false;
+	}
+	// Initialize the texture array object.
+	result = m_TextureArray->Initialize(device, filename1, filename2);
+	if (!result)
+	{
+		return false;
+	}
+	return true;
 }

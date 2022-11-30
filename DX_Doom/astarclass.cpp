@@ -67,7 +67,7 @@ AStarClass::Map::Map()
 	{
 		map[i] = new int[col];
 	}
-	int aaa[53][91];
+
 	FILE* stream = fopen("./data/map.txt", "rt"); // 맵의 자료를 불러옴 0=지나갈 수 있는 곳 , 1=장애물
 	for (int i = 0; i < row; i++)
 	{

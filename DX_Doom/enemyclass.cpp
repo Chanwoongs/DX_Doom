@@ -29,7 +29,7 @@ bool EnemyClass::Initialize(ID3D11Device* device)
 	bool result;
 
 	// ¸ðµ¨ ÃÊ±âÈ­
-	result = m_model->Initialize(device, m_animationCount, m_maxFrame, m_modelWidth, m_modelHeight, m_textureNames);
+	result = m_model->Initialize(device, m_animationCount, m_maxFrame, m_modelWidth, m_modelHeight, m_textureNames, L"./data/MT_White.dds");
 	if (!result)
 	{
 		return false;

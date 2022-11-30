@@ -122,6 +122,30 @@
     <ClCompile Include="enemyStates.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="sphereclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="nodeclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="astarclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="navmeshclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="triangleclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lineclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="texturearrayclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlignedAllocationPolicy.h">
@@ -203,6 +227,36 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="stateMachine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sphereclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="nodeclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="astarclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="navmeshclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="triangleclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lineclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="texturearrayclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DxDefine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -396,5 +450,13 @@
     <Image Include="data\Zombie\MT_Zombie_AR_2.dds">
       <Filter>Resource Files\Zombie</Filter>
     </Image>
+    <Image Include="data\MT_White.dds">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="data\map.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>

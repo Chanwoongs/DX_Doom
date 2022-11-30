@@ -59,9 +59,15 @@ float4 LightPixelShader(PixelInputType input) : SV_TARGET
 
 // Multi Texturing
 {
-	// Blend the two pixels together and multiply by the gamma value.
-	blendColor = textureColor * secondTextureColor * 1.5;
-
+	if(secondTextureColor.r == 1.0f && secondTextureColor.g == 1.0f && secondTextureColor.b == 1.0f)
+	{
+		// Blend the two pixels together and multiply by the gamma value.
+		blendColor = textureColor;
+	}
+	else
+	{
+		blendColor = textureColor * secondTextureColor * 1.5;
+	}
 	// Saturate the final color.
 	blendColor = saturate(blendColor);
 }
@@ -87,7 +93,7 @@ float4 LightPixelShader(PixelInputType input) : SV_TARGET
 	}
 	else
 	{
-		color = float4(0.0f, 0.0f, 0.0f, 0.0f);
+		color = float4(0.3f, 0.3f, 0.3f, 1.0f);
 	}
 
 	// Initialize the specular color.
