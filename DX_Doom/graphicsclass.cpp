@@ -48,6 +48,8 @@ GraphicsClass::GraphicsClass()
 
 	m_navmeshCount = 1;
 	m_navmeshPosition = new XMFLOAT3[1];
+
+	m_isBulletReloaded = true;
 }
 
 
@@ -312,6 +314,21 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		}
 	}
 
+	// Create the bullet objects.
+	m_BulletPool = new BulletPoolClass(10);
+	if (!m_BulletPool)
+	{
+		return false;
+	}
+	// Initialize the bullet objects.
+	result = m_BulletPool->Initialize(m_D3D->GetDevice(), 4, 4,
+		L"./data/Gun/MT_Bullet.dds");
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the bullet object.", L"Error", MB_OK);
+		return false;
+	}
+
 	// Initialize Enemies
 
 	SetZombieAnimInfo(m_ZombieAnimInfo, 16);
@@ -403,7 +420,20 @@ void GraphicsClass::StartShoot()
 		m_isShoot = true;
 		m_isGunAnimPlay = true;
 		PlayMuzzleFlashAnim();
+		ShootBullet();
 	}
+}
+
+void GraphicsClass::ShootBullet()
+{
+	if (!m_isBulletReloaded) return;
+
+	XMMATRIX bulletMatrix = XMMatrixIdentity();
+	XMFLOAT3 tempCamPos = m_Camera->GetPosition();
+	XMVECTOR tempCamPosVec = XMLoadFloat3(&tempCamPos);
+
+	m_BulletPool->Create(m_Camera->GetTargetVector() - tempCamPosVec, tempCamPosVec);
+	m_isBulletReloaded = false;
 }
 
 void GraphicsClass::PlayGunAnim()
@@ -426,12 +456,14 @@ void GraphicsClass::PlayGunAnim()
 
 		if (m_isGunAnimReversed == true && m_GunBitmapInfo.currentFrameNum == 0)
 		{
+
 			m_isGunAnimPlay = false;
 			m_isGunAnimReversed = false;
 			m_isShoot = false;
 
 			m_MuzzleFlashBitmapInfo.currentFrameNum = 0;
 			m_isMuzzleAnimPlay = false;
+			m_isBulletReloaded = true;
 
 			return;
 		}
@@ -593,6 +625,14 @@ void GraphicsClass::Shutdown()
 		m_MuzzleFlash = 0;
 	}
 
+	// Release the bullet objects.
+	if (m_BulletPool)
+	{
+		m_BulletPool->ShutDown();
+		delete m_BulletPool;
+		m_BulletPool = 0;
+	}
+
 	// Release the model object.
 	if (m_Zombie)
 	{
@@ -650,6 +690,12 @@ bool GraphicsClass::Frame(int fps, int cpu, float frameTime)
 	{
 		return false;
 	}
+	// Set the deltaTime.
+	result = m_Text->SetDeltaTime(deltaTime, m_D3D->GetDeviceContext());
+	if (!result)
+	{
+		return false;
+	}
 
 	// update camera Headbob
 	bobAngle += XM_PI * 0.025f;
@@ -657,6 +703,7 @@ bool GraphicsClass::Frame(int fps, int cpu, float frameTime)
 	{
 		bobAngle = 0.0f;
 	}
+	
 	m_Camera->StartHeadbob(bobAngle);
 
 	// Play Gun Animation
@@ -752,7 +799,6 @@ bool GraphicsClass::Render(float deltaTime)
 	m_D3D->TurnOnAlphaBlending();
 
 	// billboarding Enemy
-
 	// Zombie
 	XMMATRIX zombieBillboardWorldMatrix = UpdateEnemyWalkingAnimation(m_Zombie, m_ZombieAnimInfo, deltaTime);
 
@@ -768,7 +814,7 @@ bool GraphicsClass::Render(float deltaTime)
 	}
 	else m_ZombieAnimInfo.currentFrameNum++;
 
-	result = m_Zombie->GetModel()->UpdateTextures(m_D3D->GetDevice(), 
+	result = m_Zombie->GetModel()->UpdateTextures(m_D3D->GetDevice(),
 		m_ZombieAnimInfo.textureNames[m_ZombieAnimInfo.currentAnimationIndex][m_ZombieAnimInfo.currentFrameNum / 25]);
 	if (!result)
 	{
@@ -777,7 +823,7 @@ bool GraphicsClass::Render(float deltaTime)
 	// Render the model using the light shader.
 	// 신축 회전 이동 순
 	result = m_LightShader->Render(m_D3D->GetDeviceContext(), 6, 1,
-		zombieBillboardWorldMatrix, 
+		zombieBillboardWorldMatrix,
 		viewMatrix, projectionMatrix,
 		m_Zombie->GetModel()->GetTextureArray(),
 		m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
@@ -787,6 +833,29 @@ bool GraphicsClass::Render(float deltaTime)
 	{
 		return false;
 	}
+
+
+	// billboarding Bullet
+	m_BulletPool->UpdateBullets();
+	for (int i = 0; i < m_BulletPool->GetPoolSize(); i++)
+	{
+		if (!m_BulletPool->GetBullets()[i].IsUse()) continue;
+		XMMATRIX bulletMatrix;
+		bulletMatrix = m_BulletPool->GetBullets()[i].Update(deltaTime);
+
+		result = m_BulletPool->GetBullets()[i].Render(m_D3D->GetDeviceContext(), -0.5f, 2.5f);
+
+		// Render the bitmap with the texture shader.
+		result = m_TextureShader->Render(m_D3D->GetDeviceContext(), 
+			m_BulletPool->GetBullets()[i].GetModel()->GetIndexCount(),
+			bulletMatrix, viewMatrix, projectionMatrix,
+			m_BulletPool->GetBullets()[i].GetModel()->GetTexture());
+		if (!result)
+		{
+			return false;
+		}
+	}
+
 
 	// Turn off alpha blending after rendering the text.
 	m_D3D->TurnOffAlphaBlending();

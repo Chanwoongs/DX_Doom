@@ -30,6 +30,7 @@
 #include "nodeclass.h"
 #include "navmeshclass.h"
 #include "skyboxshaderclass.h"
+#include "bulletpoolclass.h"
 
 /////////////
 // GLOBALS //
@@ -91,6 +92,7 @@ public:
 	CameraClass* GetCamera();
 
 	void StartShoot();
+	void ShootBullet();
 	void PlayGunAnim();
 	void PlayMuzzleFlashAnim();
 	void FinishShoot();
@@ -135,6 +137,8 @@ private:
 	Bitmaps* m_MuzzleFlash;
 	BitmapInfo m_MuzzleFlashBitmapInfo;
 
+	BulletPoolClass* m_BulletPool;
+
 	TextClass* m_Text;
 
 	XMFLOAT3* m_planePosition;
@@ -155,6 +159,7 @@ private:
 	bool m_isGunAnimPlay;
 	bool m_isGunAnimReversed;
 	bool m_isMuzzleAnimPlay;
+	bool m_isBulletReloaded;
 };
 
 #endif

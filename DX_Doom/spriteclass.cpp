@@ -207,7 +207,7 @@ void SpriteClass::ShutdownBuffers()
 }
 
 
-bool SpriteClass::UpdateBuffers(ID3D11DeviceContext* deviceContext, int positionX, int positionY)
+bool SpriteClass::UpdateBuffers(ID3D11DeviceContext* deviceContext, float positionX, float positionY)
 {
 	float left, right, top, bottom;
 	VertexType* vertices;
@@ -234,10 +234,10 @@ bool SpriteClass::UpdateBuffers(ID3D11DeviceContext* deviceContext, int position
 	right = left + (float)m_spriteWidth;
 
 	// Calculate the screen coordinates of the top of the bitmap.
-	top = (float)(m_spriteHeight);
+	top = (float)(m_spriteHeight) - positionY;
 
 	// Calculate the screen coordinates of the bottom of the bitmap.
-	bottom = 0.0f;
+	bottom = -positionY;
 
 	// Create the vertex array.
 	vertices = new VertexType[m_vertexCount];
@@ -289,7 +289,6 @@ bool SpriteClass::UpdateBuffers(ID3D11DeviceContext* deviceContext, int position
 
 	return true;
 }
-
 
 void SpriteClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
 {
