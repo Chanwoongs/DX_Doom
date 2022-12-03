@@ -11,6 +11,8 @@ TextClass::TextClass()
 
 	m_sentence1 = 0;
 	m_sentence2 = 0;
+	m_sentence3 = 0;
+	m_sentence4 = 0;
 }
 
 
@@ -109,6 +111,22 @@ bool TextClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 		return false;
 	}
 
+	// Initialize the third sentence.
+	result = InitializeSentence(&m_sentence4, 50, device);
+	if (!result)
+	{
+		return false;
+	}
+
+	// Now update the sentence vertex buffer with the new string information.
+	result = UpdateSentence(m_sentence4, "Goodbye", 100, 200, 1.0f, 1.0f, 0.0f, deviceContext);
+	if (!result)
+	{
+		return false;
+	}
+
+
+
 	return true;
 }
 
@@ -123,6 +141,9 @@ void TextClass::Shutdown()
 
 	// Release the second sentence.
 	ReleaseSentence(&m_sentence3);
+
+	// Release the second sentence.
+	ReleaseSentence(&m_sentence4);
 
 	// Release the font shader object.
 	if(m_FontShader)
@@ -169,6 +190,14 @@ bool TextClass::Render(ID3D11DeviceContext* deviceContext, XMMATRIX worldMatrix,
 	{
 		return false;
 	}
+
+	// Draw the third sentence.
+	result = RenderSentence(deviceContext, m_sentence4, worldMatrix, orthoMatrix);
+	if (!result)
+	{
+		return false;
+	}
+
 
 	return true;
 }
@@ -493,6 +522,25 @@ bool TextClass::SetPosition(XMFLOAT3 position, ID3D11DeviceContext* deviceContex
 	strcat_s(posString, tempString3);
 	// Update the sentence vertex buffer with the new string information.
 	result = UpdateSentence(m_sentence3, posString, 20, 60, 0.0f, 1.0f, 0.0f, deviceContext);
+	if (!result)
+	{
+		return false;
+	}
+	return true;
+}
+
+bool TextClass::SetDeltaTime(float deltaTime, ID3D11DeviceContext* deviceContext)
+{
+	char tempString[16];
+	char cpuString[32];
+	bool result;
+	// Convert the cpu integer to string format.
+	snprintf(tempString, 16, "%.5f", deltaTime);
+	// Setup the cpu string.
+	strcpy_s(cpuString, "deltaTime: ");
+	strcat_s(cpuString, tempString);
+	// Update the sentence vertex buffer with the new string information.
+	result = UpdateSentence(m_sentence4, cpuString, 20, 80, 0.0f, 1.0f, 0.0f, deviceContext);
 	if (!result)
 	{
 		return false;
