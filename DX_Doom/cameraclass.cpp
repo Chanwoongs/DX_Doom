@@ -98,7 +98,7 @@ void CameraClass::StartHeadbob(float timer)
 {
 	if (!m_isMoving) return;
 
-	m_position.y = m_defaultYPos + sin(timer) / 1.5f;
+	m_position.y = m_defaultYPos + sin(timer * 0.1f);
 }
 
 void CameraClass::EndHeadbob(float timer)

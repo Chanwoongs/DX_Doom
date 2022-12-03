@@ -40,6 +40,7 @@ public:
 
 	void Render();
 	void GetViewMatrix(XMMATRIX&);
+	XMVECTOR GetTargetVector() { return m_target; }
 	void RotateCamera(float, float, float);
 	void Move(float);
 	void StopMove() { m_isMoving = false; }
