@@ -5,6 +5,11 @@
 #define _ENEMYCLASS_H_
 
 
+//////////////
+// INCLUDES //
+//////////////
+#include <DirectXCollision.h>
+
 ///////////////////////
 // MY CLASS INCLUDES //
 ///////////////////////
@@ -13,6 +18,7 @@
 #include "enemyStates.h"
 #include "StateMachine.h"
 
+using namespace DirectX;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Class name: EnemyClass
@@ -23,7 +29,7 @@ template <class type> class State; //pre-fixed with "template <class entity_type
 class EnemyClass
 {
 public:
-	EnemyClass(int, int[], int, int, const WCHAR**[]);
+	EnemyClass(int, int[], int, int, const WCHAR**[], float, float, float);
 	EnemyClass(const EnemyClass&);
 	~EnemyClass();
 
@@ -73,6 +79,11 @@ public:
 	bool IsAttacking() { return m_isAttacking == true; }
 	void SetAttacking(bool attack) { m_isAttacking = attack; }
 
+	bool IsHitted() { return m_isHitted == true; }
+	void SetHitted(bool hitted) { m_isHitted = hitted; }
+
+	BoundingBox GetBoundingBox() { return m_Box; }
+
 private:
 	StateMachine<EnemyClass>* m_pStateMachine;
 
@@ -102,8 +113,9 @@ private:
 	XMFLOAT3 m_attackPosition;
 
 	bool m_isAttacking;
+	bool m_isHitted;
 
-
+	BoundingBox m_Box;
 };
 
 #endif

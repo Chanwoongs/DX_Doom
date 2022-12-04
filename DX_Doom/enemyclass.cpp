@@ -3,7 +3,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "enemyclass.h"
 
-EnemyClass::EnemyClass(int animationCount, int maxFrame[], int modelWidth, int modelHeight, const WCHAR** textureFilenames[])
+EnemyClass::EnemyClass(int animationCount, int maxFrame[], int modelWidth, int modelHeight, 
+	const WCHAR** textureFilenames[], float boxExtentX, float boxExtentY, float boxExtentZ)
 	: 
 	m_animationCount(animationCount), m_maxFrame(maxFrame),
 	m_modelWidth(modelWidth), m_modelHeight(modelHeight), m_textureNames(textureFilenames)
@@ -13,6 +14,9 @@ EnemyClass::EnemyClass(int animationCount, int maxFrame[], int modelWidth, int m
 	m_pStateMachine = new StateMachine<EnemyClass>(this);
 
 	m_pStateMachine->SetCurrentState(Patrol::Instance());
+
+	m_Box.Center = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	m_Box.Extents = XMFLOAT3(boxExtentX, boxExtentY, boxExtentZ);
 }
 
 EnemyClass::~EnemyClass()
@@ -78,6 +82,7 @@ void EnemyClass::SetPosition(float x, float y, float z)
 void EnemyClass::SetPosition(XMFLOAT3 position)
 {
 	m_position = position;
+	m_Box.Center = XMFLOAT3(m_position.x, m_modelHeight / 2, m_position.z); ;
 }
 
 void EnemyClass::SetForwardVector(float x, float y, float z)
