@@ -59,9 +59,10 @@ void BulletPoolClass::UpdateBullets()
 {
 	for (int i = 0; i < m_poolSize; i++)
 	{
+		if (!m_Bullets[i].IsUse()) continue;
 		if (!m_Bullets[i].IsJustDied()) continue;
 
-		m_Bullets->Clean();
+		m_Bullets[i].Clean();
 		m_Bullets[i].SetNext(m_FirstAvailable);
 		m_FirstAvailable = &m_Bullets[i];
 		m_numUsingBullets--;

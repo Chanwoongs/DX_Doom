@@ -834,12 +834,14 @@ bool GraphicsClass::Render(float deltaTime)
 		return false;
 	}
 
-
 	// billboarding Bullet
+
+	// Update and Render Bullet
 	m_BulletPool->UpdateBullets();
 	for (int i = 0; i < m_BulletPool->GetPoolSize(); i++)
 	{
 		if (!m_BulletPool->GetBullets()[i].IsUse()) continue;
+
 		XMMATRIX bulletMatrix;
 		bulletMatrix = m_BulletPool->GetBullets()[i].Update(deltaTime);
 
