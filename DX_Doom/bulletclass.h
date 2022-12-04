@@ -4,6 +4,13 @@
 #ifndef _BULLETCLASS_H_
 #define _BULLETCLASS_H_
 
+//////////////
+// INCLUDES //
+//////////////
+#include <DirectXCollision.h>
+
+using namespace DirectX;
+
 ///////////////////////
 // MY CLASS INCLUDES //
 ///////////////////////
@@ -49,9 +56,11 @@ public:
 	void SetJustDied(bool justDied) { m_justDied = justDied; }
 
 	SpriteClass* GetModel() { return m_Model; }
+	BoundingSphere GetBoundingSphere() { return m_Sphere; }
 
 private:
 	SpriteClass* m_Model;
+	BoundingSphere m_Sphere;
 
 	const WCHAR* m_textureName;
 	int m_modelWidth;

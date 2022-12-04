@@ -78,6 +78,9 @@ XMMATRIX BulletClass::Update(float deltaTime, XMFLOAT3 camPosition)
 	SetPosition(tempBulletPos);
 	SetForwardVector(XMVector3Normalize(m_forwardVec));
 
+	m_Sphere.Center = m_position;
+	m_Sphere.Radius = 1.0f;
+
 	// Calculate the rotation that needs to be applied to the billboard model to face the current camera position using the arc tangent function.
 	auto yawAngle = atan2(m_position.x - camPosition.x, m_position.z - camPosition.z) * (180.0 / XM_PI);
 
