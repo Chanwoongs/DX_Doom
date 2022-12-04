@@ -68,7 +68,7 @@ void BulletClass::Clean()
 	m_justDied = false;
 }
 
-XMMATRIX BulletClass::Update(float deltaTime)
+XMMATRIX BulletClass::Update(float deltaTime, XMFLOAT3 camPosition)
 {
 	XMMATRIX bulletMoveMatrix = XMMatrixIdentity();
 	bulletMoveMatrix = XMMatrixTranslationFromVector(m_forwardVec / deltaTime * m_speed * 1.0f);
@@ -78,9 +78,16 @@ XMMATRIX BulletClass::Update(float deltaTime)
 	SetPosition(tempBulletPos);
 	SetForwardVector(XMVector3Normalize(m_forwardVec));
 
+	// Calculate the rotation that needs to be applied to the billboard model to face the current camera position using the arc tangent function.
+	auto yawAngle = atan2(m_position.x - camPosition.x, m_position.z - camPosition.z) * (180.0 / XM_PI);
+
+	// Convert rotation into radians.
+	auto billboardYawRotation = (float)yawAngle * 0.0174532925f;
+
 	XMMATRIX bulletWorldMatrix = XMMatrixIdentity();
 	// Setup the rotation the billboard at the origin using the world matrix.
-	// billboardWorldMatrix *= XMMatrixRotationY(billboardRotation);
+	bulletWorldMatrix *= XMMatrixRotationY(billboardYawRotation);
+
 	// Setup the translation matrix from the billboard model.
 	XMMATRIX translateMatrix = XMMatrixTranslation(m_position.x, m_position.y, m_position.z);
 	// Finally combine the rotation and translation matrices to create the final world matrix for the billboard model.

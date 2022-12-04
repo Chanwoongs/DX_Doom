@@ -19,7 +19,7 @@ public:
 	BulletClass(const BulletClass&);
 	~BulletClass();
 
-	XMMATRIX Update(float);
+	XMMATRIX Update(float, XMFLOAT3);
 
 	bool Initialize(ID3D11Device*, int, int, const WCHAR*);
 	void Shutdown();
