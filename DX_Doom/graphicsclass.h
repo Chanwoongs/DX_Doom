@@ -9,6 +9,7 @@
 // INCLUDES //
 //////////////
 #include <vector>
+#include <DirectXCollision.h>
 
 ///////////////////////
 // MY CLASS INCLUDES //
