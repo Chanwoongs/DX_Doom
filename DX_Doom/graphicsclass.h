@@ -108,6 +108,7 @@ private:
 private:
 	D3DClass* m_D3D;
 	CameraClass* m_Camera;
+	BoundingBox m_PlayerBox;
 
 	int m_ScreenWidth, m_ScreenHeight;
 
@@ -132,6 +133,7 @@ private:
 	ModelClass* m_Plane;
 	ModelClass* m_Stage;
 	ModelClass* m_NavmeshModel;
+	vector<BoundingBox*> m_StageBox;
 
 	Bitmaps* m_Gun;
 	BitmapInfo m_GunBitmapInfo;
@@ -153,8 +155,7 @@ private:
 
 	EnemyClass* m_Zombie;
 	AnimationInfo m_ZombieAnimInfo;
-
-	float m_acceptDistance;
+	int m_zombieInterval;
 
 	bool m_isShoot;
 	bool m_isGunAnimPlay;
