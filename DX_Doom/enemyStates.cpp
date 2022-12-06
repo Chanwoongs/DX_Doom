@@ -24,6 +24,7 @@ Patrol* Patrol::Instance()
 
 void Patrol::Enter(EnemyClass* pEnemyClass)
 {
+	pEnemyClass->SetStateChanged(true);
 	timer = 0.0f;
     return;
 }
@@ -31,6 +32,8 @@ void Patrol::Enter(EnemyClass* pEnemyClass)
 
 void Patrol::Execute(EnemyClass* pEnemyClass, float deltaTime)
 {
+	pEnemyClass->SetStateChanged(false);
+
 	// Get Enemy's destination node position
 	XMFLOAT3 destination = pEnemyClass->GetPath().at(pEnemyClass->GetPathIndex());
 	pEnemyClass->SetSpeed(1.0f);
@@ -103,6 +106,11 @@ void Patrol::Execute(EnemyClass* pEnemyClass, float deltaTime)
 	diff = XMVectorZero();
 	distance = -1.0;
 
+	if (pEnemyClass->IsHitted())
+	{
+		pEnemyClass->GetFSM()->ChangeState(Hitted::Instance());
+	}
+
     return;
 }
 
@@ -128,12 +136,15 @@ Approach* Approach::Instance()
 
 void Approach::Enter(EnemyClass* pEnemyClass)
 {
+	pEnemyClass->SetStateChanged(true);
     return;
 }
 
 
 void Approach::Execute(EnemyClass* pEnemyClass, float deltaTime)
 {
+	pEnemyClass->SetStateChanged(false);
+
 	XMFLOAT3 destination = XMFLOAT3(pEnemyClass->GetTargetPosition().x, 0, pEnemyClass->GetTargetPosition().z);
 	pEnemyClass->SetSpeed(1.0f);
 
@@ -178,7 +189,6 @@ void Approach::Execute(EnemyClass* pEnemyClass, float deltaTime)
 		timer = 0.0f;
 	}
 
-
 	XMFLOAT3 enemyPos = pEnemyClass->GetPosition();
 	XMVECTOR enemyPositionVec = XMLoadFloat3(&enemyPos);
 	XMVECTOR enemyDestPathVec = XMLoadFloat3(&destination);
@@ -195,6 +205,11 @@ void Approach::Execute(EnemyClass* pEnemyClass, float deltaTime)
 	else if (distance <= pEnemyClass->GetAttackRange())
 	{
 		pEnemyClass->GetFSM()->ChangeState(Attack::Instance());
+	}
+
+	if (pEnemyClass->IsHitted())
+	{
+		pEnemyClass->GetFSM()->ChangeState(Hitted::Instance());
 	}
 
 	diff = XMVectorZero();
@@ -225,6 +240,7 @@ Attack* Attack::Instance()
 
 void Attack::Enter(EnemyClass* pEnemyClass)
 {
+	pEnemyClass->SetStateChanged(true);
 	pEnemyClass->SetAttackPosition(pEnemyClass->GetTargetPosition());
     
 	return;
@@ -232,6 +248,8 @@ void Attack::Enter(EnemyClass* pEnemyClass)
 
 void Attack::Execute(EnemyClass* pEnemyClass, float deltaTime)
 {
+	pEnemyClass->SetStateChanged(false);
+
 	pEnemyClass->SetCurrentTargetPath(XMFLOAT3(pEnemyClass->GetTargetPosition().x, 0, pEnemyClass->GetTargetPosition().z));
 	pEnemyClass->SetSpeed(0.0f);
 	XMFLOAT3 enemyPos = pEnemyClass->GetPosition();
@@ -250,6 +268,12 @@ void Attack::Execute(EnemyClass* pEnemyClass, float deltaTime)
 	}
 
 	pEnemyClass->SetAttacking(true);
+
+	if (pEnemyClass->IsHitted())
+	{
+		pEnemyClass->GetFSM()->ChangeState(Hitted::Instance());
+	}
+
     return;
 }
 
@@ -275,17 +299,30 @@ Hitted* Hitted::Instance()
 
 void Hitted::Enter(EnemyClass* pEnemyClass)
 {
+	pEnemyClass->SetStateChanged(true);
+
+	pEnemyClass->SetHp(pEnemyClass->GetHp() - 25.0f);
+
     return;
 }
 
 
 void Hitted::Execute(EnemyClass* pEnemyClass, float deltaTime)
 {
+	pEnemyClass->SetStateChanged(false);
+
+	if (pEnemyClass->GetHp() <= 0)
+	{
+		pEnemyClass->GetFSM()->ChangeState(Dead::Instance());
+	}
+
     return;
 }
 
 void Hitted::Exit(EnemyClass* pEnemyClass)
 {
+	pEnemyClass->SetHitted(false);
+
     return;
 }
 
@@ -293,3 +330,39 @@ int Hitted::GetStateID()
 {
 	return HITTED;
 }
+
+//------------------------------------------------------------------------methods for Dead
+
+Dead* Dead::Instance()
+{
+	static Dead instance;
+
+	return &instance;
+}
+
+
+void Dead::Enter(EnemyClass* pEnemyClass)
+{
+	pEnemyClass->SetStateChanged(true);
+	pEnemyClass->SetSpeed(0.0f);
+	return;
+}
+
+
+void Dead::Execute(EnemyClass* pEnemyClass, float deltaTime)
+{
+	pEnemyClass->SetStateChanged(false);
+
+	return;
+}
+
+void Dead::Exit(EnemyClass* pEnemyClass)
+{
+	return;
+}
+
+int Dead::GetStateID()
+{
+	return DEAD;
+}
+

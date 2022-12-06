@@ -10,6 +10,7 @@
 #define APPROACH 2
 #define ATTACK 3
 #define HITTED 4
+#define DEAD 5
 
 #endif
 
@@ -33,11 +34,11 @@ public:
   //this is a singleton
   static Patrol* Instance();
 
-  virtual void Enter(EnemyClass* woong);
+  virtual void Enter(EnemyClass* enemy);
 
-  virtual void Execute(EnemyClass* woong, float deltaTime);
+  virtual void Execute(EnemyClass* enemy, float deltaTime);
 
-  virtual void Exit(EnemyClass* woong);
+  virtual void Exit(EnemyClass* enemy);
 
   virtual int GetStateID();
 
@@ -59,11 +60,11 @@ public:
   //this is a singleton
   static Approach* Instance();
 
-  virtual void Enter(EnemyClass* woong);
+  virtual void Enter(EnemyClass* enemy);
 
-  virtual void Execute(EnemyClass* woong, float deltaTime);
+  virtual void Execute(EnemyClass* enemy, float deltaTime);
 
-  virtual void Exit(EnemyClass* woong);
+  virtual void Exit(EnemyClass* enemy);
 
   virtual int GetStateID();
 };
@@ -82,11 +83,11 @@ public:
   //this is a singleton
   static Attack* Instance();
 
-  virtual void Enter(EnemyClass* woong);
+  virtual void Enter(EnemyClass* enemy);
 
-  virtual void Execute(EnemyClass* woong, float deltaTime);
+  virtual void Execute(EnemyClass* enemy, float deltaTime);
 
-  virtual void Exit(EnemyClass* woong);
+  virtual void Exit(EnemyClass* enemy);
 
   virtual int GetStateID();
 };
@@ -105,13 +106,36 @@ public:
   //this is a singleton
   static Hitted* Instance();
 
-  virtual void Enter(EnemyClass* woong);
+  virtual void Enter(EnemyClass* enemy);
 
-  virtual void Execute(EnemyClass* woong, float deltaTime);
+  virtual void Execute(EnemyClass* enemy, float deltaTime);
 
-  virtual void Exit(EnemyClass* woong);
+  virtual void Exit(EnemyClass* enemy);
 
   virtual int GetStateID();
+};
+
+class Dead : public State<EnemyClass>
+{
+private:
+
+	Dead() {}
+
+	Dead(const Dead&);
+	Dead& operator=(const Dead&);
+
+public:
+
+	//this is a singleton
+	static Dead* Instance();
+
+	virtual void Enter(EnemyClass* enemy);
+
+	virtual void Execute(EnemyClass* enemy, float deltaTime);
+
+	virtual void Exit(EnemyClass* enemy);
+
+	virtual int GetStateID();
 };
 
 
