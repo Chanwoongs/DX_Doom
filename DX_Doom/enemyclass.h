@@ -29,7 +29,7 @@ template <class type> class State; //pre-fixed with "template <class entity_type
 class EnemyClass
 {
 public:
-	EnemyClass(int, int[], int, int, const WCHAR**[], float, float, float);
+	EnemyClass(float, int, int[], int, int, const WCHAR**[], float, float, float);
 	EnemyClass(const EnemyClass&);
 	~EnemyClass();
 
@@ -84,8 +84,18 @@ public:
 
 	BoundingBox GetBoundingBox() { return m_Box; }
 
+	bool IsStateChanged() { return m_stateChanged == true; }
+	void SetStateChanged(bool stateChanged) { m_stateChanged = stateChanged; }
+
+	float GetHp() { return m_hp; }
+	void SetHp(float hp) { m_hp = hp; }
+
+	float IsAlive() { return m_isAlive; }
+	void SetAlive(bool alive) { m_isAlive = alive; }
+
 private:
 	StateMachine<EnemyClass>* m_pStateMachine;
+	bool m_stateChanged;
 
 	Model2DClass* m_model;
 	const WCHAR*** m_textureNames;
@@ -116,6 +126,9 @@ private:
 	bool m_isHitted;
 
 	BoundingBox m_Box;
+
+	float m_hp;
+	bool m_isAlive;
 };
 
 #endif

@@ -3,7 +3,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "enemyclass.h"
 
-EnemyClass::EnemyClass(int animationCount, int maxFrame[], int modelWidth, int modelHeight, 
+EnemyClass::EnemyClass(float hp, int animationCount, int maxFrame[], int modelWidth, int modelHeight, 
 	const WCHAR** textureFilenames[], float boxExtentX, float boxExtentY, float boxExtentZ)
 	: 
 	m_animationCount(animationCount), m_maxFrame(maxFrame),
@@ -17,6 +17,9 @@ EnemyClass::EnemyClass(int animationCount, int maxFrame[], int modelWidth, int m
 
 	m_Box.Center = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	m_Box.Extents = XMFLOAT3(boxExtentX, boxExtentY, boxExtentZ);
+
+	m_hp = hp;
+	m_isAlive = true;
 }
 
 EnemyClass::~EnemyClass()
