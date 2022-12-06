@@ -129,6 +129,7 @@ private:
 	BitmapClass* m_Crosshair;
 
 	NavmeshClass* m_Navmesh;
+	ModelClass* m_Cube;
 
 	ModelClass* m_Plane;
 	ModelClass* m_Stage;

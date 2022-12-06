@@ -25,7 +25,6 @@ Patrol* Patrol::Instance()
 void Patrol::Enter(EnemyClass* pEnemyClass)
 {
 	pEnemyClass->SetStateChanged(true);
-	timer = 0.0f;
     return;
 }
 
@@ -49,11 +48,8 @@ void Patrol::Execute(EnemyClass* pEnemyClass, float deltaTime)
 
 		if (path.size() == 0) return;
 
-		pEnemyClass->SetShortestPath(path);
 		XMFLOAT3 target;
 
-		if (path.size() > 1)
-			path.pop_front();
 		if (path.size() > 1)
 			path.pop_front();
 
@@ -68,11 +64,22 @@ void Patrol::Execute(EnemyClass* pEnemyClass, float deltaTime)
 		{
 			if (path.size() > 1)
 				path.pop_front();
-			if (path.size() > 1)
-				path.pop_front();
 
 			target = *path.front();
 		}
+
+		list<XMFLOAT3*>::iterator iter;
+		iter = path.begin();
+		int i = 0;
+		pEnemyClass->SetShortestPathSize(0);
+		for (; iter != path.end(); iter++)
+		{
+			pEnemyClass->GetShortestPath()[i].x = (*iter)->x;
+			pEnemyClass->GetShortestPath()[i].y = (*iter)->y;
+			pEnemyClass->GetShortestPath()[i].z = (*iter)->z;
+			i++;
+		}
+		pEnemyClass->SetShortestPathSize(i);
 
 		// Set next current target node to enemy's path
 		pEnemyClass->SetCurrentTargetPath(target);
@@ -146,7 +153,7 @@ void Approach::Execute(EnemyClass* pEnemyClass, float deltaTime)
 	pEnemyClass->SetStateChanged(false);
 
 	XMFLOAT3 destination = XMFLOAT3(pEnemyClass->GetTargetPosition().x, 0, pEnemyClass->GetTargetPosition().z);
-	pEnemyClass->SetSpeed(1.0f);
+	pEnemyClass->SetSpeed(1.5f);
 
 	timer += deltaTime;
 	if (timer > 200.0f)
@@ -159,11 +166,8 @@ void Approach::Execute(EnemyClass* pEnemyClass, float deltaTime)
 
 		if (path.size() == 0) return;
 
-		pEnemyClass->SetShortestPath(path);
 		XMFLOAT3 target;
 
-		if (path.size() > 1)
-			path.pop_front();
 		if (path.size() > 1)
 			path.pop_front();
 
@@ -178,11 +182,22 @@ void Approach::Execute(EnemyClass* pEnemyClass, float deltaTime)
 		{
 			if (path.size() > 1)
 				path.pop_front();
-			if (path.size() > 1)
-				path.pop_front();
 
 			target = *path.front();
 		}
+
+		list<XMFLOAT3*>::iterator iter;
+		iter = path.begin();
+		int i = 0;
+		pEnemyClass->SetShortestPathSize(0);
+		for (; iter != path.end(); iter++)
+		{
+			pEnemyClass->GetShortestPath()[i].x = (*iter)->x;
+			pEnemyClass->GetShortestPath()[i].y = (*iter)->y;
+			pEnemyClass->GetShortestPath()[i].z = (*iter)->z;
+			i++;
+		}
+		pEnemyClass->SetShortestPathSize(i);
 
 		// Set next current target node to enemy's path
 		pEnemyClass->SetCurrentTargetPath(target);
@@ -200,7 +215,7 @@ void Approach::Execute(EnemyClass* pEnemyClass, float deltaTime)
 
 	if (distance >= pEnemyClass->GetDetectRange())
 	{
-		pEnemyClass->GetFSM()->ChangeState(Patrol::Instance());
+		//pEnemyClass->GetFSM()->ChangeState(Patrol::Instance());
 	}
 	else if (distance <= pEnemyClass->GetAttackRange())
 	{

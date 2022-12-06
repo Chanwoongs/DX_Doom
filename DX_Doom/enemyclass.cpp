@@ -20,6 +20,8 @@ EnemyClass::EnemyClass(float hp, int animationCount, int maxFrame[], int modelWi
 
 	m_hp = hp;
 	m_isAlive = true;
+
+	m_shortestPath = new XMFLOAT3[100];
 }
 
 EnemyClass::~EnemyClass()
@@ -54,6 +56,7 @@ void EnemyClass::Shutdown()
 
 	delete m_pStateMachine;
 	delete m_model;
+	delete[] m_shortestPath;
 
 	return;
 }

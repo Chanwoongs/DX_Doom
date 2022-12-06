@@ -215,6 +215,21 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
+	XMFLOAT3 temp = XMFLOAT3(0, 0, 0);
+	m_Cube = new ModelClass(&temp, 1, false);
+	if (!m_Cube)
+	{
+		return false;
+	}
+	// Initialize the model object.
+	result = m_Cube->Initialize(m_D3D->GetDevice(), L"./data/EM_Cube.obj", L"./data/MT_White.dds", L"./data/MT_White.dds", L"./data/MT_White.dds");
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
+		return false;
+	}
+
+
 	// Create the model object.
 	m_Sphere = new SphereClass;
 	if (!m_Sphere)
@@ -579,6 +594,14 @@ void GraphicsClass::Shutdown()
 	}
 
 	// Release the model object.
+	if (m_Cube)
+	{
+		m_Cube->Shutdown();
+		delete m_Cube;
+		m_Cube = 0;
+	}
+
+	// Release the model object.
 	if (m_NavmeshModel)
 	{
 		delete m_navmeshPosition;
@@ -587,13 +610,13 @@ void GraphicsClass::Shutdown()
 		m_NavmeshModel = 0;
 	}
 
-	//// Release the model object.
-	//if (m_Sphere)
-	//{
-	//	m_Sphere->Shutdown();
-	//	delete m_Sphere;
-	//	m_Sphere = 0;
-	//}
+	// Release the model object.
+	if (m_Sphere)
+	{
+		m_Sphere->Shutdown();
+		delete m_Sphere;
+		m_Sphere = 0;
+	}
 
 	// Release the model object.
 	if (m_Crosshair)
@@ -729,7 +752,6 @@ bool GraphicsClass::Frame(int fps, int cpu, float frameTime)
 		}
 	}
 
-
 	// Play Gun Animation
 	PlayGunAnim();
 
@@ -864,6 +886,26 @@ bool GraphicsClass::Render(float deltaTime)
 			return false;
 		}
 	}
+
+	for (int i = 0; i < m_Zombie->GetShortestPathSize(); i++)
+	{
+		m_Cube->Render(m_D3D->GetDeviceContext());
+
+		// Render the model using the light shader.
+		result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Cube->GetVertexCount(), m_Cube->GetInstanceCount(),
+			worldMatrix * XMMatrixScaling(0.2f, 0.2f, 0.2f) *
+			XMMatrixTranslation(m_Zombie->GetShortestPath()[i].x, m_Zombie->GetShortestPath()[i].y, m_Zombie->GetShortestPath()[i].z),
+			viewMatrix, projectionMatrix,
+			m_Cube->GetTextureArray(),
+			m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
+			m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower(),
+			m_Light->GetAmbientToggle(), m_Light->GetDiffuseToggle(), m_Light->GetSpecularToggle(), 1);
+		if (!result)
+		{
+			return false;
+		}
+	}
+		
 
 	// billboarding Bullet
 	// Update and Render Bullet

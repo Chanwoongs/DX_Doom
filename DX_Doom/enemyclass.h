@@ -55,8 +55,9 @@ public:
 	int GetPathIndex() { return m_pathIndex; }
 	void SetPathIndex(int index) { m_pathIndex = index; }
 
-	list<XMFLOAT3*> GetShortestPath() { return m_shortestPath; }
-	void SetShortestPath(list<XMFLOAT3*> path) { m_shortestPath = path; }
+	XMFLOAT3* GetShortestPath() { return m_shortestPath; }
+	int GetShortestPathSize() { return m_shortestPathSize; }
+	void SetShortestPathSize(int size) { m_shortestPathSize = size; }
 
 	float GetAcceptDistance() { return m_acceptDistance; }
 	void SetAcceptDistance(float acceptDistance) { m_acceptDistance = acceptDistance; }
@@ -112,7 +113,8 @@ private:
 
 	vector<XMFLOAT3> m_path;
 	XMFLOAT3 m_currentTargetPath;
-	list<XMFLOAT3*> m_shortestPath;
+	XMFLOAT3* m_shortestPath;
+	int m_shortestPathSize;
 	int m_pathIndex;
 	float m_acceptDistance;
 	float m_detectRange;
