@@ -98,7 +98,7 @@ void CameraClass::StartHeadbob(float timer)
 {
 	if (!m_isMoving) return;
 
-	m_position.y = m_defaultYPos + sin(timer * 0.1f);
+	m_position.y = m_defaultYPos + sin(timer);
 }
 
 void CameraClass::EndHeadbob(float timer)
@@ -136,7 +136,7 @@ void CameraClass::Render()
 
 	// Setup where the camera is looking by default.
 	lookAt = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
-
+	
 	camRotationMatrix = XMMatrixRotationRollPitchYaw(m_pitch, m_yaw, m_roll);
 	m_target = XMVector3TransformCoord(m_defaultForward, camRotationMatrix);
 	m_target = XMVector3Normalize(m_target);

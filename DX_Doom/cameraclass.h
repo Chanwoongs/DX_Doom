@@ -41,6 +41,8 @@ public:
 	void Render();
 	void GetViewMatrix(XMMATRIX&);
 	XMVECTOR GetTargetVector() { return m_target; }
+	XMVECTOR GetRightVector() { return m_camRight; }
+	XMVECTOR GetForwardVector() { return m_camForward; }
 	void RotateCamera(float, float, float);
 	void Move(float);
 	void StopMove() { m_isMoving = false; }

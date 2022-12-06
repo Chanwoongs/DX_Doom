@@ -225,19 +225,23 @@ void SystemClass::Run()
 			}
 			if (key == 97)
 			{
-				m_Graphics->GetCamera()->MoveLeft(speed);
+				if (!m_Graphics->IsLeftHit())
+					m_Graphics->GetCamera()->MoveLeft(speed);
 			}
 			if (key == 100)
 			{
-				m_Graphics->GetCamera()->MoveRight(speed);
+				if (!m_Graphics->IsRightHit()) 
+					m_Graphics->GetCamera()->MoveRight(speed);
 			}
 			if (key == 115)
 			{
-				m_Graphics->GetCamera()->MoveBack(speed);
+				if (!m_Graphics->IsBackwardHit()) 
+					m_Graphics->GetCamera()->MoveBack(speed);
 			}
 			if (key == 119)
 			{
-				m_Graphics->GetCamera()->MoveForward(speed);
+				if (!m_Graphics->IsForwardHit()) 
+					m_Graphics->GetCamera()->MoveForward(speed);
 			}
 			if (key == 113)
 			{
