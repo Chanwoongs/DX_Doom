@@ -55,7 +55,7 @@ AStarClass::Node::~Node()
 AStarClass::Map::Map()
 {
 	// 맵의 크기를 불러옴
-	char crow[4], ccol[4];
+	char crow[5], ccol[4];
 	GetPrivateProfileStringA("MAP", "row", "", crow, sizeof(crow) - 1, "./data/map.txt");
 	GetPrivateProfileStringA("MAP", "col", "", ccol, sizeof(ccol) - 1, "./data/map.txt");
 	row = atoi(crow); 
@@ -126,11 +126,11 @@ list<XMFLOAT3*> AStarClass::FindPath(Map* navi, XMFLOAT3 startPoint, XMFLOAT3 en
 		// 부모가 NULL일 때까지 path에 경로 저장
 		for (selectedNode = *iter; selectedNode->m_Parent != NULL; selectedNode = selectedNode->m_Parent)  
 		{
-			path.push_back(new XMFLOAT3(selectedNode->m_position.x - m_correction, 0.0f, selectedNode->m_position.z));
+			path.push_back(new XMFLOAT3((selectedNode->m_position.x * 2) - m_correction, 0.0f, (selectedNode->m_position.z * 2)));
 		}	
 
 		// 부모가 NULL인 경우의 path까지 저장(출발 지점)
-		path.push_back(new XMFLOAT3(selectedNode->m_position.x - m_correction, 0.0f, selectedNode->m_position.z));
+		path.push_back(new XMFLOAT3((selectedNode->m_position.x * 2) - m_correction, 0.0f, (selectedNode->m_position.z * 2)));
 
 		// 목적지점으부터 역순으로 입력했으므로 다시 역순으로 뒤집어 출발지점이 첫 번째가 되도록 함.
 		path.reverse(); 

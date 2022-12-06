@@ -56,10 +56,10 @@ public:
 	AStarClass(XMFLOAT3 startPoint, XMFLOAT3 endPoint, int correction)
 	{
 		m_correction = correction;
-		m_startPoint.x = (int)startPoint.x + m_correction;
-		m_startPoint.z = (int)startPoint.z;
-		m_endPoint.x = (int)endPoint.x + m_correction;
-		m_endPoint.z = (int)endPoint.z;
+		m_startPoint.x = ((int)startPoint.x + m_correction) / 2;
+		m_startPoint.z = ((int)startPoint.z / 2);
+		m_endPoint.x = ((int)endPoint.x + m_correction) / 2;
+		m_endPoint.z = ((int)endPoint.z / 2);
 
 		m_Navi = new Map();
 	}
