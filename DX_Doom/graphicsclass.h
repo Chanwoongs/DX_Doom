@@ -88,9 +88,13 @@ public:
 	
 	void SetZombieAnimInfo(AnimationInfo&, int);
 
-	void SetModels2DTextures();
+	void SetModels2DTextures(int);
 
 	CameraClass* GetCamera();
+	bool IsForwardHit() { return m_forwardHit == true; }
+	bool IsBackwardHit() { return m_backwardHit == true; }
+	bool IsRightHit() { return m_rightHit == true; }
+	bool IsLeftHit() { return m_leftHit == true; }
 
 	void StartShoot();
 	void ShootBullet();
@@ -108,6 +112,11 @@ private:
 private:
 	D3DClass* m_D3D;
 	CameraClass* m_Camera;
+	bool m_forwardHit;
+	bool m_backwardHit;
+	bool m_rightHit;
+	bool m_leftHit;
+
 	BoundingBox m_PlayerBox;
 
 	int m_ScreenWidth, m_ScreenHeight;
@@ -154,15 +163,21 @@ private:
 	XMFLOAT3* m_navmeshPosition;
 	int m_navmeshCount;
 
+	vector<EnemyClass*> m_Zombies;
+	vector<AnimationInfo*> m_ZombieAnimInfos;
 	EnemyClass* m_Zombie;
 	AnimationInfo m_ZombieAnimInfo;
 	int m_zombieInterval;
+	int m_zombieCount;
 
 	bool m_isShoot;
 	bool m_isGunAnimPlay;
 	bool m_isGunAnimReversed;
 	bool m_isMuzzleAnimPlay;
 	bool m_isBulletReloaded;
+
+	float m_playerHP;
+	int m_aliveEnemies;
 };
 
 #endif
