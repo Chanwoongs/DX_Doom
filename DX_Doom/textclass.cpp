@@ -125,6 +125,36 @@ bool TextClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 		return false;
 	}
 
+	// Initialize the third sentence.
+	result = InitializeSentence(&m_sentence5, 50, device);
+	if (!result)
+	{
+		return false;
+	}
+
+	// Now update the sentence vertex buffer with the new string information.
+	result = UpdateSentence(m_sentence5, "Goodbye", 100, 200, 1.0f, 1.0f, 0.0f, deviceContext);
+	if (!result)
+	{
+		return false;
+	}
+
+
+	// Initialize the third sentence.
+	result = InitializeSentence(&m_sentence6, 80, device);
+	if (!result)
+	{
+		return false;
+	}
+
+	// Now update the sentence vertex buffer with the new string information.
+	result = UpdateSentence(m_sentence6, "Goodbye", 100, 200, 1.0f, 1.0f, 0.0f, deviceContext);
+	if (!result)
+	{
+		return false;
+	}
+
+
 
 
 	return true;
@@ -144,6 +174,12 @@ void TextClass::Shutdown()
 
 	// Release the second sentence.
 	ReleaseSentence(&m_sentence4);
+
+	// Release the second sentence.
+	ReleaseSentence(&m_sentence5);
+
+	// Release the second sentence.
+	ReleaseSentence(&m_sentence6);
 
 	// Release the font shader object.
 	if(m_FontShader)
@@ -191,12 +227,28 @@ bool TextClass::Render(ID3D11DeviceContext* deviceContext, XMMATRIX worldMatrix,
 		return false;
 	}
 
-	// Draw the third sentence.
+	// Draw the fourth sentence.
 	result = RenderSentence(deviceContext, m_sentence4, worldMatrix, orthoMatrix);
 	if (!result)
 	{
 		return false;
 	}
+
+	// Draw the fifth sentence.
+	result = RenderSentence(deviceContext, m_sentence5, worldMatrix, orthoMatrix);
+	if (!result)
+	{
+		return false;
+	}
+
+
+	// Draw the sixth sentence.
+	result = RenderSentence(deviceContext, m_sentence6, worldMatrix, orthoMatrix);
+	if (!result)
+	{
+		return false;
+	}
+
 
 
 	return true;
@@ -532,15 +584,55 @@ bool TextClass::SetPosition(XMFLOAT3 position, ID3D11DeviceContext* deviceContex
 bool TextClass::SetDeltaTime(float deltaTime, ID3D11DeviceContext* deviceContext)
 {
 	char tempString[16];
-	char cpuString[32];
+	char timeString[32];
 	bool result;
 	// Convert the cpu integer to string format.
 	snprintf(tempString, 16, "%.5f", deltaTime);
 	// Setup the cpu string.
-	strcpy_s(cpuString, "deltaTime: ");
-	strcat_s(cpuString, tempString);
+	strcpy_s(timeString, "deltaTime: ");
+	strcat_s(timeString, tempString);
 	// Update the sentence vertex buffer with the new string information.
-	result = UpdateSentence(m_sentence4, cpuString, 20, 80, 0.0f, 1.0f, 0.0f, deviceContext);
+	result = UpdateSentence(m_sentence4, timeString, 20, 80, 0.0f, 1.0f, 0.0f, deviceContext);
+	if (!result)
+	{
+		return false;
+	}
+	return true;
+}
+
+
+bool TextClass::SetHp(float HP, ID3D11DeviceContext* deviceContext)
+{
+	char tempString[16];
+	char hpString[16];
+	bool result;
+	// Convert the cpu integer to string format.
+	_itoa_s(HP, tempString, 10);
+	// Setup the cpu string.
+	strcpy_s(hpString, "HP: ");
+	strcat_s(hpString, tempString);
+	// Update the sentence vertex buffer with the new string information.
+	result = UpdateSentence(m_sentence5, hpString, 20, 100, 0.0f, 1.0f, 0.0f, deviceContext);
+	if (!result)
+	{
+		return false;
+	}
+	return true;
+}
+
+
+bool TextClass::SetNumEnemies(int aliveEnemies, ID3D11DeviceContext* deviceContext)
+{
+	char tempString[16];
+	char numString[32];
+	bool result;
+	// Convert the cpu integer to string format.
+	_itoa_s(aliveEnemies, tempString, 10);
+	// Setup the cpu string.
+	strcpy_s(numString, "Remaining Enemies: ");
+	strcat_s(numString, tempString);
+	// Update the sentence vertex buffer with the new string information.
+	result = UpdateSentence(m_sentence6, numString, 20, 120, 0.0f, 1.0f, 0.0f, deviceContext);
 	if (!result)
 	{
 		return false;
