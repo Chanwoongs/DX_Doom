@@ -181,7 +181,7 @@ void SystemClass::Run()
 			}
 		}
 
-		float speed = 0.15;
+		float speed = m_Timer->GetTime() * 0.02;
 
 		// Check if the user pressed escape and wants to quit.
 		if (m_Input->IsEscapePressed() == true)

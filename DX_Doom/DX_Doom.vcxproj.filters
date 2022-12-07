@@ -149,6 +149,12 @@
     <ClCompile Include="skyboxshaderclass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="bulletclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="bulletpoolclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlignedAllocationPolicy.h">
@@ -263,6 +269,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="skyboxshaderclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="bulletclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="bulletpoolclass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -470,6 +482,48 @@
     </Image>
     <Image Include="data\skyboxbox.dds">
       <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\Gun\MT_Bullet.dds">
+      <Filter>Resource Files\Gun</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_D_1.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_D_2.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_D_3.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_D_4.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_D_5.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_HB.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_HBL.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_HBR.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_HF.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_HFL.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_HFR.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_HL.dds">
+      <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\Zombie\MT_Zombie_HR.dds">
+      <Filter>Resource Files\Zombie</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>

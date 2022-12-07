@@ -33,11 +33,12 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>Static</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -101,14 +102,19 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_AFXDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <DisableSpecificWarnings>4005</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>MSVCRT.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -152,6 +158,8 @@
   <ItemGroup>
     <ClCompile Include="astarclass.cpp" />
     <ClCompile Include="bitmapclass.cpp" />
+    <ClCompile Include="bulletclass.cpp" />
+    <ClCompile Include="bulletpoolclass.cpp" />
     <ClCompile Include="cameraclass.cpp" />
     <ClCompile Include="colorshaderclass.cpp" />
     <ClCompile Include="cpuclass.cpp" />
@@ -189,6 +197,8 @@
     <ClInclude Include="AlignedAllocationPolicy.h" />
     <ClInclude Include="astarclass.h" />
     <ClInclude Include="bitmapclass.h" />
+    <ClInclude Include="bulletclass.h" />
+    <ClInclude Include="bulletpoolclass.h" />
     <ClInclude Include="cameraclass.h" />
     <ClInclude Include="colorshaderclass.h" />
     <ClInclude Include="cpuclass.h" />
@@ -227,6 +237,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="data\ET_Stone.dds" />
+    <Image Include="data\Gun\MT_Bullet.dds" />
     <Image Include="data\Gun\MT_Gun_1.dds" />
     <Image Include="data\Gun\MT_Gun_2.dds" />
     <Image Include="data\Gun\MT_Gun_3.dds" />
@@ -274,6 +285,11 @@
     <Image Include="data\Zombie\MT_Zombie_B_2.dds" />
     <Image Include="data\Zombie\MT_Zombie_B_3.dds" />
     <Image Include="data\Zombie\MT_Zombie_B_4.dds" />
+    <Image Include="data\Zombie\MT_Zombie_D_1.dds" />
+    <Image Include="data\Zombie\MT_Zombie_D_2.dds" />
+    <Image Include="data\Zombie\MT_Zombie_D_3.dds" />
+    <Image Include="data\Zombie\MT_Zombie_D_4.dds" />
+    <Image Include="data\Zombie\MT_Zombie_D_5.dds" />
     <Image Include="data\Zombie\MT_Zombie_FL_1.dds" />
     <Image Include="data\Zombie\MT_Zombie_FL_2.dds" />
     <Image Include="data\Zombie\MT_Zombie_FL_3.dds" />
@@ -286,6 +302,14 @@
     <Image Include="data\Zombie\MT_Zombie_F_2.dds" />
     <Image Include="data\Zombie\MT_Zombie_F_3.dds" />
     <Image Include="data\Zombie\MT_Zombie_F_4.dds" />
+    <Image Include="data\Zombie\MT_Zombie_HB.dds" />
+    <Image Include="data\Zombie\MT_Zombie_HBL.dds" />
+    <Image Include="data\Zombie\MT_Zombie_HBR.dds" />
+    <Image Include="data\Zombie\MT_Zombie_HF.dds" />
+    <Image Include="data\Zombie\MT_Zombie_HFL.dds" />
+    <Image Include="data\Zombie\MT_Zombie_HFR.dds" />
+    <Image Include="data\Zombie\MT_Zombie_HL.dds" />
+    <Image Include="data\Zombie\MT_Zombie_HR.dds" />
     <Image Include="data\Zombie\MT_Zombie_L_1.dds" />
     <Image Include="data\Zombie\MT_Zombie_L_2.dds" />
     <Image Include="data\Zombie\MT_Zombie_L_3.dds" />
