@@ -91,8 +91,11 @@ public:
 	float GetHp() { return m_hp; }
 	void SetHp(float hp) { m_hp = hp; }
 
-	float IsAlive() { return m_isAlive; }
+	bool IsAlive() { return m_isAlive == true; }
 	void SetAlive(bool alive) { m_isAlive = alive; }
+
+	bool IsReturning() { return m_isReturning == true; }
+	void SetReturning(bool returning) { m_isReturning = returning; }
 
 private:
 	StateMachine<EnemyClass>* m_pStateMachine;
@@ -126,6 +129,7 @@ private:
 
 	bool m_isAttacking;
 	bool m_isHitted;
+	bool m_isReturning;
 
 	BoundingBox m_Box;
 

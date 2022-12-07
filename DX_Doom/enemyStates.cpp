@@ -35,13 +35,13 @@ void Patrol::Execute(EnemyClass* pEnemyClass, float deltaTime)
 
 	// Get Enemy's destination node position
 	XMFLOAT3 destination = pEnemyClass->GetPath().at(pEnemyClass->GetPathIndex());
-	pEnemyClass->SetSpeed(1.0f);
+	pEnemyClass->SetSpeed(deltaTime * 0.2);
 
 	timer += deltaTime;
-	if (timer > 200.0f)
+	if (timer > 50.0f)
 	{
 		// Find Path to destionation
-		int correction = 45;
+		int correction = 48;
 		AStarClass AStar(pEnemyClass->GetPosition(), destination, correction);
 		AStar.FindPath();
 		list<XMFLOAT3*> path = AStar.GetPath();
@@ -97,6 +97,10 @@ void Patrol::Execute(EnemyClass* pEnemyClass, float deltaTime)
 	if (distance <= pEnemyClass->GetAcceptDistance())
 	{
 		pEnemyClass->SetPathIndex(pEnemyClass->GetPathIndex() + 1);
+		if (pEnemyClass->IsReturning())
+		{
+			pEnemyClass->SetReturning(false);
+		}
 		if (pEnemyClass->GetPathIndex() == pEnemyClass->GetPath().size())
 		{
 			pEnemyClass->SetPathIndex(0);
@@ -107,7 +111,10 @@ void Patrol::Execute(EnemyClass* pEnemyClass, float deltaTime)
 	distance = XMVectorGetX(XMVector3Length(diff));
 	if (distance < pEnemyClass->GetDetectRange())
 	{
-		pEnemyClass->GetFSM()->ChangeState(Approach::Instance());
+		if (!pEnemyClass->IsReturning())
+		{
+			pEnemyClass->GetFSM()->ChangeState(Approach::Instance());
+		}
 	}
 
 	diff = XMVectorZero();
@@ -156,10 +163,10 @@ void Approach::Execute(EnemyClass* pEnemyClass, float deltaTime)
 	pEnemyClass->SetSpeed(1.5f);
 
 	timer += deltaTime;
-	if (timer > 200.0f)
+	if (timer > 50.0f)
 	{
 		// Find Path to destionation
-		int correction = 45;
+		int correction = 48;
 		AStarClass AStar(pEnemyClass->GetPosition(), destination, correction);
 		AStar.FindPath();
 		list<XMFLOAT3*> path = AStar.GetPath();
@@ -215,11 +222,22 @@ void Approach::Execute(EnemyClass* pEnemyClass, float deltaTime)
 
 	if (distance >= pEnemyClass->GetDetectRange())
 	{
-		//pEnemyClass->GetFSM()->ChangeState(Patrol::Instance());
+		pEnemyClass->GetFSM()->ChangeState(Patrol::Instance());
 	}
 	else if (distance <= pEnemyClass->GetAttackRange())
 	{
 		pEnemyClass->GetFSM()->ChangeState(Attack::Instance());
+	}
+
+	XMFLOAT3 pathPos = pEnemyClass->GetPath().at(pEnemyClass->GetPathIndex());
+	XMVECTOR pathVec = XMLoadFloat3(&pathPos);
+	diff = enemyPositionVec - pathVec;
+	distance = XMVectorGetX(XMVector3Length(diff));
+
+	if (distance >= pEnemyClass->GetDetectRange() * 2)
+	{
+		pEnemyClass->GetFSM()->ChangeState(Patrol::Instance());
+		pEnemyClass->SetReturning(true);
 	}
 
 	if (pEnemyClass->IsHitted())
