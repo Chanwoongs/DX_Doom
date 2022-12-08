@@ -34,6 +34,7 @@
 #include "bulletpoolclass.h"
 #include "particleshaderclass.h"
 #include "particlesystemclass.h"
+#include "soundclass.h"
 
 /////////////
 // GLOBALS //
@@ -152,6 +153,14 @@ private:
 	BitmapClass* m_Fail;
 	BitmapClass* m_Crosshair;
 	BitmapClass* m_Hit;
+
+	SoundClass* m_BGM;
+	SoundClass* m_FireSound;
+	SoundClass* m_HittedSound;
+	SoundClass* m_EnemyHittedSound;
+	SoundClass* m_EnemyDieSound;
+	SoundClass* m_StageClearSound;
+	SoundClass* m_AllClearSound;
 
 	NavmeshClass* m_Navmesh;
 	ModelClass* m_Cube;

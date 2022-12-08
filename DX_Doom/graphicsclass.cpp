@@ -392,6 +392,96 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
+	// Create the sound object.
+	m_FireSound = new SoundClass;
+	if (!m_FireSound)
+	{
+		return false;
+	}
+
+	// Initialize the sound object.
+	result = m_FireSound->Initialize(hwnd, "./data/Shoot.wav");
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize Direct Sound.", L"Error", MB_OK);
+		return false;
+	}
+
+	// Create the sound object.
+	m_HittedSound = new SoundClass;
+	if (!m_HittedSound)
+	{
+		return false;
+	}
+
+	// Initialize the sound object.
+	result = m_HittedSound->Initialize(hwnd, "./data/Hitted.wav");
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize Direct Sound.", L"Error", MB_OK);
+		return false;
+	}
+
+	// Create the sound object.
+	m_EnemyHittedSound = new SoundClass;
+	if (!m_EnemyHittedSound)
+	{
+		return false;
+	}
+
+	// Initialize the sound object.
+	result = m_EnemyHittedSound->Initialize(hwnd, "./data/EnemyHitted.wav");
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize Direct Sound.", L"Error", MB_OK);
+		return false;
+	}
+
+	// Create the sound object.
+	m_EnemyDieSound = new SoundClass;
+	if (!m_EnemyDieSound)
+	{
+		return false;
+	}
+
+	// Initialize the sound object.
+	result = m_EnemyDieSound->Initialize(hwnd, "./data/EnemyDie.wav");
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize Direct Sound.", L"Error", MB_OK);
+		return false;
+	}
+
+	// Create the sound object.
+	m_StageClearSound = new SoundClass;
+	if (!m_StageClearSound)
+	{
+		return false;
+	}
+
+	// Initialize the sound object.
+	result = m_StageClearSound->Initialize(hwnd, "./data/StageClear.wav");
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize Direct Sound.", L"Error", MB_OK);
+		return false;
+	}
+
+	// Create the sound object.
+	m_AllClearSound = new SoundClass;
+	if (!m_AllClearSound)
+	{
+		return false;
+	}
+
+	// Initialize the sound object.
+	result = m_AllClearSound->Initialize(hwnd, "./data/AllClear.wav");
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize Direct Sound.", L"Error", MB_OK);
+		return false;
+	}
+
 	// Initialize Gun Info
 	m_GunBitmapInfo.maxFrame = 4;
 	m_GunBitmapInfo.bitmapsWidth = new int[m_GunBitmapInfo.maxFrame];
@@ -541,16 +631,18 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Zombies.at(2)->SetPathIndex(0);
 	m_Zombies.at(2)->SetCurrentTargetPath(m_Zombies.at(2)->GetPath().at(m_Zombies.at(2)->GetPathIndex()));
 
-	m_Zombies.at(3)->SetPosition(-36, 0, 165);
+	m_Zombies.at(3)->SetPosition(0, 0, 170);
 	m_Zombies.at(3)->SetForwardVector(0, 0, -1);
 	m_Zombies.at(3)->SetAcceptDistance(2.0f);
 	m_Zombies.at(3)->SetDetectRange(30.0f);
 	m_Zombies.at(3)->SetAttackRange(3.0f);
 	m_Zombies.at(3)->SetSpeed(1.0f);
 	m_Zombies.at(3)->AddPath(XMFLOAT3(-36, 0, 165));
-	m_Zombies.at(3)->AddPath(XMFLOAT3(-37, 0, 192));
-	m_Zombies.at(3)->AddPath(XMFLOAT3(39, 0, 189));
-	m_Zombies.at(3)->AddPath(XMFLOAT3(36, 0, 178));
+	m_Zombies.at(3)->AddPath(XMFLOAT3(-39, 0, 196));
+	m_Zombies.at(3)->AddPath(XMFLOAT3(0, 0, 170));
+	m_Zombies.at(3)->AddPath(XMFLOAT3(39, 0, 196));
+	m_Zombies.at(3)->AddPath(XMFLOAT3(36, 0, 165));
+	m_Zombies.at(3)->AddPath(XMFLOAT3(0, 0, 170));
 	m_Zombies.at(3)->SetPathIndex(0);
 	m_Zombies.at(3)->SetCurrentTargetPath(m_Zombies.at(3)->GetPath().at(m_Zombies.at(3)->GetPathIndex()));
 
@@ -639,6 +731,8 @@ void GraphicsClass::ShootBullet()
 
 	m_BulletPool->Create(m_Camera->GetTargetVector() - tempCamPosVec, tempCamPosVec);
 	m_isBulletReloaded = false;
+
+	bool result = m_FireSound->PlayWaveFile();
 }
 
 void GraphicsClass::PlayGunAnim()
@@ -687,6 +781,7 @@ void GraphicsClass::FinishShoot()
 
 void GraphicsClass::UpdateStageNum()
 {
+	bool result;
 	switch (m_currentStage)
 	{
 	case 0:
@@ -696,6 +791,7 @@ void GraphicsClass::UpdateStageNum()
 		m_Zombies.at(0)->SetSpawn(false);
 		m_Zombies.at(1)->SetSpawn(true);
 		m_aliveEnemies--;
+		result = m_StageClearSound->PlayWaveFile();
 		break;
 	case 1:
 		m_currentStage = 2;
@@ -704,6 +800,7 @@ void GraphicsClass::UpdateStageNum()
 		m_Zombies.at(1)->SetSpawn(false);
 		m_Zombies.at(2)->SetSpawn(true);
 		m_aliveEnemies--;
+		result = m_StageClearSound->PlayWaveFile();
 		break;
 	case 2:
 		m_currentStage = 3;
@@ -712,10 +809,12 @@ void GraphicsClass::UpdateStageNum()
 		m_Zombies.at(2)->SetSpawn(false);
 		m_Zombies.at(3)->SetSpawn(true);
 		m_aliveEnemies--;
+		result = m_StageClearSound->PlayWaveFile();
 		break;
 	case 3:
 		// End Game Scene
 		m_aliveEnemies--;
+		result = m_AllClearSound->PlayWaveFile();
 		break;
 
 	default:
@@ -913,6 +1012,62 @@ void GraphicsClass::Shutdown()
 		m_Fail->Shutdown();
 		delete m_Fail;
 		m_Fail = 0;
+	}
+
+	// Release the sound object.
+	if (m_BGM)
+	{
+		m_BGM->Shutdown();
+		delete m_BGM;
+		m_BGM = 0;
+	}
+
+	// Release the sound object.
+	if (m_FireSound)
+	{
+		m_FireSound->Shutdown();
+		delete m_FireSound;
+		m_FireSound = 0;
+	}
+
+	// Release the sound object.
+	if (m_HittedSound)
+	{
+		m_HittedSound->Shutdown();
+		delete m_HittedSound;
+		m_HittedSound = 0;
+	}
+
+	// Release the sound object.
+	if (m_EnemyHittedSound)
+	{
+		m_EnemyHittedSound->Shutdown();
+		delete m_EnemyHittedSound;
+		m_EnemyHittedSound = 0;
+	}
+
+	// Release the sound object.
+	if (m_EnemyDieSound)
+	{
+		m_EnemyDieSound->Shutdown();
+		delete m_EnemyDieSound;
+		m_EnemyDieSound = 0;
+	}
+
+	// Release the sound object.
+	if (m_StageClearSound)
+	{
+		m_StageClearSound->Shutdown();
+		delete m_StageClearSound;
+		m_StageClearSound = 0;
+	}
+
+	// Release the sound object.
+	if (m_AllClearSound)
+	{
+		m_AllClearSound->Shutdown();
+		delete m_AllClearSound;
+		m_AllClearSound = 0;
 	}
 
 	// Release the model object.
@@ -1364,6 +1519,7 @@ bool GraphicsClass::Render(float deltaTime)
 				{
 					m_BulletPool->GetBullets()[i].SetJustDied(true);
 					m_Zombies.at(j)->SetHitted(true);
+					bool result = m_EnemyHittedSound->PlayWaveFile();
 				}
 			}
 		}
@@ -1590,7 +1746,8 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 	{
 		if (enemy->GetFSM()->CurrentState()->GetStateID() == PATROL || enemy->GetFSM()->CurrentState()->GetStateID() == APPROACH)
 		{
-			anim.currentAnimationIndex = ZOMBIE_F;
+			anim.currentAnimationIndex = ZOMBIE_F;			
+
 		}
 		else if (enemy->GetFSM()->CurrentState()->GetStateID() == ATTACK)
 		{
@@ -1603,6 +1760,7 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 					{
 						m_playerHP -= 10.0f;
 						m_playerHit = true;
+						bool result = m_HittedSound->PlayWaveFile();
 						m_Camera->MoveBack(0.3f);
 						if (m_playerHP <= 0.0f)
 						{
@@ -1624,6 +1782,8 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 		}
 		else if (enemy->GetFSM()->CurrentState()->GetStateID() == DEAD)
 		{
+			bool result = m_EnemyDieSound->PlayWaveFile();
+
 			if (anim.currentFrameNum / m_zombieInterval == 7)
 			{
 				UpdateStageNum();
@@ -1657,6 +1817,8 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 		}
 		else if (enemy->GetFSM()->CurrentState()->GetStateID() == DEAD)
 		{
+			bool result = m_EnemyDieSound->PlayWaveFile();
+
 			if (anim.currentFrameNum / m_zombieInterval == 7)
 			{
 				UpdateStageNum();
@@ -1690,6 +1852,8 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 		}
 		else if (enemy->GetFSM()->CurrentState()->GetStateID() == DEAD)
 		{
+			bool result = m_EnemyDieSound->PlayWaveFile();
+
 			if (anim.currentFrameNum / m_zombieInterval == 7)
 			{
 				UpdateStageNum();
@@ -1723,6 +1887,8 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 		}
 		else if (enemy->GetFSM()->CurrentState()->GetStateID() == DEAD)
 		{
+			bool result = m_EnemyDieSound->PlayWaveFile();
+
 			if (anim.currentFrameNum / m_zombieInterval == 7)
 			{
 				UpdateStageNum();
@@ -1756,6 +1922,8 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 		}
 		else if (enemy->GetFSM()->CurrentState()->GetStateID() == DEAD)
 		{
+			bool result = m_EnemyDieSound->PlayWaveFile();
+
 			if (anim.currentFrameNum / m_zombieInterval == 7)
 			{
 				UpdateStageNum();
@@ -1789,6 +1957,8 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 		}
 		else if (enemy->GetFSM()->CurrentState()->GetStateID() == DEAD)
 		{
+			bool result = m_EnemyDieSound->PlayWaveFile();
+
 			if (anim.currentFrameNum / m_zombieInterval == 7)
 			{
 				UpdateStageNum();
@@ -1822,6 +1992,8 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 		}
 		else if (enemy->GetFSM()->CurrentState()->GetStateID() == DEAD)
 		{
+			bool result = m_EnemyDieSound->PlayWaveFile();
+
 			if (anim.currentFrameNum / m_zombieInterval == 7)
 			{
 				UpdateStageNum();
@@ -1855,6 +2027,8 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 		}
 		else if (enemy->GetFSM()->CurrentState()->GetStateID() == DEAD)
 		{
+			bool result = m_EnemyDieSound->PlayWaveFile();
+
 			if (anim.currentFrameNum / m_zombieInterval == 7)
 			{
 				UpdateStageNum();
