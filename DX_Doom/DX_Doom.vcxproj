@@ -152,6 +152,8 @@
     <None Include="data\font.vs" />
     <None Include="data\light.ps" />
     <None Include="data\light.vs" />
+    <None Include="data\particle.ps" />
+    <None Include="data\particle.vs" />
     <None Include="data\texture.ps" />
     <None Include="data\texture.vs" />
   </ItemGroup>
@@ -180,8 +182,11 @@
     <ClCompile Include="modelclass.cpp" />
     <ClCompile Include="navmeshclass.cpp" />
     <ClCompile Include="nodeclass.cpp" />
+    <ClCompile Include="particleshaderclass.cpp" />
+    <ClCompile Include="particlesystemclass.cpp" />
     <ClCompile Include="position.cpp" />
     <ClCompile Include="skyboxshaderclass.cpp" />
+    <ClCompile Include="soundclass.cpp" />
     <ClCompile Include="sphereclass.cpp" />
     <ClCompile Include="spriteclass.cpp" />
     <ClCompile Include="stdafx.cpp" />
@@ -218,8 +223,11 @@
     <ClInclude Include="modelclass.h" />
     <ClInclude Include="navmeshclass.h" />
     <ClInclude Include="nodeclass.h" />
+    <ClInclude Include="particleshaderclass.h" />
+    <ClInclude Include="particlesystemclass.h" />
     <ClInclude Include="position.h" />
     <ClInclude Include="skyboxshaderclass.h" />
+    <ClInclude Include="soundclass.h" />
     <ClInclude Include="sphereclass.h" />
     <ClInclude Include="spriteclass.h" />
     <ClInclude Include="state.h" />
@@ -236,7 +244,10 @@
     <ClInclude Include="triangleclass.h" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="data\dirty.dds" />
     <Image Include="data\ET_Stone.dds" />
+    <Image Include="data\gameclear.dds" />
+    <Image Include="data\gameover.dds" />
     <Image Include="data\Gun\MT_Bullet.dds" />
     <Image Include="data\Gun\MT_Gun_1.dds" />
     <Image Include="data\Gun\MT_Gun_2.dds" />
@@ -245,10 +256,14 @@
     <Image Include="data\Gun\MT_MuzzleFlash_1.dds" />
     <Image Include="data\Gun\MT_MuzzleFlash_2.dds" />
     <Image Include="data\MT_Crosshair.dds" />
+    <Image Include="data\MT_Red.dds" />
     <Image Include="data\MT_White.dds" />
     <Image Include="data\NT_Stone.dds" />
     <Image Include="data\skyboxbox.dds" />
     <Image Include="data\skymap.dds" />
+    <Image Include="data\star.dds" />
+    <Image Include="data\tile.dds" />
+    <Image Include="data\title.dds" />
     <Image Include="data\Zombie\MT_Zombie_ABL_1.dds" />
     <Image Include="data\Zombie\MT_Zombie_ABL_2.dds" />
     <Image Include="data\Zombie\MT_Zombie_ABL_3.dds" />

@@ -45,6 +45,12 @@
     <None Include="data\font.ps">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="data\particle.ps">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="data\particle.vs">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="colorshaderclass.cpp">
@@ -153,6 +159,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="bulletpoolclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="particleshaderclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="particlesystemclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="soundclass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -275,6 +290,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="bulletpoolclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="particleshaderclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="particlesystemclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="soundclass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -524,6 +548,27 @@
     </Image>
     <Image Include="data\Zombie\MT_Zombie_HR.dds">
       <Filter>Resource Files\Zombie</Filter>
+    </Image>
+    <Image Include="data\star.dds">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\gameclear.dds">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\title.dds">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\gameover.dds">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\tile.dds">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\dirty.dds">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="data\MT_Red.dds">
+      <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>
