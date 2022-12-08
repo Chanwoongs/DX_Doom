@@ -99,6 +99,11 @@ list<XMFLOAT3*> AStarClass::FindPath(Map* navi, XMFLOAT3 startPoint, XMFLOAT3 en
 	Node* selectedNode; // 선택된 노드
 	list<XMFLOAT3*> path;
 
+	if (navi->map[int(endPoint.z)][int(endPoint.x)] == 1)
+	{
+		return path;
+	}
+
 	openNode.push_back(new Node(startPoint, endPoint, NULL)); // 시작지점을 열린노드에 추가
 
 	list<Node*>::iterator iter;
