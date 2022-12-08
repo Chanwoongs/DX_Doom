@@ -52,7 +52,8 @@ public:
 	void TurnZBufferOn();
 	void TurnZBufferOff();
 
-	void TurnOnAlphaBlending();
+	void TurnOnColorAlphaBlending();
+	void TurnOnBlackAlphaBlending();
 	void TurnOffAlphaBlending();
 
 	void TurnOnCulling();
@@ -76,7 +77,8 @@ private:
 	ID3D11DepthStencilView* m_depthStencilView;
 	ID3D11RasterizerState* m_rasterState;
 	ID3D11RasterizerState* m_rasterStateNoCulling;
-	ID3D11BlendState* m_alphaEnableBlendingState;
+	ID3D11BlendState* m_colorAlphaEnableBlendingState;
+	ID3D11BlendState* m_blackAlphaEnableBlendingState;
 	ID3D11BlendState* m_alphaDisableBlendingState;
 	XMMATRIX m_projectionMatrix;
 	XMMATRIX m_worldMatrix;
