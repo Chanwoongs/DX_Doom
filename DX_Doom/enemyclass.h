@@ -94,6 +94,9 @@ public:
 	bool IsAlive() { return m_isAlive == true; }
 	void SetAlive(bool alive) { m_isAlive = alive; }
 
+	bool IsSpawn() { return m_isSpawn == true; }
+	void SetSpawn(bool spwan) { m_isSpawn = spwan; }
+
 	bool IsReturning() { return m_isReturning == true; }
 	void SetReturning(bool returning) { m_isReturning = returning; }
 
@@ -135,6 +138,7 @@ private:
 
 	float m_hp;
 	bool m_isAlive;
+	bool m_isSpawn;
 };
 
 #endif

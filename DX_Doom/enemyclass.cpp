@@ -15,7 +15,7 @@ EnemyClass::EnemyClass(float hp, int animationCount, int maxFrame[], int modelWi
 
 	m_pStateMachine->SetCurrentState(Patrol::Instance());
 
-	m_Box.Center = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	m_Box.Center = XMFLOAT3(-100.0f, -100.0f, -100.0f);
 	m_Box.Extents = XMFLOAT3(boxExtentX, boxExtentY, boxExtentZ);
 
 	m_hp = hp;
