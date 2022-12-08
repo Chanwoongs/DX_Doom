@@ -35,7 +35,7 @@ void Patrol::Execute(EnemyClass* pEnemyClass, float deltaTime)
 
 	// Get Enemy's destination node position
 	XMFLOAT3 destination = pEnemyClass->GetPath().at(pEnemyClass->GetPathIndex());
-	pEnemyClass->SetSpeed(deltaTime * 0.2);
+	pEnemyClass->SetSpeed(deltaTime * 0.4f);
 
 	timer += deltaTime;
 	if (timer > 50.0f)
@@ -153,7 +153,7 @@ void Approach::Execute(EnemyClass* pEnemyClass, float deltaTime)
 	pEnemyClass->SetStateChanged(false);
 
 	XMFLOAT3 destination = XMFLOAT3(pEnemyClass->GetTargetPosition().x, 0, pEnemyClass->GetTargetPosition().z);
-	pEnemyClass->SetSpeed(1.5f);
+	pEnemyClass->SetSpeed(deltaTime);
 
 	timer += deltaTime;
 	if (timer > 50.0f)
@@ -168,9 +168,11 @@ void Approach::Execute(EnemyClass* pEnemyClass, float deltaTime)
 
 		XMFLOAT3 target;
 
-		if (path.size() > 1)
+		if (path.size() > 2)
+		{
 			path.pop_front();
-
+			path.pop_front();
+		}
 		target = *path.front();
 
 		XMFLOAT3 enemyPos = pEnemyClass->GetPosition();
@@ -180,9 +182,11 @@ void Approach::Execute(EnemyClass* pEnemyClass, float deltaTime)
 		float distance = XMVectorGetX(XMVector3Length(diff));
 		if (distance <= 0.1f)
 		{
-			if (path.size() > 1)
+			if (path.size() > 2)
+			{
 				path.pop_front();
-
+				path.pop_front();
+			}
 			target = *path.front();
 		}
 
@@ -217,7 +221,7 @@ void Approach::Execute(EnemyClass* pEnemyClass, float deltaTime)
 	{
 		pEnemyClass->GetFSM()->ChangeState(Patrol::Instance());
 	}
-	else if (distance <= pEnemyClass->GetAttackRange())
+	else if (distance <= pEnemyClass->GetAttackRange() - 0.5f)
 	{
 		pEnemyClass->GetFSM()->ChangeState(Attack::Instance());
 	}
@@ -277,7 +281,7 @@ void Attack::Execute(EnemyClass* pEnemyClass, float deltaTime)
 	XMVECTOR diff = enemyPositionVec - targetPositionVec;
 	float distance = XMVectorGetX(XMVector3Length(diff));
 
-	if (distance >= pEnemyClass->GetAttackRange() + 1.0f)
+	if (distance > pEnemyClass->GetAttackRange())
 	{
 		pEnemyClass->GetFSM()->ChangeState(Approach::Instance());
 	}

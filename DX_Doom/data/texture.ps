@@ -53,6 +53,10 @@ float4 TexturePixelShader(PixelInputType input) : SV_TARGET
 	{
 		textureColor.a = 0.0f;
 	}
+	else if(textureColor.r == 1.0f && textureColor.g == 0.0f && textureColor.b == 0.0f)
+	{
+		textureColor.a = 0.2f;
+	}
 	else 
 	{
 		textureColor.a = 1.0f;

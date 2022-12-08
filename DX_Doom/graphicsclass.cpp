@@ -65,17 +65,28 @@ GraphicsClass::GraphicsClass()
 
 	m_isBulletReloaded = true;
 
-	m_StageBox.push_back(new BoundingBox(XMFLOAT3(17.5f, 10.0f, 20.0f), XMFLOAT3(0.2f, 10.0f, 25.0f)));
-	m_StageBox.push_back(new BoundingBox(XMFLOAT3(-17.5f, 10.0f, 20.0f), XMFLOAT3(0.2f, 10.0f, 25.0f)));
-	m_StageBox.push_back(new BoundingBox(XMFLOAT3(0.0f, 10.0f, 21.0f), XMFLOAT3(7.0f, 10.0f, 6.0f)));
-	m_StageBox.push_back(new BoundingBox(XMFLOAT3(23.0f, 10.0f, 45.0f), XMFLOAT3(20.0f, 10.0f, 6.5f)));
-	m_StageBox.push_back(new BoundingBox(XMFLOAT3(-23.0f, 10.0f, 45.0f), XMFLOAT3(20.0f, 10.0f, 6.5f)));
-	m_StageBox.push_back(new BoundingBox(XMFLOAT3(0.0f, 10.0f, 61.0f), XMFLOAT3(5.0f, 10.0f, 6.0f)));
-	m_StageBox.push_back(new BoundingBox(XMFLOAT3(21.0f, 10.0f, 66.0f), XMFLOAT3(13.0f, 10.0f, 5.0f)));
-	m_StageBox.push_back(new BoundingBox(XMFLOAT3(-21.0f, 10.0f, 66.0f), XMFLOAT3(13.0f, 10.0f, 5.0f)));
+	//m_StageBox.push_back(new BoundingBox(XMFLOAT3(17.5f, 10.0f, 20.0f), XMFLOAT3(0.2f, 10.0f, 25.0f)));
+	//m_StageBox.push_back(new BoundingBox(XMFLOAT3(-17.5f, 10.0f, 20.0f), XMFLOAT3(0.2f, 10.0f, 25.0f)));
+	//m_StageBox.push_back(new BoundingBox(XMFLOAT3(0.0f, 10.0f, 21.0f), XMFLOAT3(7.0f, 10.0f, 6.0f)));
+	//m_StageBox.push_back(new BoundingBox(XMFLOAT3(23.0f, 10.0f, 45.0f), XMFLOAT3(20.0f, 10.0f, 6.5f)));
+	//m_StageBox.push_back(new BoundingBox(XMFLOAT3(-23.0f, 10.0f, 45.0f), XMFLOAT3(20.0f, 10.0f, 6.5f)));
+	//m_StageBox.push_back(new BoundingBox(XMFLOAT3(0.0f, 10.0f, 61.0f), XMFLOAT3(5.0f, 10.0f, 6.0f)));
+	//m_StageBox.push_back(new BoundingBox(XMFLOAT3(21.0f, 10.0f, 66.0f), XMFLOAT3(13.0f, 10.0f, 5.0f)));
+	//m_StageBox.push_back(new BoundingBox(XMFLOAT3(-21.0f, 10.0f, 66.0f), XMFLOAT3(13.0f, 10.0f, 5.0f)));
+
+	m_DoorBox.push_back(new BoundingBox(XMFLOAT3(0.0f, 3.0f, 46.0f), XMFLOAT3(5.0f, 10.0f, 12.0f)));
+	m_DoorBox.push_back(new BoundingBox(XMFLOAT3(-9.0f, 3.0f, 100.0f), XMFLOAT3(10.0f, 10.0f, 5.0f)));
+	m_DoorBox.push_back(new BoundingBox(XMFLOAT3(40.0f, 3.0f, 155.0f), XMFLOAT3(7.0f, 10.0f, 6.0f)));
 
 	m_playerHP = 100.0f;
 	m_aliveEnemies = 4;
+
+	m_ParticleShader = 0;
+	m_ParticleSystem = 0;
+	m_ParticlePosition = 0;
+	m_ParticleCount = 3;
+
+	m_SceneNum = 1;
 }
 
 
@@ -206,7 +217,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 	// Initialize the model object.
-	result = m_Plane->Initialize(m_D3D->GetDevice(), L"./data/EM_Cube.obj", L"./data/ET_Plane.dds", L"./data/ET_Dirt.dds", L"./data/MT_White.dds");
+	result = m_Plane->Initialize(m_D3D->GetDevice(), L"./data/EM_Cube.obj", L"./data/ET_Plane.dds", L"./data/ET_Seafloor.dds", L"./data/MT_White.dds");
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
@@ -219,7 +230,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 	// Initialize the model object.
-	result = m_Stage->Initialize(m_D3D->GetDevice(), L"./data/EM_Stage.obj", L"./data/ET_Stone.dds", L"./data/ET_Dirt.dds", L"./data/NT_Stone.dds");
+	result = m_Stage->Initialize(m_D3D->GetDevice(), L"./data/EM_Stage.obj", L"./data/ET_Stone.dds", L"./data/dirty.dds", L"./data/NT_Stone.dds");
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
@@ -256,6 +267,56 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
+	// Create the particle shader object.
+	m_ParticleShader = new ParticleShaderClass;
+	if (!m_ParticleShader)
+	{
+		return false;
+	}
+
+	// Initialize the particle shader object.
+	result = m_ParticleShader->Initialize(m_D3D->GetDevice(), hwnd);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the particle shader object.", L"Error", MB_OK);
+		return false;
+	}
+
+	// Create the particle system object.
+	m_ParticleSystem = new ParticleSystemClass[m_ParticleCount];
+	if (!m_ParticleSystem)
+	{
+		return false;
+	}
+
+	// Initialize the particle system object.
+	result = m_ParticleSystem[0].Initialize(m_D3D->GetDevice(), L"./data/star.dds", 5.0f, 10.0f, 12.0f);
+	if (!result)
+	{
+		return false;
+	}
+	result = m_ParticleSystem[1].Initialize(m_D3D->GetDevice(), L"./data/star.dds", 10.0f, 10.0f, 5.0f);
+	if (!result)
+	{
+		return false;
+	}
+	result = m_ParticleSystem[2].Initialize(m_D3D->GetDevice(), L"./data/star.dds", 7.0f, 10.0f, 6.0f);
+	if (!result)
+	{
+		return false;
+	}
+
+	m_ParticlePosition = new XMFLOAT3[m_ParticleCount];
+
+	m_ParticlePosition[0] = XMFLOAT3(0.0f, 3.0f, 46.0f);
+	m_ParticlePosition[1] = XMFLOAT3(-9.0f, 3.0f, 100.0f);
+	m_ParticlePosition[2] = XMFLOAT3(40.0f, 3.0f, 155.0f);
+
+	m_ParticleSystem[0].SetParticleMode(1);
+	m_ParticleSystem[1].SetParticleMode(1);
+	m_ParticleSystem[2].SetParticleMode(1);
+
+
 	// Create the bitmap object.
 	m_Crosshair = new BitmapClass;
 	if (!m_Crosshair)
@@ -265,6 +326,66 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	// Initialize the bitmap object.
 	result = m_Crosshair->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight,
 		L"./data/MT_Crosshair.dds", 200, 200);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
+		return false;
+	}
+
+	// Create the bitmap object.
+	m_Title = new BitmapClass;
+	if (!m_Title)
+	{
+		return false;
+	}
+	// Initialize the bitmap object.
+	result = m_Title->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight,
+		L"./data/title.dds", screenWidth, screenHeight);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
+		return false;
+	}
+
+	// Create the bitmap object.
+	m_Clear = new BitmapClass;
+	if (!m_Clear)
+	{
+		return false;
+	}
+	// Initialize the bitmap object.
+	result = m_Clear->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight,
+		L"./data/gameclear.dds", screenWidth, screenHeight);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
+		return false;
+	}
+
+	// Create the bitmap object.
+	m_Fail = new BitmapClass;
+	if (!m_Fail)
+	{
+		return false;
+	}
+	// Initialize the bitmap object.
+	result = m_Fail->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight,
+		L"./data/gameover.dds", screenWidth, screenHeight);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
+		return false;
+	}
+
+	// Create the bitmap object.
+	m_Hit = new BitmapClass;
+	if (!m_Hit)
+	{
+		return false;
+	}
+	// Initialize the bitmap object.
+	result = m_Hit->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight,
+		L"./data/MT_Red.dds", screenWidth, screenHeight);
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the bitmap object.", L"Error", MB_OK);
@@ -388,12 +509,13 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Zombies.at(0)->SetForwardVector(0, 0, -1);
 	m_Zombies.at(0)->SetAcceptDistance(2.0f);
 	m_Zombies.at(0)->SetDetectRange(30.0f);
-	m_Zombies.at(0)->SetAttackRange(3.0f);
+	m_Zombies.at(0)->SetAttackRange(5.0f);
 	m_Zombies.at(0)->SetSpeed(1.0f);
 	m_Zombies.at(0)->AddPath(XMFLOAT3(0, 0, 29));
 	m_Zombies.at(0)->AddPath(XMFLOAT3(0, 0, 1));
 	m_Zombies.at(0)->SetPathIndex(0);
 	m_Zombies.at(0)->SetCurrentTargetPath(m_Zombies.at(0)->GetPath().at(m_Zombies.at(0)->GetPathIndex()));
+	m_Zombies.at(0)->SetSpawn(true);
 
 	m_Zombies.at(1)->SetPosition(-41, 0, 54);
 	m_Zombies.at(1)->SetForwardVector(0, 0, -1);
@@ -408,18 +530,18 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Zombies.at(1)->SetPathIndex(0);
 	m_Zombies.at(1)->SetCurrentTargetPath(m_Zombies.at(1)->GetPath().at(m_Zombies.at(1)->GetPathIndex()));
 
-	m_Zombies.at(2)->SetPosition(-10, 0, 88);
+	m_Zombies.at(2)->SetPosition(38, 0, 163);
 	m_Zombies.at(2)->SetForwardVector(0, 0, -1);
 	m_Zombies.at(2)->SetAcceptDistance(2.0f);
 	m_Zombies.at(2)->SetDetectRange(30.0f);
 	m_Zombies.at(2)->SetAttackRange(3.0f);
 	m_Zombies.at(2)->SetSpeed(1.0f);
-	m_Zombies.at(2)->AddPath(XMFLOAT3(38, 0, 163));
 	m_Zombies.at(2)->AddPath(XMFLOAT3(-10, 0, 88));
+	m_Zombies.at(2)->AddPath(XMFLOAT3(38, 0, 163));
 	m_Zombies.at(2)->SetPathIndex(0);
 	m_Zombies.at(2)->SetCurrentTargetPath(m_Zombies.at(2)->GetPath().at(m_Zombies.at(2)->GetPathIndex()));
 
-	m_Zombies.at(3)->SetPosition(36, 0, 178);
+	m_Zombies.at(3)->SetPosition(-36, 0, 165);
 	m_Zombies.at(3)->SetForwardVector(0, 0, -1);
 	m_Zombies.at(3)->SetAcceptDistance(2.0f);
 	m_Zombies.at(3)->SetDetectRange(30.0f);
@@ -428,6 +550,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Zombies.at(3)->AddPath(XMFLOAT3(-36, 0, 165));
 	m_Zombies.at(3)->AddPath(XMFLOAT3(-37, 0, 192));
 	m_Zombies.at(3)->AddPath(XMFLOAT3(39, 0, 189));
+	m_Zombies.at(3)->AddPath(XMFLOAT3(36, 0, 178));
 	m_Zombies.at(3)->SetPathIndex(0);
 	m_Zombies.at(3)->SetCurrentTargetPath(m_Zombies.at(3)->GetPath().at(m_Zombies.at(3)->GetPathIndex()));
 
@@ -562,6 +685,44 @@ void GraphicsClass::FinishShoot()
 	m_isShoot = false;
 }
 
+void GraphicsClass::UpdateStageNum()
+{
+	switch (m_currentStage)
+	{
+	case 0:
+		m_currentStage = 1;
+		m_DoorBox.at(0)->Center = XMFLOAT3(-100.0f, -100.0f, -100.0f);
+		m_ParticleSystem[0].SetParticleMode(0);
+		m_Zombies.at(0)->SetSpawn(false);
+		m_Zombies.at(1)->SetSpawn(true);
+		m_aliveEnemies--;
+		break;
+	case 1:
+		m_currentStage = 2;
+		m_DoorBox.at(1)->Center = XMFLOAT3(-100.0f, -100.0f, -100.0f);
+		m_ParticleSystem[1].SetParticleMode(0);
+		m_Zombies.at(1)->SetSpawn(false);
+		m_Zombies.at(2)->SetSpawn(true);
+		m_aliveEnemies--;
+		break;
+	case 2:
+		m_currentStage = 3;
+		m_DoorBox.at(2)->Center = XMFLOAT3(-100.0f, -100.0f, -100.0f);
+		m_ParticleSystem[2].SetParticleMode(0);
+		m_Zombies.at(2)->SetSpawn(false);
+		m_Zombies.at(3)->SetSpawn(true);
+		m_aliveEnemies--;
+		break;
+	case 3:
+		// End Game Scene
+		m_aliveEnemies--;
+		break;
+
+	default:
+		break;
+	}
+}
+
 bool GraphicsClass::SameSide(XMFLOAT3 p1, XMFLOAT3 p2, XMFLOAT3 a, XMFLOAT3 b)
 {
 	XMVECTOR p1V, p2V, aV, bV;
@@ -649,6 +810,28 @@ void GraphicsClass::Shutdown()
 		m_Stage = 0;
 	}
 
+	// Release the box object.
+	if (m_StageBox.size() > 0)
+	{
+		vector<BoundingBox*>::iterator iter;
+		iter = m_StageBox.begin();
+		for (; iter != m_StageBox.end(); iter++)
+		{
+			delete* iter;
+		}
+	}
+
+	// Release the box object.
+	if (m_DoorBox.size() > 0)
+	{
+		vector<BoundingBox*>::iterator iter;
+		iter = m_DoorBox.begin();
+		for (; iter != m_DoorBox.end(); iter++)
+		{
+			delete* iter;
+		}
+	}
+
 	// Release the model object.
 	if (m_Cube)
 	{
@@ -674,12 +857,62 @@ void GraphicsClass::Shutdown()
 		m_Sphere = 0;
 	}
 
+	// Release the particle system object.
+	if (m_ParticleSystem)
+	{
+		for (int i = 0; i < m_ParticleCount; i++)
+		{
+			m_ParticleSystem[i].Shutdown();
+		}
+		delete[] m_ParticleSystem;
+		m_ParticleSystem = 0;
+	}
+
+	// Release the particle shader object.
+	if (m_ParticleShader)
+	{
+		m_ParticleShader->Shutdown();
+		delete m_ParticleShader;
+		m_ParticleShader = 0;
+	}
+
+	// Release the particle shader object.
+	if (m_ParticlePosition)
+	{
+		delete[] m_ParticlePosition;
+		m_ParticlePosition = 0;
+	}
+
 	// Release the model object.
 	if (m_Crosshair)
 	{
 		m_Crosshair->Shutdown();
 		delete m_Crosshair;
 		m_Crosshair = 0;
+	}
+
+	// Release the model object.
+	if (m_Title)
+	{
+		m_Title->Shutdown();
+		delete m_Title;
+		m_Title = 0;
+	}
+
+	// Release the model object.
+	if (m_Clear)
+	{
+		m_Clear->Shutdown();
+		delete m_Clear;
+		m_Clear = 0;
+	}
+
+	// Release the model object.
+	if (m_Fail)
+	{
+		m_Fail->Shutdown();
+		delete m_Fail;
+		m_Fail = 0;
 	}
 
 	// Release the model object.
@@ -822,33 +1055,70 @@ bool GraphicsClass::Frame(int fps, int cpu, float frameTime)
 		float a = 0.0f;
 		if ((*iter)->Intersects(camPosVec, m_Camera->GetForwardVector(), a))
 		{
-			if (a < 2.0f)
+			if (a < 3.0f)
 				m_forwardHit = true;
 			else
 				m_forwardHit = false;
 		}
 		if ((*iter)->Intersects(camPosVec, -m_Camera->GetForwardVector(), a))
 		{
-			if (a < 2.0f)
+			if (a < 3.0f)
 				m_backwardHit = true;
 			else
 				m_backwardHit = false;
 		}
 		if ((*iter)->Intersects(camPosVec, m_Camera->GetRightVector(), a))
 		{
-			if (a < 2.0f)
+			if (a < 3.0f)
 				m_rightHit = true;
 			else
 				m_rightHit = false;
 		}
 		if ((*iter)->Intersects(camPosVec, -m_Camera->GetRightVector(), a))
 		{
-			if (a < 2.0f)
+			if (a < 3.0f)
 				m_leftHit = true;
 			else
 				m_leftHit = false;
 		}
 	}
+
+	iter = m_DoorBox.begin();
+	for (; iter != m_DoorBox.end(); iter++)
+	{
+		XMFLOAT3 camPos = m_Camera->GetPosition();
+		XMVECTOR camPosVec = XMLoadFloat3(&camPos);
+		float a = 0.0f;
+		if ((*iter)->Intersects(camPosVec, m_Camera->GetForwardVector(), a))
+		{
+			if (a < 3.0f)
+				m_forwardHit = true;
+			else
+				m_forwardHit = false;
+		}
+		if ((*iter)->Intersects(camPosVec, -m_Camera->GetForwardVector(), a))
+		{
+			if (a < 3.0f)
+				m_backwardHit = true;
+			else
+				m_backwardHit = false;
+		}
+		if ((*iter)->Intersects(camPosVec, m_Camera->GetRightVector(), a))
+		{
+			if (a < 3.0f)
+				m_rightHit = true;
+			else
+				m_rightHit = false;
+		}
+		if ((*iter)->Intersects(camPosVec, -m_Camera->GetRightVector(), a))
+		{
+			if (a < 3.0f)
+				m_leftHit = true;
+			else
+				m_leftHit = false;
+		}
+	}
+
 
 	// Play Gun Animation
 	PlayGunAnim();
@@ -856,13 +1126,23 @@ bool GraphicsClass::Frame(int fps, int cpu, float frameTime)
 	// Update FSM
 	for (int i = 0; i < m_zombieCount; i++)
 	{
-		m_Zombies.at(i)->SetTargetPosition(m_Camera->GetPosition());
-		m_Zombies.at(i)->Update(deltaTime);
-		if (m_Zombies.at(i)->IsStateChanged())
+		if (m_Zombies.at(i)->IsSpawn())
 		{
-			m_ZombieAnimInfos.at(i)->currentFrameNum = 0;
+			m_Zombies.at(i)->SetTargetPosition(m_Camera->GetPosition());
+			m_Zombies.at(i)->Update(deltaTime);
+			if (m_Zombies.at(i)->IsStateChanged())
+			{
+				m_ZombieAnimInfos.at(i)->currentFrameNum = 0;
+			}
 		}
 	}
+
+	// Run the frame processing for the particle system.
+	for (int i = 0; i < m_ParticleCount; i++)
+	{
+		m_ParticleSystem[i].Frame(frameTime, m_D3D->GetDeviceContext());
+	}
+
 
 	// Render the graphics scene.
 	result = Render(deltaTime);
@@ -893,243 +1173,362 @@ bool GraphicsClass::Render(float deltaTime)
 	m_D3D->GetOrthoMatrix(orthoMatrix);
 	m_Camera->GetViewMatrix(viewMatrix);
 
-	// Skybox rendering
-	m_D3D->TurnOffCulling();
-	m_D3D->TurnOnDS();
-
-	// Reset skyboxMatrix
-	skyboxMatrix = XMMatrixIdentity();
-	skyboxMatrix = XMMatrixScaling(5.0f, 5.0f, 5.0f) * 
-		XMMatrixTranslation(m_Camera->GetPosition().x, m_Camera->GetPosition().y, m_Camera->GetPosition().z);
-
-	// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
-	m_Sphere->Render(m_D3D->GetDeviceContext());
-
-	// Render the model using the texture shader.
-	result = m_SkyboxShader->Render(m_D3D->GetDeviceContext(), m_Sphere->GetFaceCount(), 
-		skyboxMatrix, viewMatrix, projectionMatrix,	m_Sphere->GetTexture());
-	if (!result)
-	{
-		return false;
-	}
-
-	m_D3D->TurnOnCulling();
-	m_D3D->TurnOffDS();
-
-	/////////////////////////////////////////////////////// 3D Render
-	m_Plane->Render(m_D3D->GetDeviceContext());
-
-	// Render the model using the light shader.
-	result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Plane->GetVertexCount(), m_Plane->GetInstanceCount(),
-		worldMatrix * XMMatrixScaling(150.0f, 0.01f, 500.0f) * XMMatrixTranslation(0.0f, 0.0f, 100.0f), viewMatrix, projectionMatrix,
-		m_Plane->GetTextureArray(),
-		m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
-		m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower(),
-		m_Light->GetAmbientToggle(), m_Light->GetDiffuseToggle(), m_Light->GetSpecularToggle(), 10);
-	if (!result)
-	{
-		return false;
-	}
-
-	m_Stage->Render(m_D3D->GetDeviceContext());
-
-	// Render the model using the light shader.
-	result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Stage->GetVertexCount(), m_Stage->GetInstanceCount(),
-		worldMatrix * XMMatrixScaling(0.5f, 0.2f, 0.5f) * XMMatrixTranslation(0.0f, 0.0f, 0.0f), viewMatrix, projectionMatrix,
-		m_Stage->GetTextureArray(),
-		m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
-		m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower(),
-		m_Light->GetAmbientToggle(), m_Light->GetDiffuseToggle(), m_Light->GetSpecularToggle(), 10);
-	if (!result)
-	{
-		return false;
-	}
-
-	/////////////////////////////////////////////////////// 2.5D Render
-	// Turn on the alpha blending before rendering the text.
-	m_D3D->TurnOnAlphaBlending();
-
-	// billboarding Enemy
-	for (int i = 0; i < m_zombieCount; i++)
-	{
-		// Zombie
-		if (m_Zombies.at(i)->IsAlive())
-		{
-			XMMATRIX zombieBillboardWorldMatrix = UpdateEnemyWalkingAnimation(m_Zombies.at(i), *m_ZombieAnimInfos.at(i), deltaTime);
-
-			// Put the bitmap vertex and index buffers on the graphics pipeline to prepare them for drawing.
-			result = m_Zombies.at(i)->Render(m_D3D->GetDeviceContext(), 0, 0, m_ZombieAnimInfos.at(i)->currentAnimationIndex,
-				m_ZombieAnimInfos.at(i)->currentFrameNum / m_zombieInterval);
-			if (!result)
-			{
-				return false;
-			}
-			if (m_ZombieAnimInfos.at(i)->currentFrameNum + 1 == m_Zombies.at(i)->GetModel()->GetMaxFrameNum(m_ZombieAnimInfos.at(i)->currentAnimationIndex) * m_zombieInterval)
-			{
-				m_ZombieAnimInfos.at(i)->currentFrameNum = 0;
-			}
-			else m_ZombieAnimInfos.at(i)->currentFrameNum++;
-
-			result = m_Zombies.at(i)->GetModel()->UpdateTextures(m_D3D->GetDevice(),
-				m_ZombieAnimInfos.at(i)->textureNames[m_ZombieAnimInfos.at(i)->currentAnimationIndex][m_ZombieAnimInfos.at(i)->currentFrameNum / m_zombieInterval]);
-			if (!result)
-			{
-				return false;
-			}
-			// Render the model using the light shader.
-			// 신축 회전 이동 순
-			result = m_LightShader->Render(m_D3D->GetDeviceContext(), 6, 1,
-				zombieBillboardWorldMatrix,
-				viewMatrix, projectionMatrix,
-				m_Zombies.at(i)->GetModel()->GetTextureArray(),
-				m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
-				m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower(),
-				m_Light->GetAmbientToggle(), m_Light->GetDiffuseToggle(), m_Light->GetSpecularToggle(), 1);
-			if (!result)
-			{
-				return false;
-			}
-		}
-
-		for (int j = 0; j < m_Zombies.at(i)->GetShortestPathSize(); j++)
-		{
-			m_Cube->Render(m_D3D->GetDeviceContext());
-
-			// Render the model using the light shader.
-			result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Cube->GetVertexCount(), m_Cube->GetInstanceCount(),
-				worldMatrix * XMMatrixScaling(0.2f, 0.2f, 0.2f) *
-				XMMatrixTranslation(m_Zombies.at(i)->GetShortestPath()[j].x, m_Zombies.at(i)->GetShortestPath()[j].y, m_Zombies.at(i)->GetShortestPath()[j].z),
-				viewMatrix, projectionMatrix,
-				m_Cube->GetTextureArray(),
-				m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
-				m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower(),
-				m_Light->GetAmbientToggle(), m_Light->GetDiffuseToggle(), m_Light->GetSpecularToggle(), 1);
-			if (!result)
-			{
-				return false;
-			}
-		}
-	}
-
-	// billboarding Bullet
-	// Update and Render Bullet
-	m_BulletPool->UpdateBullets();
-	for (int i = 0; i < m_BulletPool->GetPoolSize(); i++)
-	{
-		if (!m_BulletPool->GetBullets()[i].IsUse()) continue;
-
-		XMMATRIX bulletMatrix;
-		bulletMatrix = m_BulletPool->GetBullets()[i].Update(deltaTime, m_Camera->GetPosition());
-
-		result = m_BulletPool->GetBullets()[i].Render(m_D3D->GetDeviceContext(), -0.5f, 2.5f);
-
-		// Render the bitmap with the texture shader.
-		result = m_TextureShader->Render(m_D3D->GetDeviceContext(), 
-			m_BulletPool->GetBullets()[i].GetModel()->GetIndexCount(),
-			bulletMatrix, viewMatrix, projectionMatrix,
-			m_BulletPool->GetBullets()[i].GetModel()->GetTexture());
-		if (!result)
-		{
-			return false;
-		}
-
-		for (int i = 0; i < m_zombieCount; i++)
-		{
-			if (m_BulletPool->GetBullets()[i].GetBoundingSphere().Intersects(m_Zombies.at(i)->GetBoundingBox()))
-			{
-				m_BulletPool->GetBullets()[i].SetJustDied(true);
-				m_Zombies.at(i)->SetHitted(true);
-			}
-		}
-	}
-
-
-	// Turn off alpha blending after rendering the text.
-	m_D3D->TurnOffAlphaBlending();
-
-	/////////////////////////////////////////////////////// 2D Image Render
-	// Turn off the Z buffer to begin all 2D rendering.
-	m_D3D->TurnZBufferOff();
-
-	// Turn on the alpha blending before rendering the text.
-	m_D3D->TurnOnAlphaBlending();
-
-	// Put the bitmap vertex and index buffers on the graphics pipeline to prepare them for drawing.
-	result = m_Crosshair->Render(m_D3D->GetDeviceContext(), m_ScreenWidth / 2 - 100, m_ScreenHeight / 2 - 100);
-	if (!result)
-	{
-		return false;
-	}
-	// Render the bitmap with the texture shader.
-	result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Crosshair->GetIndexCount(),
-		worldMatrix, m_BaseViewMatrix, orthoMatrix, m_Crosshair->GetTexture());
-	if (!result)
-	{
-		return false;
-	}
-
-	// Play Muzzle Flash Anim
-	if (m_isMuzzleAnimPlay == true && m_MuzzleFlashBitmapInfo.currentFrameNum != -1)
+	if (m_SceneNum == 1)
 	{
 		// Put the bitmap vertex and index buffers on the graphics pipeline to prepare them for drawing.
-		result = m_MuzzleFlash->bitmaps.at(m_MuzzleFlashBitmapInfo.currentFrameNum / 10)->Render(m_D3D->GetDeviceContext(),
-			m_MuzzleFlashBitmapInfo.bitmapsPos[m_MuzzleFlashBitmapInfo.currentFrameNum / 10].x,
-			m_MuzzleFlashBitmapInfo.bitmapsPos[m_MuzzleFlashBitmapInfo.currentFrameNum / 10].y);
+		result = m_Title->Render(m_D3D->GetDeviceContext(), 0, 0);
 		if (!result)
 		{
 			return false;
 		}
 		// Render the bitmap with the texture shader.
-		result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_MuzzleFlash->bitmaps.at(m_MuzzleFlashBitmapInfo.currentFrameNum / 10)->GetIndexCount(),
-			worldMatrix, m_BaseViewMatrix, orthoMatrix, m_MuzzleFlash->bitmaps.at(m_MuzzleFlashBitmapInfo.currentFrameNum / 10)->GetTexture());
+		result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Title->GetIndexCount(),
+			worldMatrix, m_BaseViewMatrix, orthoMatrix, m_Title->GetTexture());
 		if (!result)
 		{
 			return false;
 		}
-		m_MuzzleFlashBitmapInfo.currentFrameNum++;
-		if (m_MuzzleFlashBitmapInfo.currentFrameNum == m_MuzzleFlashBitmapInfo.maxFrame * 10)
+	}
+
+	if (m_SceneNum == 2)
+	{
+		// Skybox rendering
+		m_D3D->TurnOffCulling();
+		m_D3D->TurnOnDS();
+
+		// Reset skyboxMatrix
+		skyboxMatrix = XMMatrixIdentity();
+		skyboxMatrix = XMMatrixScaling(5.0f, 5.0f, 5.0f) *
+			XMMatrixTranslation(m_Camera->GetPosition().x, m_Camera->GetPosition().y, m_Camera->GetPosition().z);
+
+		// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
+		m_Sphere->Render(m_D3D->GetDeviceContext());
+
+		// Render the model using the texture shader.
+		result = m_SkyboxShader->Render(m_D3D->GetDeviceContext(), m_Sphere->GetFaceCount(),
+			skyboxMatrix, viewMatrix, projectionMatrix, m_Sphere->GetTexture());
+		if (!result)
 		{
-			m_isMuzzleAnimPlay = false;
-			m_MuzzleFlashBitmapInfo.currentFrameNum = -1;
+			return false;
+		}
+
+		m_D3D->TurnOnCulling();
+		m_D3D->TurnOffDS();
+
+		/////////////////////////////////////////////////////// 3D Render
+		m_Plane->Render(m_D3D->GetDeviceContext());
+
+		// Render the model using the light shader.
+		result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Plane->GetVertexCount(), m_Plane->GetInstanceCount(),
+			worldMatrix * XMMatrixScaling(150.0f, 0.01f, 500.0f) * XMMatrixTranslation(0.0f, 0.0f, 100.0f), viewMatrix, projectionMatrix,
+			m_Plane->GetTextureArray(),
+			m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
+			m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower(),
+			m_Light->GetAmbientToggle(), m_Light->GetDiffuseToggle(), m_Light->GetSpecularToggle(), 50);
+		if (!result)
+		{
+			return false;
+		}
+
+		m_Stage->Render(m_D3D->GetDeviceContext());
+
+		// Render the model using the light shader.
+		result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Stage->GetVertexCount(), m_Stage->GetInstanceCount(),
+			worldMatrix * XMMatrixScaling(0.5f, 0.2f, 0.5f) * XMMatrixTranslation(0.0f, 0.0f, 0.0f), viewMatrix, projectionMatrix,
+			m_Stage->GetTextureArray(),
+			m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
+			m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower(),
+			m_Light->GetAmbientToggle(), m_Light->GetDiffuseToggle(), m_Light->GetSpecularToggle(), 10);
+		if (!result)
+		{
+			return false;
+		}
+
+		/////////////////////////////////////////////////////// 2.5D Render
+		// Turn on the alpha blending before rendering the text.
+		m_D3D->TurnOnColorAlphaBlending();
+
+		// billboarding Enemy
+		for (int i = 0; i < m_zombieCount; i++)
+		{
+			// Zombie
+			if (m_Zombies.at(i)->IsSpawn())
+			{
+				XMMATRIX zombieBillboardWorldMatrix = UpdateEnemyWalkingAnimation(m_Zombies.at(i), *m_ZombieAnimInfos.at(i), deltaTime);
+
+				// Put the bitmap vertex and index buffers on the graphics pipeline to prepare them for drawing.
+				result = m_Zombies.at(i)->Render(m_D3D->GetDeviceContext(), 0, 0, m_ZombieAnimInfos.at(i)->currentAnimationIndex,
+					m_ZombieAnimInfos.at(i)->currentFrameNum / m_zombieInterval);
+				if (!result)
+				{
+					return false;
+				}
+				if (m_ZombieAnimInfos.at(i)->currentFrameNum + 1 == m_Zombies.at(i)->GetModel()->GetMaxFrameNum(m_ZombieAnimInfos.at(i)->currentAnimationIndex) * m_zombieInterval)
+				{
+					m_ZombieAnimInfos.at(i)->currentFrameNum = 0;
+				}
+				else m_ZombieAnimInfos.at(i)->currentFrameNum++;
+
+				result = m_Zombies.at(i)->GetModel()->UpdateTextures(m_D3D->GetDevice(),
+					m_ZombieAnimInfos.at(i)->textureNames[m_ZombieAnimInfos.at(i)->currentAnimationIndex][m_ZombieAnimInfos.at(i)->currentFrameNum / m_zombieInterval]);
+				if (!result)
+				{
+					return false;
+				}
+				// Render the model using the light shader.
+				// 신축 회전 이동 순
+				result = m_LightShader->Render(m_D3D->GetDeviceContext(), 6, 1,
+					zombieBillboardWorldMatrix,
+					viewMatrix, projectionMatrix,
+					m_Zombies.at(i)->GetModel()->GetTextureArray(),
+					m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
+					m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower(),
+					m_Light->GetAmbientToggle(), m_Light->GetDiffuseToggle(), m_Light->GetSpecularToggle(), 1);
+				if (!result)
+				{
+					return false;
+				}
+
+				for (int j = 0; j < m_Zombies.at(i)->GetShortestPathSize(); j++)
+				{
+					if (m_Zombies.at(i)->IsAlive())
+					{
+						m_Cube->Render(m_D3D->GetDeviceContext());
+
+						// Render the model using the light shader.
+						result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Cube->GetVertexCount(), m_Cube->GetInstanceCount(),
+							worldMatrix * XMMatrixScaling(0.2f, 0.2f, 0.2f) *
+							XMMatrixTranslation(m_Zombies.at(i)->GetShortestPath()[j].x, m_Zombies.at(i)->GetShortestPath()[j].y, m_Zombies.at(i)->GetShortestPath()[j].z),
+							viewMatrix, projectionMatrix,
+							m_Cube->GetTextureArray(),
+							m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
+							m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower(),
+							m_Light->GetAmbientToggle(), m_Light->GetDiffuseToggle(), m_Light->GetSpecularToggle(), 1);
+						if (!result)
+						{
+							return false;
+						}
+					}
+				}
+			}
+		}
+
+		if (m_playerHit)
+		{
+			m_hitTimer += deltaTime * 0.01f;
+			// Put the bitmap vertex and index buffers on the graphics pipeline to prepare them for drawing.
+			result = m_Hit->Render(m_D3D->GetDeviceContext(), 0, 0);
+			if (!result)
+			{
+				return false;
+			}
+			// Render the bitmap with the texture shader.
+			result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Hit->GetIndexCount(),
+				worldMatrix, m_BaseViewMatrix, orthoMatrix, m_Hit->GetTexture());
+			if (!result)
+			{
+				return false;
+			}
+			if (m_hitTimer > 1.0f)
+			{
+				m_playerHit = false;
+				m_hitTimer = 0.0f;
+			}
+		}
+
+		// billboarding Bullet
+		// Update and Render Bullet
+		m_BulletPool->UpdateBullets();
+		for (int i = 0; i < m_BulletPool->GetPoolSize(); i++)
+		{
+			if (!m_BulletPool->GetBullets()[i].IsUse()) continue;
+
+			XMMATRIX bulletMatrix;
+			bulletMatrix = m_BulletPool->GetBullets()[i].Update(deltaTime, m_Camera->GetPosition());
+
+			result = m_BulletPool->GetBullets()[i].Render(m_D3D->GetDeviceContext(), -0.5f, 2.5f);
+
+			// Render the bitmap with the texture shader.
+			result = m_TextureShader->Render(m_D3D->GetDeviceContext(),
+				m_BulletPool->GetBullets()[i].GetModel()->GetIndexCount(),
+				bulletMatrix, viewMatrix, projectionMatrix,
+				m_BulletPool->GetBullets()[i].GetModel()->GetTexture());
+			if (!result)
+			{
+				return false;
+			}
+
+			for (int j = 0; j < m_zombieCount; j++)
+			{
+				if (m_BulletPool->GetBullets()[i].GetBoundingSphere().Intersects(m_Zombies.at(j)->GetBoundingBox()))
+				{
+					m_BulletPool->GetBullets()[i].SetJustDied(true);
+					m_Zombies.at(j)->SetHitted(true);
+				}
+			}
+		}
+
+
+		// Turn off alpha blending after rendering the text.
+		m_D3D->TurnOffAlphaBlending();
+
+
+		/////////////////////////////////////////////////////// 2D Image Render
+		// Turn off the Z buffer to begin all 2D rendering.
+		m_D3D->TurnZBufferOff();
+
+		// Turn on the alpha blending before rendering the text.
+		m_D3D->TurnOnColorAlphaBlending();
+
+		// Put the bitmap vertex and index buffers on the graphics pipeline to prepare them for drawing.
+		result = m_Crosshair->Render(m_D3D->GetDeviceContext(), m_ScreenWidth / 2 - 100, m_ScreenHeight / 2 - 100);
+		if (!result)
+		{
+			return false;
+		}
+		// Render the bitmap with the texture shader.
+		result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Crosshair->GetIndexCount(),
+			worldMatrix, m_BaseViewMatrix, orthoMatrix, m_Crosshair->GetTexture());
+		if (!result)
+		{
+			return false;
+		}
+
+		// Play Muzzle Flash Anim
+		if (m_isMuzzleAnimPlay == true && m_MuzzleFlashBitmapInfo.currentFrameNum != -1)
+		{
+			// Put the bitmap vertex and index buffers on the graphics pipeline to prepare them for drawing.
+			result = m_MuzzleFlash->bitmaps.at(m_MuzzleFlashBitmapInfo.currentFrameNum / 10)->Render(m_D3D->GetDeviceContext(),
+				m_MuzzleFlashBitmapInfo.bitmapsPos[m_MuzzleFlashBitmapInfo.currentFrameNum / 10].x,
+				m_MuzzleFlashBitmapInfo.bitmapsPos[m_MuzzleFlashBitmapInfo.currentFrameNum / 10].y);
+			if (!result)
+			{
+				return false;
+			}
+			// Render the bitmap with the texture shader.
+			result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_MuzzleFlash->bitmaps.at(m_MuzzleFlashBitmapInfo.currentFrameNum / 10)->GetIndexCount(),
+				worldMatrix, m_BaseViewMatrix, orthoMatrix, m_MuzzleFlash->bitmaps.at(m_MuzzleFlashBitmapInfo.currentFrameNum / 10)->GetTexture());
+			if (!result)
+			{
+				return false;
+			}
+			m_MuzzleFlashBitmapInfo.currentFrameNum++;
+			if (m_MuzzleFlashBitmapInfo.currentFrameNum == m_MuzzleFlashBitmapInfo.maxFrame * 10)
+			{
+				m_isMuzzleAnimPlay = false;
+				m_MuzzleFlashBitmapInfo.currentFrameNum = -1;
+			}
+		}
+
+		// Put the bitmap vertex and index buffers on the graphics pipeline to prepare them for drawing.
+		result = m_Gun->bitmaps.at(m_GunBitmapInfo.currentFrameNum / 25)->Render(m_D3D->GetDeviceContext(),
+			m_GunBitmapInfo.bitmapsPos[m_GunBitmapInfo.currentFrameNum / 25].x,
+			m_ScreenHeight - m_GunBitmapInfo.bitmapsHeight[m_GunBitmapInfo.currentFrameNum / 25]);
+		if (!result)
+		{
+			return false;
+		}
+		// Render the bitmap with the texture shader.
+		result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Gun->bitmaps.at(m_GunBitmapInfo.currentFrameNum / 25)->GetIndexCount(),
+			worldMatrix, m_BaseViewMatrix, orthoMatrix, m_Gun->bitmaps.at(m_GunBitmapInfo.currentFrameNum / 25)->GetTexture());
+		if (!result)
+		{
+			return false;
+		}
+
+		// Turn off alpha blending after rendering the text.
+		m_D3D->TurnOffAlphaBlending();
+
+		/////////////////////////////////////////////////////// 2D Text Render
+
+		// Turn on the alpha blending before rendering the text.
+		m_D3D->TurnOnBlackAlphaBlending();
+
+		// Render the text strings.
+		result = m_Text->Render(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix);
+		if (!result)
+		{
+			return false;
+		}
+
+		// Turn off alpha blending after rendering the text.
+		m_D3D->TurnOffAlphaBlending();
+
+		// Turn the Z buffer back on now that all 2D rendering has completed.
+		m_D3D->TurnZBufferOn();
+
+		// Rendering Particles
+		// Turn on the alpha blending before rendering the text.
+		m_D3D->TurnOnBlackAlphaBlending();
+
+		for (int i = 0; i < m_ParticleCount; i++)
+		{
+			// Calculate the rotation that needs to be applied to the billboard model to face the current camera position using the arc tangent function.
+			angle = atan2(m_ParticlePosition[i].x - m_Camera->GetPosition().x, m_ParticlePosition[i].z - m_Camera->GetPosition().z) * (180.0 / XM_PI);
+
+			// Convert rotation into radians.
+			billboardRotation = m_Camera->GetRotation().y * 0.0174532925f;
+
+			XMMATRIX tempWorldMatrix = worldMatrix;
+
+			// Setup the rotation the billboard at the origin using the world matrix.
+			tempWorldMatrix *= XMMatrixRotationY(billboardRotation);
+
+			// Setup the translation matrix from the billboard model.
+			translateMatrix = XMMatrixTranslation(m_ParticlePosition[i].x, m_ParticlePosition[i].y, m_ParticlePosition[i].z);
+
+			// Finally combine the rotation and translation matrices to create the final world matrix for the billboard model.
+			tempWorldMatrix = XMMatrixMultiply(tempWorldMatrix, translateMatrix);
+
+			// Put the particle system vertex and index buffers on the graphics pipeline to prepare them for drawing.
+			m_ParticleSystem[i].Render(m_D3D->GetDeviceContext());
+
+			// Render the model using the texture shader.
+			result = m_ParticleShader->Render(m_D3D->GetDeviceContext(), m_ParticleSystem[i].GetIndexCount(), tempWorldMatrix, viewMatrix, projectionMatrix,
+				m_ParticleSystem[i].GetTexture());
+			if (!result)
+			{
+				return false;
+			}
+		}
+
+		// Turn on the alpha blending before rendering the text.
+		m_D3D->TurnOffAlphaBlending();
+	}
+
+	if (m_SceneNum == 3)
+	{
+		// Put the bitmap vertex and index buffers on the graphics pipeline to prepare them for drawing.
+		result = m_Clear->Render(m_D3D->GetDeviceContext(), 0, 0);
+		if (!result)
+		{
+			return false;
+		}
+		// Render the bitmap with the texture shader.
+		result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Clear->GetIndexCount(),
+			worldMatrix, m_BaseViewMatrix, orthoMatrix, m_Clear->GetTexture());
+		if (!result)
+		{
+			return false;
 		}
 	}
 
-	// Put the bitmap vertex and index buffers on the graphics pipeline to prepare them for drawing.
-	result = m_Gun->bitmaps.at(m_GunBitmapInfo.currentFrameNum / 25)->Render(m_D3D->GetDeviceContext(),
-		m_GunBitmapInfo.bitmapsPos[m_GunBitmapInfo.currentFrameNum / 25].x,
-		m_ScreenHeight - m_GunBitmapInfo.bitmapsHeight[m_GunBitmapInfo.currentFrameNum / 25]);
-	if (!result)
+	if (m_SceneNum == 4)
 	{
-		return false;
+		// Put the bitmap vertex and index buffers on the graphics pipeline to prepare them for drawing.
+		result = m_Fail->Render(m_D3D->GetDeviceContext(), 0, 0);
+		if (!result)
+		{
+			return false;
+		}
+		// Render the bitmap with the texture shader.
+		result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Fail->GetIndexCount(),
+			worldMatrix, m_BaseViewMatrix, orthoMatrix, m_Fail->GetTexture());
+		if (!result)
+		{
+			return false;
+		}
 	}
-	// Render the bitmap with the texture shader.
-	result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Gun->bitmaps.at(m_GunBitmapInfo.currentFrameNum / 25)->GetIndexCount(),
-		worldMatrix, m_BaseViewMatrix, orthoMatrix, m_Gun->bitmaps.at(m_GunBitmapInfo.currentFrameNum / 25)->GetTexture());
-	if (!result)
-	{
-		return false;
-	}
-
-	// Turn off alpha blending after rendering the text.
-	m_D3D->TurnOffAlphaBlending();
-
-	/////////////////////////////////////////////////////// 2D Text Render
-
-	// Turn on the alpha blending before rendering the text.
-	m_D3D->TurnOnAlphaBlending();
-
-	// Render the text strings.
-	result = m_Text->Render(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix);
-	if (!result)
-	{
-		return false;
-	}
-
-	// Turn off alpha blending after rendering the text.
-	m_D3D->TurnOffAlphaBlending();
-
-	// Turn the Z buffer back on now that all 2D rendering has completed.
-	m_D3D->TurnZBufferOn();
 
 	// Present the rendered scene to the screen.
 	m_D3D->EndScene();
@@ -1200,10 +1599,15 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 				float a = 0.0f;
 				if (m_PlayerBox.Intersects(enemyPositionVec, enemyToPlayerVec, a))
 				{
-					if (a < 3.0f)
+					if (a < 10.0f)
 					{
 						m_playerHP -= 10.0f;
-						m_Camera->MoveBack(0.5f);
+						m_playerHit = true;
+						m_Camera->MoveBack(0.3f);
+						if (m_playerHP <= 0.0f)
+						{
+							SetSceneNum(4);
+						}
 					}
 				}
 			}
@@ -1222,7 +1626,10 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 		{
 			if (anim.currentFrameNum / m_zombieInterval == 7)
 			{
+				UpdateStageNum();
 				enemy->SetAlive(false); 
+				if (m_aliveEnemies == 0)
+					SetSceneNum(3);
 			}
 
 			anim.currentAnimationIndex = ZOMBIE_D;
@@ -1252,7 +1659,10 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 		{
 			if (anim.currentFrameNum / m_zombieInterval == 7)
 			{
+				UpdateStageNum();
 				enemy->SetAlive(false);
+				if (m_aliveEnemies == 0)
+					SetSceneNum(3);
 			}
 
 			anim.currentAnimationIndex = ZOMBIE_D;
@@ -1282,7 +1692,10 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 		{
 			if (anim.currentFrameNum / m_zombieInterval == 7)
 			{
+				UpdateStageNum();
 				enemy->SetAlive(false);
+				if (m_aliveEnemies == 0)
+					SetSceneNum(3);
 			}
 
 			anim.currentAnimationIndex = ZOMBIE_D;
@@ -1312,7 +1725,10 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 		{
 			if (anim.currentFrameNum / m_zombieInterval == 7)
 			{
+				UpdateStageNum();
 				enemy->SetAlive(false);
+				if (m_aliveEnemies == 0)
+					SetSceneNum(3);
 			}
 
 			anim.currentAnimationIndex = ZOMBIE_D;
@@ -1342,7 +1758,10 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 		{
 			if (anim.currentFrameNum / m_zombieInterval == 7)
 			{
+				UpdateStageNum();
 				enemy->SetAlive(false);
+				if (m_aliveEnemies == 0)
+					SetSceneNum(3);
 			}
 
 			anim.currentAnimationIndex = ZOMBIE_D;
@@ -1372,7 +1791,10 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 		{
 			if (anim.currentFrameNum / m_zombieInterval == 7)
 			{
+				UpdateStageNum();
 				enemy->SetAlive(false);
+				if (m_aliveEnemies == 0)
+					SetSceneNum(3);
 			}
 
 			anim.currentAnimationIndex = ZOMBIE_D;
@@ -1402,7 +1824,10 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 		{
 			if (anim.currentFrameNum / m_zombieInterval == 7)
 			{
+				UpdateStageNum();
 				enemy->SetAlive(false);
+				if (m_aliveEnemies == 0)
+					SetSceneNum(3);
 			}
 
 			anim.currentAnimationIndex = ZOMBIE_D;
@@ -1432,7 +1857,10 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 		{
 			if (anim.currentFrameNum / m_zombieInterval == 7)
 			{
+				UpdateStageNum();
 				enemy->SetAlive(false);
+				if (m_aliveEnemies == 0)
+					SetSceneNum(3);
 			}
 
 			anim.currentAnimationIndex = ZOMBIE_D;

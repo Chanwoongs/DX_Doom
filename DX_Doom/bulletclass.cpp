@@ -8,7 +8,7 @@ BulletClass::BulletClass()
 	m_isUse = false;
 	m_justDied = false;
 	m_life = 0.0f;
-	m_lifeTime = 50.0f;
+	m_lifeTime = 25.0f;
 	m_speed = 2.0f;
 }
 

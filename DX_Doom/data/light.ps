@@ -81,7 +81,7 @@ float4 LightPixelShader(PixelInputType input) : SV_TARGET
 	}
 	else
 	{
-		blendColor = textureColor * secondTextureColor * 1.5;
+		blendColor = textureColor * secondTextureColor * 1.0f;
 	}
 	// Saturate the final color.
 	blendColor = saturate(blendColor);

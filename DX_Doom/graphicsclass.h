@@ -32,6 +32,8 @@
 #include "navmeshclass.h"
 #include "skyboxshaderclass.h"
 #include "bulletpoolclass.h"
+#include "particleshaderclass.h"
+#include "particlesystemclass.h"
 
 /////////////
 // GLOBALS //
@@ -102,8 +104,13 @@ public:
 	void PlayMuzzleFlashAnim();
 	void FinishShoot();
 
+	void UpdateStageNum();
+
 	bool SameSide(XMFLOAT3, XMFLOAT3, XMFLOAT3, XMFLOAT3);
 	bool PointInTriangle(XMFLOAT3, XMFLOAT3, XMFLOAT3, XMFLOAT3);
+
+	int GetSceneNum() { return m_SceneNum; }
+	void SetSceneNum(int num) { m_SceneNum = num; }
 
 private:
 	bool Render(float);
@@ -129,13 +136,22 @@ private:
 	SkyboxShaderClass* m_SkyboxShader;
 	SphereClass* m_Sphere;
 
+	ParticleShaderClass* m_ParticleShader;
+	ParticleSystemClass* m_ParticleSystem;
+	XMFLOAT3* m_ParticlePosition;
+	int m_ParticleCount;
+
 	bool m_ambient;
 	bool m_diffuse;
 	bool m_specular;
 
 	XMMATRIX m_BaseViewMatrix;
 
+	BitmapClass* m_Title;
+	BitmapClass* m_Clear;
+	BitmapClass* m_Fail;
 	BitmapClass* m_Crosshair;
+	BitmapClass* m_Hit;
 
 	NavmeshClass* m_Navmesh;
 	ModelClass* m_Cube;
@@ -144,6 +160,7 @@ private:
 	ModelClass* m_Stage;
 	ModelClass* m_NavmeshModel;
 	vector<BoundingBox*> m_StageBox;
+	vector<BoundingBox*> m_DoorBox;
 
 	Bitmaps* m_Gun;
 	BitmapInfo m_GunBitmapInfo;
@@ -175,9 +192,13 @@ private:
 	bool m_isGunAnimReversed;
 	bool m_isMuzzleAnimPlay;
 	bool m_isBulletReloaded;
+	bool m_playerHit;
+	float m_hitTimer;
 
 	float m_playerHP;
 	int m_aliveEnemies;
+	int m_currentStage;
+	int m_SceneNum;
 };
 
 #endif

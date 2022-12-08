@@ -281,6 +281,11 @@ bool InputClass::GetKeyboardState(char& key)
 		key = 'e';
 		return true;
 	}
+	if (m_keyboardState[DIK_SPACE] & 0x80)
+	{
+		key = 32;
+		return true;
+	}
 	return false;
 }
 
