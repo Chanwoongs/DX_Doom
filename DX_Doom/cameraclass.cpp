@@ -28,6 +28,9 @@ CameraClass::CameraClass()
 	m_yaw = 0.0f;
 	m_pitch = 0.0f;
 	m_roll = 0.0f;
+
+	m_skyModeToggle = false;
+	m_headbobToggle = true;
 }
 
 
@@ -82,27 +85,33 @@ void CameraClass::MoveForward(float speed)
 	m_isMoving = true;
 }
 
-void CameraClass::MoveDown(float speed)
+void CameraClass::ToggleSkyMode()
 {
-	m_moveUpDown -= speed;
-	m_isMoving = true;
-}
-
-void CameraClass::MoveUp(float speed)
-{
-	m_moveUpDown += speed;
-	m_isMoving = true;
+	if (m_skyModeToggle == false)
+	{
+		m_position.y = 50.0f;
+		m_skyModeToggle = true;
+		m_headbobToggle = false;
+	}
+	else if (m_skyModeToggle == true)
+	{
+		m_position.y = m_defaultYPos;
+		m_skyModeToggle = false;
+		m_headbobToggle = true;;
+	}
 }
 
 void CameraClass::StartHeadbob(float timer)
 {
 	if (!m_isMoving) return;
+	if (!m_headbobToggle) return;
 
 	m_position.y = m_defaultYPos + sin(timer);
 }
 
 void CameraClass::EndHeadbob(float timer)
 {
+	if (!m_headbobToggle) return;
 	XMVECTOR pos = XMVectorSet(m_position.x, m_position.y, m_position.z, 0);
 	m_position.y = XMVectorGetY(XMVectorLerp(pos, XMVectorSet(m_position.x, m_defaultYPos, m_position.z, 0), timer));
 }

@@ -30,8 +30,7 @@ public:
 	void MoveRight(float);
 	void MoveBack(float);
 	void MoveForward(float);
-	void MoveDown(float);
-	void MoveUp(float);
+	void ToggleSkyMode();
 	void StartHeadbob(float);
 	void EndHeadbob(float);
 
@@ -64,6 +63,8 @@ private:
 
 	float m_defaultYPos;
 	bool m_isMoving;
+	bool m_skyModeToggle;
+	bool m_headbobToggle;
 };
 
 #endif

@@ -65,9 +65,9 @@ GraphicsClass::GraphicsClass()
 
 	m_isBulletReloaded = true;
 
-	//m_StageBox.push_back(new BoundingBox(XMFLOAT3(17.5f, 10.0f, 20.0f), XMFLOAT3(0.2f, 10.0f, 25.0f)));
-	//m_StageBox.push_back(new BoundingBox(XMFLOAT3(-17.5f, 10.0f, 20.0f), XMFLOAT3(0.2f, 10.0f, 25.0f)));
-	//m_StageBox.push_back(new BoundingBox(XMFLOAT3(0.0f, 10.0f, 21.0f), XMFLOAT3(7.0f, 10.0f, 6.0f)));
+	m_StageBox.push_back(new BoundingBox(XMFLOAT3(17.5f, 10.0f, 20.0f), XMFLOAT3(0.2f, 10.0f, 25.0f)));
+	m_StageBox.push_back(new BoundingBox(XMFLOAT3(-17.5f, 10.0f, 20.0f), XMFLOAT3(0.2f, 10.0f, 25.0f)));
+	m_StageBox.push_back(new BoundingBox(XMFLOAT3(0.0f, 10.0f, 21.0f), XMFLOAT3(7.0f, 10.0f, 6.0f)));
 	//m_StageBox.push_back(new BoundingBox(XMFLOAT3(23.0f, 10.0f, 45.0f), XMFLOAT3(20.0f, 10.0f, 6.5f)));
 	//m_StageBox.push_back(new BoundingBox(XMFLOAT3(-23.0f, 10.0f, 45.0f), XMFLOAT3(20.0f, 10.0f, 6.5f)));
 	//m_StageBox.push_back(new BoundingBox(XMFLOAT3(0.0f, 10.0f, 61.0f), XMFLOAT3(5.0f, 10.0f, 6.0f)));
@@ -607,16 +607,15 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Zombies.at(0)->SetCurrentTargetPath(m_Zombies.at(0)->GetPath().at(m_Zombies.at(0)->GetPathIndex()));
 	m_Zombies.at(0)->SetSpawn(true);
 
-	m_Zombies.at(1)->SetPosition(-41, 0, 54);
+	m_Zombies.at(1)->SetPosition(-41, 0, 89);
 	m_Zombies.at(1)->SetForwardVector(0, 0, -1);
 	m_Zombies.at(1)->SetAcceptDistance(2.0f);
 	m_Zombies.at(1)->SetDetectRange(30.0f);
 	m_Zombies.at(1)->SetAttackRange(3.0f);
 	m_Zombies.at(1)->SetSpeed(1.0f);
-	m_Zombies.at(1)->AddPath(XMFLOAT3(41, 0, 89));
-	m_Zombies.at(1)->AddPath(XMFLOAT3(41, 0, 54));
-	m_Zombies.at(1)->AddPath(XMFLOAT3(-41, 0, 98));
-	m_Zombies.at(1)->AddPath(XMFLOAT3(-41, 0, 54));
+	m_Zombies.at(1)->AddPath(XMFLOAT3(39, 0, 89));
+	m_Zombies.at(1)->AddPath(XMFLOAT3(38, 0, 56));
+	m_Zombies.at(1)->AddPath(XMFLOAT3(-39, 0, 55));
 	m_Zombies.at(1)->SetPathIndex(0);
 	m_Zombies.at(1)->SetCurrentTargetPath(m_Zombies.at(1)->GetPath().at(m_Zombies.at(1)->GetPathIndex()));
 

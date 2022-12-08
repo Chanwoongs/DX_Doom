@@ -191,65 +191,64 @@ void SystemClass::Run()
 		// Fire Gun
 		if (m_Input->IsLeftMouseButtonDown() == true)
 		{
-			// Start Shoot
-			m_Graphics->StartShoot();
-			// Instantiate Muzzle Fire and Play
-			 
-			// Muzzle Fire's Light Effect
-
-			// Play Gun Animation
-
-			// Play Shooting Sound
-
-			// Shoot Projectile
-
-			// Finish Shoot
-			m_Graphics->FinishShoot();
+			if (m_Graphics->GetSceneNum() == 2)
+			{
+				// Start Shoot
+				m_Graphics->StartShoot();
+				m_Graphics->FinishShoot();
+			}
 		}
 		if (m_Input->GetKeyboardState(key) == true)
 		{
-			if (key == 54 && !isKeyPressed)
+			if (m_Graphics->GetSceneNum() == 1)
 			{
-				m_Graphics->toggleAmbient();
-				isKeyPressed = true;
+				if (key == 32)
+				{
+					m_Graphics->SetSceneNum(2);
+				}
 			}
-			if (key == 55 && !isKeyPressed)
+			else if (m_Graphics->GetSceneNum() == 2)
 			{
-				m_Graphics->toggleDiffuse();
-				isKeyPressed = true;
-			}
-			if (key == 56 && !isKeyPressed)
-			{
-				m_Graphics->toggleSpecular();
-				isKeyPressed = true;
-			}
-			if (key == 97)
-			{
-				if (!m_Graphics->IsLeftHit())
-					m_Graphics->GetCamera()->MoveLeft(speed);
-			}
-			if (key == 100)
-			{
-				if (!m_Graphics->IsRightHit()) 
-					m_Graphics->GetCamera()->MoveRight(speed);
-			}
-			if (key == 115)
-			{
-				if (!m_Graphics->IsBackwardHit()) 
-					m_Graphics->GetCamera()->MoveBack(speed);
-			}
-			if (key == 119)
-			{
-				if (!m_Graphics->IsForwardHit()) 
-					m_Graphics->GetCamera()->MoveForward(speed);
-			}
-			if (key == 113)
-			{
-				m_Graphics->GetCamera()->MoveDown(speed);
-			}
-			if (key == 101)
-			{
-				m_Graphics->GetCamera()->MoveUp(speed);
+				if (key == 54 && !isKeyPressed)
+				{
+					m_Graphics->toggleAmbient();
+					isKeyPressed = true;
+				}
+				if (key == 55 && !isKeyPressed)
+				{
+					m_Graphics->toggleDiffuse();
+					isKeyPressed = true;
+				}
+				if (key == 56 && !isKeyPressed)
+				{
+					m_Graphics->toggleSpecular();
+					isKeyPressed = true;
+				}
+				if (key == 97)
+				{
+					if (!m_Graphics->IsLeftHit())
+						m_Graphics->GetCamera()->MoveLeft(speed);
+				}
+				if (key == 100)
+				{
+					if (!m_Graphics->IsRightHit())
+						m_Graphics->GetCamera()->MoveRight(speed);
+				}
+				if (key == 115)
+				{
+					if (!m_Graphics->IsBackwardHit())
+						m_Graphics->GetCamera()->MoveBack(speed);
+				}
+				if (key == 119)
+				{
+					if (!m_Graphics->IsForwardHit())
+						m_Graphics->GetCamera()->MoveForward(speed);
+				}
+				if (key == 101 && !isKeyPressed)
+				{
+					m_Graphics->GetCamera()->ToggleSkyMode();
+					isKeyPressed = true;
+				}
 			}
 		}
 		else
