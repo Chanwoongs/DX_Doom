@@ -4,7 +4,7 @@ Navmesh
 
 처리할 충돌
 총알, 적 / Sphere와 BoundingBox
-Navmesh Node / Polygon Spherer
+Navmesh Node / Polygon Sphere
 
 BoundingBox class
 position
