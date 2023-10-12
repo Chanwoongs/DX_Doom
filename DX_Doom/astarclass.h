@@ -53,11 +53,6 @@ public:
 			~Map();
 	};
 
-	struct NodeInfo {
-		XMFLOAT3 key;
-		Node value;
-	};
-
 public:
 	AStarClass(XMFLOAT3 start, XMFLOAT3 end) : m_startPoint(start), m_endPoint(end)
 	{

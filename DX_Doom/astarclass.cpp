@@ -40,32 +40,41 @@ AStarClass::Map::~Map()
 	delete[] map; // 맵의 행 동적할당 해제
 }
 
+
 vector<XMFLOAT3> AStarClass::findPath()
 {
 	priority_queue<Node*, vector<Node*>, Compare> openList;
-	vector<NodeInfo> allNodesVector;  // unordered_map 대신 vector 사용
+	unordered_map<int, Node> allNodes;
 
 	Node* startNode = new Node(m_startPoint);
 	openList.push(startNode);
-	allNodesVector.push_back({ m_startPoint, *startNode });
+	allNodes[hash(m_startPoint)] = *startNode;
 
-	while (!openList.empty()) 
-	{
+	while (!openList.empty()) {
+		// 비용이 가장 낮은 노드 선택
 		Node current = *openList.top();
 		openList.pop();
 
+		// 경로를 찾았다
 		if (current.position.x == m_endPoint.x && current.position.z == m_endPoint.z)
 		{
 			vector<XMFLOAT3> path;
+
+			// 경로를 벡터에 담고
 			while (current.parent)
 			{
-				path.push_back({ (current.position.x * 2) - m_map->col, 0.0f, current.position.z * 2 });
+				path.push_back({
+					(current.position.x * 2) - m_map->col
+					, 0.0f,
+					current.position.z * 2 });
 				current = *current.parent;
 			}
+			// 역순으로 
 			reverse(path.begin(), path.end());
 			return path;
 		}
 
+		// 주변 노드 체크 (8방향)
 		for (int x = -1; x <= 1; x++)
 		{
 			for (int z = -1; z <= 1; z++)
@@ -74,35 +83,27 @@ vector<XMFLOAT3> AStarClass::findPath()
 				newPosition.x = current.position.x + x;
 				newPosition.z = current.position.z + z;
 
-				if (newPosition.x == current.position.x && newPosition.z == current.position.z) continue;
-				if (newPosition.x < 0 || newPosition.z < 0 || newPosition.x >= m_map->col || newPosition.z >= m_map->row) continue;
+				// 재방문 방지
+				if (newPosition.x == current.position.x &&
+					newPosition.z == current.position.z) continue;
+				// 범위 체크
+				if (newPosition.x < 0 || newPosition.z < 0 ||
+					newPosition.x >= m_map->col || newPosition.z >= m_map->row) continue;
+				// 갈 수 없는 곳 체크
 				if (m_map->map[(int)newPosition.z][(int)newPosition.x] == 1) continue;
 
+
 				Node* newNode = new Node(newPosition);
+
 				float newCost = current.g + heuristic(current.position, newPosition);
-
-				bool found = false;
-				for (auto& node : allNodesVector) 
-				{
-					if (node.key.x == newPosition.x && node.key.y == newPosition.y && node.key.z == newPosition.z)
-					{
-						found = true;
-						if (newCost < node.value.g)
-						{
-							node.value.g = newCost;
-							node.value.h = heuristic(newPosition, m_endPoint);
-							node.value.parent = &current;
-						}
-						break;
-					}
-				}
-
-				if (!found) 
+				if (allNodes.find(hash(newPosition)) == allNodes.end() ||
+					newCost < allNodes[hash(newPosition)].g)
 				{
 					newNode->g = newCost;
 					newNode->h = heuristic(newPosition, m_endPoint);
-					newNode->parent = &current;
-					allNodesVector.push_back({ newPosition, *newNode });
+					newNode->parent = &allNodes[hash(current.position)];
+
+					allNodes[hash(newPosition)] = *newNode;
 					openList.push(newNode);
 				}
 			}
