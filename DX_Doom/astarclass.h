@@ -11,7 +11,9 @@
 //////////////
 #include <d3d11.h>
 #include <directxmath.h>
-#include <list>
+#include <vector>
+#include <queue>
+#include <unordered_map>
 
 using namespace DirectX;
 using namespace std;
@@ -26,81 +28,72 @@ using namespace std;
 class AStarClass
 {
 public:
-	class Node // 노드 클래스
+	class Node
 	{
 	public:
-		Node* m_Parent;
-		XMFLOAT3 m_position;
-		XMFLOAT3 m_endPoint;
-		float m_fValue;
-		float m_gValue;
-		float m_hValue;
+		XMFLOAT3 position;
+	
+		Node() : position({ 0, 0, 0 }), g(0.0f), h(0.0f), parent(nullptr) {}
+		Node(XMFLOAT3& pos) : position(pos), g(0.0f), h(0.0f), parent(nullptr) {}
+		
+		float totalCost() const { return g + h; }
 
-	public:
-		Node(XMFLOAT3, XMFLOAT3, Node*);
-		Node();
-		~Node();
+		Node* parent;
+		float g; // start에서 현재 위치까지의 비용
+		float h; // heuristic 
 	};
 
-	class Map // 맵 클래스
+	class Map
 	{
-	public:
-		int row, col;
-		int** map;
-	public:
-		Map();
-		~Map();
+		public:
+			int row, col;
+			int** map;
+		public:
+			Map();
+			~Map();
+	};
+
+	struct NodeInfo {
+		XMFLOAT3 key;
+		Node value;
 	};
 
 public:
-	AStarClass(XMFLOAT3 startPoint, XMFLOAT3 endPoint, int correction)
+	AStarClass(XMFLOAT3 start, XMFLOAT3 end) : m_startPoint(start), m_endPoint(end)
 	{
-		m_correction = correction;
-		m_startPoint.x = ((int)startPoint.x + m_correction) / 2;
-		m_startPoint.z = ((int)startPoint.z / 2);
-		m_endPoint.x = ((int)endPoint.x + m_correction) / 2;
-		m_endPoint.z = ((int)endPoint.z / 2);
-
-		m_Navi = new Map();
+		m_map = new Map();
+		m_startPoint.x = ((int)m_startPoint.x + m_map->col) / 2;
+		m_startPoint.y = 0.0f;
+		m_startPoint.z = (int)(m_startPoint.z / 2);
+		m_endPoint.x = ((int)m_endPoint.x + m_map->col) / 2;
+		m_endPoint.y = 0.0f;
+		m_endPoint.z = (int)(m_endPoint.z / 2);
 	}
-	~AStarClass()
-	{ // path 동적할당 해제
-		m_iter = m_path.begin();
-		for (; m_iter != m_path.end(); m_iter++)
+	vector<XMFLOAT3> findPath();
+
+	int hash(XMFLOAT3 point) {
+		return (int)point.x * 73856093 ^ (int)point.z * 19349663;
+	}
+
+	float heuristic(const XMFLOAT3& a, const XMFLOAT3& b)
+	{
+		return abs(a.x - b.x) + abs(a.z - b.z);
+	}
+
+	struct Compare 
+	{
+		bool operator() (const Node* a, const Node* b) 
 		{
-			delete* m_iter;
+			return a->totalCost() > b->totalCost();
 		}
-	}
+	};
 
-private: // 내부 함수
-	list<XMFLOAT3*> FindPath(Map*, XMFLOAT3, XMFLOAT3);
-
-	// 노드리스트에서 x,y 좌표의 노드를 찾아서 주소를 반환. 없으면 end()반환
-	list<Node*>::iterator FindNode(XMFLOAT3, list<Node*>*);
-
-	// 오픈노드 중 F값이 제일 작은 노드 찾아서 반환
-	list<Node*>::iterator FindNextNode(list<Node*>*); 
-
-	// 8방향 노드를 탐색하고 열린 노드에 추가 및 부모 변경을 실행함
-	void ExploreNode(Map* Navi, Node*, list<Node*>*, list<Node*>*, XMFLOAT3);
-
-public:
-	void FindPath();
-	list<XMFLOAT3*> GetPath() { return m_path; } // 경로를 XMFLOAT3* 리스트로 통째로 받아옴
+	bool isValid(const int z, const int x);
 
 private:
-	int m_row;
-	int m_col;
-
-	int m_correction;
-	XMFLOAT3 m_startPoint; // 출발지점
-	XMFLOAT3 m_endPoint; // 목표지점
-	list<XMFLOAT3*> m_path; // 경로
-	list<XMFLOAT3*>::iterator m_iter; // 경로 iterator
-
-	Map* m_Navi; // 맵 생성
+	XMFLOAT3 m_startPoint;
+	XMFLOAT3 m_endPoint;
+	Map* m_map;
 };
 
 #endif
-
-
