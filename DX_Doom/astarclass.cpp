@@ -3,20 +3,26 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "astarclass.h"
 
-AStarClass::Map::Map()
+Map::Map()
 {
 	// 맵의 크기를 불러옴
 	char crow[5], ccol[4];
-	GetPrivateProfileStringA("MAP", "row", "", crow, sizeof(crow) - 1, "./data/map.txt");
+ 	GetPrivateProfileStringA("MAP", "row", "", crow, sizeof(crow) - 1, "./data/map.txt");
 	GetPrivateProfileStringA("MAP", "col", "", ccol, sizeof(ccol) - 1, "./data/map.txt");
 	row = atoi(crow); 
 	col = atoi(ccol);
 
 	// 맵 크기 할당
-	map = new int* [row]; 
-	for (int i = 0; i < row; i++) 
+	/*map = new int* [row];
+	for (int i = 0; i < row; i++)
 	{
 		map[i] = new int[col];
+	}*/
+
+	map.resize(row + 1);
+	for (int i = 0; i < row; i++)
+	{
+		map[i].resize(col + 1);
 	}
 
 	FILE* stream = fopen("./data/map.txt", "rt"); // 맵의 자료를 불러옴 0=지나갈 수 있는 곳 , 1=장애물
@@ -31,15 +37,16 @@ AStarClass::Map::Map()
 }
 
 
-AStarClass::Map::~Map()
+Map::~Map()
 {
 	for (int i = 0; i < row; i++)
 	{
-		delete[] map[i]; // 맵의 열 동적할당 해제, 열은 행의 갯수만큼 동적할당 되었으므로 row만큼 반복
+		//delete[] map[i]; 
 	}
-	delete[] map; // 맵의 행 동적할당 해제
+	//delete[] map;
 }
 
+AStarClass* AStarClass::Instance = nullptr;
 
 vector<XMFLOAT3> AStarClass::findPath()
 {
@@ -113,7 +120,10 @@ vector<XMFLOAT3> AStarClass::findPath()
 	return v; // 경로를 찾을 수 없음
 }
 
-bool AStarClass::isValid(const int z, const int x)
+bool AStarClass::isValid(int z, int x)
 {
+	x = ((int)x + m_map->col) / 2;
+	z = (int)(z / 2);
+
 	return m_map->map[z][x] ? false : true;
 }

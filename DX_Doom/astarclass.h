@@ -14,6 +14,7 @@
 #include <vector>
 #include <queue>
 #include <unordered_map>
+#include <iostream>
 
 using namespace DirectX;
 using namespace std;
@@ -25,45 +26,52 @@ using namespace std;
 ////////////////////////////////////////////////////////////////////////////////
 // Class name: AStarClass
 ////////////////////////////////////////////////////////////////////////////////
-class AStarClass
+
+class Node
 {
 public:
-	class Node
-	{
-	public:
-		XMFLOAT3 position;
-	
-		Node() : position({ 0, 0, 0 }), g(0.0f), h(0.0f), parent(nullptr) {}
-		Node(XMFLOAT3& pos) : position(pos), g(0.0f), h(0.0f), parent(nullptr) {}
-		
-		float totalCost() const { return g + h; }
+	XMFLOAT3 position;
 
-		Node* parent;
-		float g; // start에서 현재 위치까지의 비용
-		float h; // heuristic 
-	};
+	Node() : position({ 0, 0, 0 }), g(0.0f), h(0.0f), parent(nullptr) {}
+	Node(XMFLOAT3& pos) : position(pos), g(0.0f), h(0.0f), parent(nullptr) {}
 
-	class Map
-	{
-		public:
-			int row, col;
-			int** map;
-		public:
-			Map();
-			~Map();
-	};
+	float totalCost() const { return g + h; }
+
+	Node* parent;
+	float g; // start에서 현재 위치까지의 비용
+	float h; // heuristic 
+};
+
+class Map
+{
+public:
+	int row, col;
+	vector<vector<int>> map;
+public:
+	Map();
+	~Map();
+};
+
+class AStarClass
+{
+private:
+	AStarClass() {}
 
 public:
-	AStarClass(XMFLOAT3 start, XMFLOAT3 end) : m_startPoint(start), m_endPoint(end)
+	void setInfo(XMFLOAT3 start, XMFLOAT3 end)
 	{
-		m_map = new Map();
-		m_startPoint.x = ((int)m_startPoint.x + m_map->col) / 2;
+		if (m_map == nullptr) createMap();
+
+		m_startPoint.x = ((int)start.x + m_map->col) / 2;
 		m_startPoint.y = 0.0f;
-		m_startPoint.z = (int)(m_startPoint.z / 2);
-		m_endPoint.x = ((int)m_endPoint.x + m_map->col) / 2;
+		m_startPoint.z = (int)(start.z / 2);
+		m_endPoint.x = ((int)end.x + m_map->col) / 2;
 		m_endPoint.y = 0.0f;
-		m_endPoint.z = (int)(m_endPoint.z / 2);
+		m_endPoint.z = (int)(end.z / 2);
 	}
+
+	void createMap() { m_map = new Map(); }
+
 	vector<XMFLOAT3> findPath();
 
 	int hash(XMFLOAT3 point) {
@@ -85,7 +93,18 @@ public:
 
 	bool isValid(const int z, const int x);
 
+	static AStarClass* GetInstance()
+	{
+		if (Instance == nullptr)
+		{
+			Instance = new AStarClass();
+		}
+		return Instance;
+	}
+
 private:
+	static AStarClass* Instance;
+
 	XMFLOAT3 m_startPoint;
 	XMFLOAT3 m_endPoint;
 	Map* m_map;

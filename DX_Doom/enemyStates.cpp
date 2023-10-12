@@ -38,12 +38,13 @@ void Patrol::Execute(EnemyClass* pEnemyClass, float deltaTime)
 	XMFLOAT3 destination = pEnemyClass->GetPath().at(pEnemyClass->GetPathIndex());
 	pEnemyClass->SetSpeed(deltaTime * 0.4f);
 
+	AStarClass::GetInstance()->setInfo(pEnemyClass->GetPosition(), destination);
+
 	timer += deltaTime;
 	if (timer > 50.0f && pEnemyClass->isPosUpdated())
 	{
 		// Find Path to destionation
-		AStarClass AStar(pEnemyClass->GetPosition(), destination);
-		vector<XMFLOAT3> path = AStar.findPath();
+		vector<XMFLOAT3> path = AStarClass::GetInstance()->findPath();
 
 		if (path.size() == 0) return;
 
@@ -91,27 +92,31 @@ void Patrol::Execute(EnemyClass* pEnemyClass, float deltaTime)
 	XMFLOAT3 targetPos = pEnemyClass->GetTargetPosition();
 	XMVECTOR targetPositionVec = XMLoadFloat3(&targetPos);
 
-	XMVECTOR diff = enemyPositionVec - enemyDestPathVec;
-	float distance = XMVectorGetX(XMVector3Length(diff));
-	if (distance <= pEnemyClass->GetAcceptDistance())
+	// 플레이어 좌표가 Valid 한지 검사해야한다.
+	if (AStarClass::GetInstance()->isValid((int)targetPos.z, (int)targetPos.x))
 	{
-		pEnemyClass->SetPathIndex(pEnemyClass->GetPathIndex() + 1);
-		if (pEnemyClass->GetPathIndex() == pEnemyClass->GetPath().size())
+		XMVECTOR diff = enemyPositionVec - enemyDestPathVec;
+		float distance = XMVectorGetX(XMVector3Length(diff));
+		if (distance <= pEnemyClass->GetAcceptDistance())
 		{
-			pEnemyClass->SetPathIndex(0);
+			pEnemyClass->SetPathIndex(pEnemyClass->GetPathIndex() + 1);
+			if (pEnemyClass->GetPathIndex() == pEnemyClass->GetPath().size())
+			{
+				pEnemyClass->SetPathIndex(0);
+			}
 		}
-	}
 
-	diff = enemyPositionVec - targetPositionVec;
-	distance = XMVectorGetX(XMVector3Length(diff));
-	if (distance < pEnemyClass->GetDetectRange())
-	{
-		// 여기 플레이어 좌표가 Vaild 한지 검사해야한다.
-		pEnemyClass->GetFSM()->ChangeState(Approach::Instance());
+		diff = enemyPositionVec - targetPositionVec;
+		distance = XMVectorGetX(XMVector3Length(diff));
+
+		if (distance < pEnemyClass->GetDetectRange())
+		{
+			pEnemyClass->GetFSM()->ChangeState(Approach::Instance());
+		}
+
+		diff = XMVectorZero();
+		distance = -1.0;
 	}
-	
-	diff = XMVectorZero();
-	distance = -1.0;
 
 	if (pEnemyClass->IsHitted())
 	{
@@ -159,8 +164,8 @@ void Approach::Execute(EnemyClass* pEnemyClass, float deltaTime)
 	if (timer > 50.0f && pEnemyClass->isPosUpdated())
 	{
 		// Find Path to destionation
-		AStarClass AStar(pEnemyClass->GetPosition(), destination);
-		vector<XMFLOAT3> path = AStar.findPath();
+		AStarClass::GetInstance()->setInfo(pEnemyClass->GetPosition(), destination);
+		vector<XMFLOAT3> path = AStarClass::GetInstance()->findPath();
 
 		if (path.size() == 0)
 		{
