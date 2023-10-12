@@ -1,6 +1,7 @@
 #include "enemyStates.h"
 #include "state.h"
 #include "enemyclass.h"
+#include "astarclass.h"
 
 #include <iostream>
 using std::cout;
@@ -38,22 +39,20 @@ void Patrol::Execute(EnemyClass* pEnemyClass, float deltaTime)
 	pEnemyClass->SetSpeed(deltaTime * 0.4f);
 
 	timer += deltaTime;
-	if (timer > 50.0f)
+	if (timer > 50.0f && pEnemyClass->isPosUpdated())
 	{
 		// Find Path to destionation
-		int correction = 48;
-		AStarClass AStar(pEnemyClass->GetPosition(), destination, correction);
-		AStar.FindPath();
-		list<XMFLOAT3*> path = AStar.GetPath();
+		AStarClass AStar(pEnemyClass->GetPosition(), destination);
+		vector<XMFLOAT3> path = AStar.findPath();
 
 		if (path.size() == 0) return;
 
 		XMFLOAT3 target;
 
-		if (path.size() > 1)
-			path.pop_front();
+		if (path.size() > 1) 
+			path.erase(path.begin());
 
-		target = *path.front();
+		target = *path.begin();
 
 		XMFLOAT3 enemyPos = pEnemyClass->GetPosition();
 		XMVECTOR enemyPositionVec = XMLoadFloat3(&enemyPos);
@@ -63,20 +62,20 @@ void Patrol::Execute(EnemyClass* pEnemyClass, float deltaTime)
 		if (distance <= 0.1f)
 		{
 			if (path.size() > 1)
-				path.pop_front();
+				path.erase(path.begin());
 
-			target = *path.front();
+			target = *path.begin();
 		}
 
-		list<XMFLOAT3*>::iterator iter;
+		vector<XMFLOAT3>::iterator iter;
 		iter = path.begin();
 		int i = 0;
 		pEnemyClass->SetShortestPathSize(0);
 		for (; iter != path.end(); iter++)
 		{
-			pEnemyClass->GetShortestPath()[i].x = (*iter)->x;
-			pEnemyClass->GetShortestPath()[i].y = (*iter)->y;
-			pEnemyClass->GetShortestPath()[i].z = (*iter)->z;
+			pEnemyClass->GetShortestPath()[i].x = iter->x;
+			pEnemyClass->GetShortestPath()[i].y = iter->y;
+			pEnemyClass->GetShortestPath()[i].z = iter->z;
 			i++;
 		}
 		pEnemyClass->SetShortestPathSize(i);
@@ -107,9 +106,10 @@ void Patrol::Execute(EnemyClass* pEnemyClass, float deltaTime)
 	distance = XMVectorGetX(XMVector3Length(diff));
 	if (distance < pEnemyClass->GetDetectRange())
 	{
+		// 여기 플레이어 좌표가 Vaild 한지 검사해야한다.
 		pEnemyClass->GetFSM()->ChangeState(Approach::Instance());
 	}
-
+	
 	diff = XMVectorZero();
 	distance = -1.0;
 
@@ -156,24 +156,25 @@ void Approach::Execute(EnemyClass* pEnemyClass, float deltaTime)
 	pEnemyClass->SetSpeed(deltaTime);
 
 	timer += deltaTime;
-	if (timer > 50.0f)
+	if (timer > 50.0f && pEnemyClass->isPosUpdated())
 	{
 		// Find Path to destionation
-		int correction = 48;
-		AStarClass AStar(pEnemyClass->GetPosition(), destination, correction);
-		AStar.FindPath();
-		list<XMFLOAT3*> path = AStar.GetPath();
+		AStarClass AStar(pEnemyClass->GetPosition(), destination);
+		vector<XMFLOAT3> path = AStar.findPath();
 
-		if (path.size() == 0) return;
+		if (path.size() == 0)
+		{
+			pEnemyClass->GetFSM()->ChangeState(Patrol::Instance());
+			return;
+		}
 
 		XMFLOAT3 target;
 
 		if (path.size() > 2)
 		{
-			path.pop_front();
-			path.pop_front();
+			path.erase(path.begin(), path.begin() + 2);
 		}
-		target = *path.front();
+		target = *path.begin();
 
 		XMFLOAT3 enemyPos = pEnemyClass->GetPosition();
 		XMVECTOR enemyPositionVec = XMLoadFloat3(&enemyPos);
@@ -184,21 +185,20 @@ void Approach::Execute(EnemyClass* pEnemyClass, float deltaTime)
 		{
 			if (path.size() > 2)
 			{
-				path.pop_front();
-				path.pop_front();
+				path.erase(path.begin(), path.begin() + 2);
 			}
-			target = *path.front();
+			target = *path.begin();
 		}
 
-		list<XMFLOAT3*>::iterator iter;
+		vector<XMFLOAT3>::iterator iter;
 		iter = path.begin();
 		int i = 0;
 		pEnemyClass->SetShortestPathSize(0);
 		for (; iter != path.end(); iter++)
 		{
-			pEnemyClass->GetShortestPath()[i].x = (*iter)->x;
-			pEnemyClass->GetShortestPath()[i].y = (*iter)->y;
-			pEnemyClass->GetShortestPath()[i].z = (*iter)->z;
+			pEnemyClass->GetShortestPath()[i].x = iter->x;
+			pEnemyClass->GetShortestPath()[i].y = iter->y;
+			pEnemyClass->GetShortestPath()[i].z = iter->z;
 			i++;
 		}
 		pEnemyClass->SetShortestPathSize(i);

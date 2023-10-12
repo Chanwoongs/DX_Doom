@@ -46,6 +46,12 @@ public:
 	void SetPosition(float, float, float);
 	void SetPosition(XMFLOAT3);
 
+	XMFLOAT3 GetPrevPosition() { return m_prevPosition; }
+	void SetPrevPosition(float, float, float);
+	void SetPrevPosition(XMFLOAT3);
+
+	bool isPosUpdated();
+
 	XMVECTOR GetForwardVector() { return m_forwardVec; }
 	void SetForwardVector(float ,float, float);
 	void SetForwardVector(XMVECTOR);
@@ -115,6 +121,7 @@ private:
 	float m_positionY;
 
 	XMFLOAT3 m_position;
+	XMFLOAT3 m_prevPosition;
 	XMVECTOR m_forwardVec;
 
 	vector<XMFLOAT3> m_path;

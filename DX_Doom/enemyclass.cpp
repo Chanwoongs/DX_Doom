@@ -91,6 +91,36 @@ void EnemyClass::SetPosition(XMFLOAT3 position)
 	m_Box.Center = XMFLOAT3(m_position.x, m_modelHeight / 2, m_position.z); ;
 }
 
+void EnemyClass::SetPrevPosition(float x, float y, float z)
+{
+	m_prevPosition.x = x;
+	m_prevPosition.y = y;
+	m_prevPosition.z = z;
+}
+
+void EnemyClass::SetPrevPosition(XMFLOAT3 position)
+{
+	m_prevPosition = position;
+}
+
+bool EnemyClass::isPosUpdated()
+{
+	int cx, cy, cz, px, py, pz;
+	cx = m_position.x;
+	cy = m_position.y;
+	cz = m_position.z;
+	px = m_prevPosition.x;
+	py = m_prevPosition.y;
+	pz = m_prevPosition.z;
+
+	if (cx != px || cy != py || cz != pz)
+	{
+		m_prevPosition = m_position;
+		return true;
+	}
+	else return false;
+}
+
 void EnemyClass::SetForwardVector(float x, float y, float z)
 {
 	m_forwardVec = XMVectorSet(x, y, z, 0);
