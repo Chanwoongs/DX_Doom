@@ -599,7 +599,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Zombies.at(0)->SetForwardVector(0, 0, -1);
 	m_Zombies.at(0)->SetAcceptDistance(2.0f);
 	m_Zombies.at(0)->SetDetectRange(30.0f);
-	m_Zombies.at(0)->SetAttackRange(5.0f);
+	m_Zombies.at(0)->SetAttackRange(3.0f);
 	m_Zombies.at(0)->SetSpeed(1.0f);
 	m_Zombies.at(0)->AddPath(XMFLOAT3(0, 0, 29));
 	m_Zombies.at(0)->AddPath(XMFLOAT3(0, 0, 1));
