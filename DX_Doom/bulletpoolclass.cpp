@@ -24,7 +24,7 @@ BulletPoolClass::~BulletPoolClass()
 
 bool BulletPoolClass::Initialize(ID3D11Device* device, int modelWidth, int modelHeight, const WCHAR* textureFileName)
 {
-	for (int i = 0; i < m_poolSize - 1; i++)
+	for (int i = 0; i < m_poolSize; i++)
 	{
 		m_Bullets[i].Initialize(device, modelWidth, modelHeight, textureFileName);
 	}

@@ -1115,9 +1115,9 @@ void GraphicsClass::Shutdown()
 	{
 		for (int i = 0; i < m_zombieCount; i++)
 		{
-			for (int i = 0; i < m_ZombieAnimInfos.at(i)->animationCount; i++)
+			for (int j = 0; j < m_ZombieAnimInfos.at(i)->animationCount; j++)
 			{
-				delete[] m_ZombieAnimInfos.at(i)->textureNames[i];
+				delete[] m_ZombieAnimInfos.at(i)->textureNames[j];
 			}
 			delete[] m_ZombieAnimInfos.at(i)->textureNames;
 
@@ -1188,115 +1188,116 @@ bool GraphicsClass::Frame(int fps, int cpu, float frameTime)
 		return false;
 	}
 
-
-	// update camera Headbob
-	bobAngle += XM_PI * 0.025f;
-	if (bobAngle > 360.0f)
+	if (m_SceneNum == 2)
 	{
-		bobAngle = 0.0f;
-	}
-	
-	m_Camera->StartHeadbob(bobAngle);
-	m_PlayerBox.Center = m_Camera->GetPosition();
-	m_PlayerBox.Extents = XMFLOAT3(0.5f, 5.0f, 0.5f);
+		// update camera Headbob
+		bobAngle += XM_PI * 0.025f;
+		if (bobAngle > 360.0f)
+		{
+			bobAngle = 0.0f;
+		}
 
-	vector<BoundingBox*>::iterator iter;
-	iter = m_StageBox.begin();
-	for (; iter != m_StageBox.end(); iter++)
-	{
-		XMFLOAT3 camPos = m_Camera->GetPosition();
-		XMVECTOR camPosVec = XMLoadFloat3(&camPos);
-		float a = 0.0f;
-		if ((*iter)->Intersects(camPosVec, m_Camera->GetForwardVector(), a))
-		{
-			if (a < 3.0f)
-				m_forwardHit = true;
-			else
-				m_forwardHit = false;
-		}
-		if ((*iter)->Intersects(camPosVec, -m_Camera->GetForwardVector(), a))
-		{
-			if (a < 3.0f)
-				m_backwardHit = true;
-			else
-				m_backwardHit = false;
-		}
-		if ((*iter)->Intersects(camPosVec, m_Camera->GetRightVector(), a))
-		{
-			if (a < 3.0f)
-				m_rightHit = true;
-			else
-				m_rightHit = false;
-		}
-		if ((*iter)->Intersects(camPosVec, -m_Camera->GetRightVector(), a))
-		{
-			if (a < 3.0f)
-				m_leftHit = true;
-			else
-				m_leftHit = false;
-		}
-	}
+		m_Camera->StartHeadbob(bobAngle);
+		m_PlayerBox.Center = m_Camera->GetPosition();
+		m_PlayerBox.Extents = XMFLOAT3(0.5f, 5.0f, 0.5f);
 
-	iter = m_DoorBox.begin();
-	for (; iter != m_DoorBox.end(); iter++)
-	{
-		XMFLOAT3 camPos = m_Camera->GetPosition();
-		XMVECTOR camPosVec = XMLoadFloat3(&camPos);
-		float a = 0.0f;
-		if ((*iter)->Intersects(camPosVec, m_Camera->GetForwardVector(), a))
+		vector<BoundingBox*>::iterator iter;
+		iter = m_StageBox.begin();
+		for (; iter != m_StageBox.end(); iter++)
 		{
-			if (a < 3.0f)
-				m_forwardHit = true;
-			else
-				m_forwardHit = false;
-		}
-		if ((*iter)->Intersects(camPosVec, -m_Camera->GetForwardVector(), a))
-		{
-			if (a < 3.0f)
-				m_backwardHit = true;
-			else
-				m_backwardHit = false;
-		}
-		if ((*iter)->Intersects(camPosVec, m_Camera->GetRightVector(), a))
-		{
-			if (a < 3.0f)
-				m_rightHit = true;
-			else
-				m_rightHit = false;
-		}
-		if ((*iter)->Intersects(camPosVec, -m_Camera->GetRightVector(), a))
-		{
-			if (a < 3.0f)
-				m_leftHit = true;
-			else
-				m_leftHit = false;
-		}
-	}
-
-
-	// Play Gun Animation
-	PlayGunAnim();
-
-	// Update FSM
-	for (int i = 0; i < m_zombieCount; i++)
-	{
-		if (m_Zombies.at(i)->IsSpawn())
-		{
-			m_Zombies.at(i)->SetTargetPosition(m_Camera->GetPosition());
-			m_Zombies.at(i)->Update(deltaTime);
-			if (m_Zombies.at(i)->IsStateChanged())
+			XMFLOAT3 camPos = m_Camera->GetPosition();
+			XMVECTOR camPosVec = XMLoadFloat3(&camPos);
+			float a = 0.0f;
+			if ((*iter)->Intersects(camPosVec, m_Camera->GetForwardVector(), a))
 			{
-				m_ZombieAnimInfos.at(i)->currentFrameNum = 0;
+				if (a < 3.0f)
+					m_forwardHit = true;
+				else
+					m_forwardHit = false;
+			}
+			if ((*iter)->Intersects(camPosVec, -m_Camera->GetForwardVector(), a))
+			{
+				if (a < 3.0f)
+					m_backwardHit = true;
+				else
+					m_backwardHit = false;
+			}
+			if ((*iter)->Intersects(camPosVec, m_Camera->GetRightVector(), a))
+			{
+				if (a < 3.0f)
+					m_rightHit = true;
+				else
+					m_rightHit = false;
+			}
+			if ((*iter)->Intersects(camPosVec, -m_Camera->GetRightVector(), a))
+			{
+				if (a < 3.0f)
+					m_leftHit = true;
+				else
+					m_leftHit = false;
 			}
 		}
-	}
 
-	// Run the frame processing for the particle system.
-	for (int i = 0; i < m_ParticleCount; i++)
-	{
-		m_ParticleSystem[i].Frame(frameTime, m_D3D->GetDeviceContext());
-	}
+		iter = m_DoorBox.begin();
+		for (; iter != m_DoorBox.end(); iter++)
+		{
+			XMFLOAT3 camPos = m_Camera->GetPosition();
+			XMVECTOR camPosVec = XMLoadFloat3(&camPos);
+			float a = 0.0f;
+			if ((*iter)->Intersects(camPosVec, m_Camera->GetForwardVector(), a))
+			{
+				if (a < 3.0f)
+					m_forwardHit = true;
+				else
+					m_forwardHit = false;
+			}
+			if ((*iter)->Intersects(camPosVec, -m_Camera->GetForwardVector(), a))
+			{
+				if (a < 3.0f)
+					m_backwardHit = true;
+				else
+					m_backwardHit = false;
+			}
+			if ((*iter)->Intersects(camPosVec, m_Camera->GetRightVector(), a))
+			{
+				if (a < 3.0f)
+					m_rightHit = true;
+				else
+					m_rightHit = false;
+			}
+			if ((*iter)->Intersects(camPosVec, -m_Camera->GetRightVector(), a))
+			{
+				if (a < 3.0f)
+					m_leftHit = true;
+				else
+					m_leftHit = false;
+			}
+		}
 
+
+		// Play Gun Animation
+		PlayGunAnim();
+
+		// Update FSM
+		for (int i = 0; i < m_zombieCount; i++)
+		{
+			if (m_Zombies.at(i)->IsSpawn())
+			{
+				m_Zombies.at(i)->SetTargetPosition(m_Camera->GetPosition());
+				m_Zombies.at(i)->Update(deltaTime);
+				if (m_Zombies.at(i)->IsStateChanged())
+				{
+					m_ZombieAnimInfos.at(i)->currentFrameNum = 0;
+				}
+			}
+		}
+
+		// Run the frame processing for the particle system.
+		for (int i = 0; i < m_ParticleCount; i++)
+		{
+			m_ParticleSystem[i].Frame(frameTime, m_D3D->GetDeviceContext());
+		}
+	}
 
 	// Render the graphics scene.
 	result = Render(deltaTime);
