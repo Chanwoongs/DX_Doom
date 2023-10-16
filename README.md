@@ -8,6 +8,9 @@
 ### [YouTube 영상](https://www.youtube.com/watch?v=kex6V4l4ZNQ&t=56s)
 ### [DX_Doom 기획서](https://github.com/Chanwoongs/DX_Doom/files/12922610/DX_DOOM.pdf)
 
+### 개발 기간 (1인 개발)
+> #### 2022.10 ~ 2022.12
+
 ### 개요
 > #### FPS 게임의 시초를 구현해보고자 시도해본 프로젝트 입니다.
 > #### 총을 쏴서 필드내의 좀비를 모두 처치
