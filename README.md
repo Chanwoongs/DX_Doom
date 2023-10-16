@@ -1,5 +1,5 @@
 # DX_Doom
-### 'Doom' 이라는 게임의 초기 버전을 레퍼런스하여 DirextX11 사용하여 구현한 게임입니다.
+### 'Doom' 이라는 게임의 초기 버전을 레퍼런스로 DirectX 11을 사용하여 구현한 게임입니다.
 
 <div aling="center">
   <img src="https://github.com/Chanwoongs/DX_Doom/assets/26241243/970d21d6-5fa0-470b-9112-85c65cde94a2" width="854" height="480"/>    
