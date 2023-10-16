@@ -2,6 +2,7 @@
 #define ENEMYSTATES_H
 
 #include "State.h"
+#include "helperclass.h"
 
 #ifndef StateID
 

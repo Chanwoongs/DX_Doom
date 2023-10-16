@@ -55,11 +55,7 @@ void Patrol::Execute(EnemyClass* pEnemyClass, float deltaTime)
 
 		target = *path.begin();
 
-		XMFLOAT3 enemyPos = pEnemyClass->GetPosition();
-		XMVECTOR enemyPositionVec = XMLoadFloat3(&enemyPos);
-		XMVECTOR targetVec = XMLoadFloat3(&target);
-		XMVECTOR diff = enemyPositionVec - targetVec;
-		float distance = XMVectorGetX(XMVector3Length(diff));
+		float distance = Distance(&target, pEnemyClass->GetPosition());
 		if (distance <= 0.1f)
 		{
 			if (path.size() > 1)
@@ -87,16 +83,12 @@ void Patrol::Execute(EnemyClass* pEnemyClass, float deltaTime)
 	}
 
 	XMFLOAT3 enemyPos = pEnemyClass->GetPosition();
-	XMVECTOR enemyPositionVec = XMLoadFloat3(&enemyPos);
-	XMVECTOR enemyDestPathVec = XMLoadFloat3(&destination);
 	XMFLOAT3 targetPos = pEnemyClass->GetTargetPosition();
-	XMVECTOR targetPositionVec = XMLoadFloat3(&targetPos);
 
 	// 플레이어 좌표가 Valid 한지 검사해야한다.
 	if (AStarClass::GetInstance()->isValid((int)targetPos.z, (int)targetPos.x))
 	{
-		XMVECTOR diff = enemyPositionVec - enemyDestPathVec;
-		float distance = XMVectorGetX(XMVector3Length(diff));
+		float distance = Distance(&enemyPos, &destination); 
 		if (distance <= pEnemyClass->GetAcceptDistance())
 		{
 			pEnemyClass->SetPathIndex(pEnemyClass->GetPathIndex() + 1);
@@ -106,15 +98,15 @@ void Patrol::Execute(EnemyClass* pEnemyClass, float deltaTime)
 			}
 		}
 
-		diff = enemyPositionVec - targetPositionVec;
-		distance = XMVectorGetX(XMVector3Length(diff));
+		//diff = enemyPositionVec - targetPositionVec;
+		distance = Distance(&targetPos, &enemyPos); //XMVectorGetX(XMVector3Length(diff));
 
 		if (distance < pEnemyClass->GetDetectRange())
 		{
 			pEnemyClass->GetFSM()->ChangeState(Approach::Instance());
 		}
 
-		diff = XMVectorZero();
+		//diff = XMVectorZero();
 		distance = -1.0;
 	}
 
