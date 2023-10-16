@@ -1741,8 +1741,9 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 	billboardAngle = acos(XMVectorGetX(XMVector3Dot(enemyToPlayerVec, enemy->GetForwardVector()))) * (180.0 / XM_PI);
 	float tempCross = XMVectorGetY(XMVector3Cross(enemy->GetForwardVector(), enemyToPlayerVec));
 
-	auto id = enemy->GetFSM()->CurrentState()->GetStateID();
-
+	auto fsm = enemy->GetFSM();
+	auto id = fsm->CurrentState()->GetStateID();
+	
 	// case Forward
 	if (billboardAngle < 22.5f && billboardAngle >= 0.0f)
 	{
@@ -1782,7 +1783,7 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 		case HITTED:
 		{
 			if (anim.currentFrameNum / (m_zombieInterval - 1) == 1)
-				enemy->GetFSM()->ChangeState(enemy->GetFSM()->PreviousState());
+				fsm->ChangeState(fsm->PreviousState());
 
 			anim.currentAnimationIndex = ZOMBIE_HF;
 			break;
@@ -1790,14 +1791,7 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 		case DEAD:
 		{
 			bool result = m_EnemyDieSound->PlayWaveFile();
-
-			if (anim.currentFrameNum / m_zombieInterval == 7)
-			{
-				UpdateStageNum();
-				enemy->SetAlive(false);
-				if (m_aliveEnemies == 0)
-					SetSceneNum(3);
-			}
+			checkEnd(anim, enemy);
 
 			anim.currentAnimationIndex = ZOMBIE_D;
 			break;
@@ -1825,7 +1819,7 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 		case HITTED:
 		{
 			if (anim.currentFrameNum / (m_zombieInterval - 1) == 1)
-				enemy->GetFSM()->ChangeState(enemy->GetFSM()->PreviousState());
+				fsm->ChangeState(fsm->PreviousState());
 
 			anim.currentAnimationIndex = ZOMBIE_HFL;
 			break;
@@ -1833,14 +1827,7 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 		case DEAD:
 		{
 			bool result = m_EnemyDieSound->PlayWaveFile();
-
-			if (anim.currentFrameNum / m_zombieInterval == 7)
-			{
-				UpdateStageNum();
-				enemy->SetAlive(false);
-				if (m_aliveEnemies == 0)
-					SetSceneNum(3);
-			}
+			checkEnd(anim, enemy);
 
 			anim.currentAnimationIndex = ZOMBIE_D;
 			break;
@@ -1868,7 +1855,7 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 		case HITTED:
 		{
 			if (anim.currentFrameNum / (m_zombieInterval - 1) == 1)
-				enemy->GetFSM()->ChangeState(enemy->GetFSM()->PreviousState());
+				fsm->ChangeState(fsm->PreviousState());
 
 			anim.currentAnimationIndex = ZOMBIE_HL;
 			break;
@@ -1876,14 +1863,7 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 		case DEAD:
 		{
 			bool result = m_EnemyDieSound->PlayWaveFile();
-
-			if (anim.currentFrameNum / m_zombieInterval == 7)
-			{
-				UpdateStageNum();
-				enemy->SetAlive(false);
-				if (m_aliveEnemies == 0)
-					SetSceneNum(3);
-			}
+			checkEnd(anim, enemy);
 
 			anim.currentAnimationIndex = ZOMBIE_D;
 			break;
@@ -1911,7 +1891,7 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 		case HITTED:
 		{
 			if (anim.currentFrameNum / (m_zombieInterval - 1) == 1)
-				enemy->GetFSM()->ChangeState(enemy->GetFSM()->PreviousState());
+				fsm->ChangeState(fsm->PreviousState());
 
 			anim.currentAnimationIndex = ZOMBIE_HBL;
 			break;
@@ -1919,14 +1899,7 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 		case DEAD:
 		{
 			bool result = m_EnemyDieSound->PlayWaveFile();
-
-			if (anim.currentFrameNum / m_zombieInterval == 7)
-			{
-				UpdateStageNum();
-				enemy->SetAlive(false);
-				if (m_aliveEnemies == 0)
-					SetSceneNum(3);
-			}
+			checkEnd(anim, enemy);
 
 			anim.currentAnimationIndex = ZOMBIE_D;
 			break;
@@ -1954,7 +1927,7 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 		case HITTED:
 		{
 			if (anim.currentFrameNum / (m_zombieInterval - 1) == 1)
-				enemy->GetFSM()->ChangeState(enemy->GetFSM()->PreviousState());
+				fsm->ChangeState(fsm->PreviousState());
 
 			anim.currentAnimationIndex = ZOMBIE_HB;
 			break;
@@ -1962,14 +1935,7 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 		case DEAD:
 		{
 			bool result = m_EnemyDieSound->PlayWaveFile();
-
-			if (anim.currentFrameNum / m_zombieInterval == 7)
-			{
-				UpdateStageNum();
-				enemy->SetAlive(false);
-				if (m_aliveEnemies == 0)
-					SetSceneNum(3);
-			}
+			checkEnd(anim, enemy);
 
 			anim.currentAnimationIndex = ZOMBIE_D;
 			break;
@@ -1997,7 +1963,7 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 		case HITTED:
 		{
 			if (anim.currentFrameNum / (m_zombieInterval - 1) == 1)
-				enemy->GetFSM()->ChangeState(enemy->GetFSM()->PreviousState());
+				fsm->ChangeState(fsm->PreviousState());
 
 			anim.currentAnimationIndex = ZOMBIE_HBR;
 			break;
@@ -2005,14 +1971,7 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 		case DEAD:
 		{
 			bool result = m_EnemyDieSound->PlayWaveFile();
-
-			if (anim.currentFrameNum / m_zombieInterval == 7)
-			{
-				UpdateStageNum();
-				enemy->SetAlive(false);
-				if (m_aliveEnemies == 0)
-					SetSceneNum(3);
-			}
+			checkEnd(anim, enemy);
 
 			anim.currentAnimationIndex = ZOMBIE_D;
 			break;
@@ -2040,7 +1999,7 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 		case HITTED:
 		{
 			if (anim.currentFrameNum / (m_zombieInterval - 1) == 1)
-				enemy->GetFSM()->ChangeState(enemy->GetFSM()->PreviousState());
+				fsm->ChangeState(fsm->PreviousState());
 
 			anim.currentAnimationIndex = ZOMBIE_HR;
 			break;
@@ -2048,14 +2007,7 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 		case DEAD:
 		{
 			bool result = m_EnemyDieSound->PlayWaveFile();
-
-			if (anim.currentFrameNum / m_zombieInterval == 7)
-			{
-				UpdateStageNum();
-				enemy->SetAlive(false);
-				if (m_aliveEnemies == 0)
-					SetSceneNum(3);
-			}
+			checkEnd(anim, enemy);
 
 			anim.currentAnimationIndex = ZOMBIE_D;
 			break;
@@ -2083,7 +2035,7 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 		case HITTED:
 		{
 			if (anim.currentFrameNum / (m_zombieInterval - 1) == 1)
-				enemy->GetFSM()->ChangeState(enemy->GetFSM()->PreviousState());
+				fsm->ChangeState(fsm->PreviousState());
 
 			anim.currentAnimationIndex = ZOMBIE_HFR;
 			break;
@@ -2091,14 +2043,7 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 		case DEAD:
 		{
 			bool result = m_EnemyDieSound->PlayWaveFile();
-
-			if (anim.currentFrameNum / m_zombieInterval == 7)
-			{
-				UpdateStageNum();
-				enemy->SetAlive(false);
-				if (m_aliveEnemies == 0)
-					SetSceneNum(3);
-			}
+			checkEnd(anim, enemy);
 
 			anim.currentAnimationIndex = ZOMBIE_D;
 			break;
@@ -2107,6 +2052,17 @@ XMMATRIX GraphicsClass::UpdateEnemyWalkingAnimation(EnemyClass* enemy, Animation
 	}
 
 	return billboardWorldMatrix;
+}
+
+void GraphicsClass::checkEnd(AnimationInfo anim, EnemyClass* enemy)
+{
+	if (anim.currentFrameNum / m_zombieInterval == 7)
+	{
+		UpdateStageNum();
+		enemy->SetAlive(false);
+		if (m_aliveEnemies == 0)
+			SetSceneNum(3);
+	}
 }
 
 void GraphicsClass::SetZombieAnimInfo(AnimationInfo& anim, int animationCount)
