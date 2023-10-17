@@ -19,6 +19,7 @@
 > #### [A* 길찾기 알고리즘 적용](https://github.com/Chanwoongs/DX_Doom/blob/main/DX_Doom/astarclass.cpp)
 > 지속적인 최적화를 통해 성능 향상 (성능 결과는 YouTube 영상에)
 > #### [오브젝트 풀링](https://github.com/Chanwoongs/DX_Doom/blob/main/DX_Doom/bulletpoolclass.cpp)
+> 게임 프로그래밍 패턴 책에서 배운 빈칸 리스트 기법으로 구현. 객체 생성과 동시에 다음 사용할 객체 포인터 위치를 저장하고 소멸 시 삭제가 아닌 초기화
 > Bullet의 메모리를 미리 확보하여 사용하고 파괴 시 삭제하지 않고 초기화하여 재사용
 > #### [3D 환경에서 2D 몬스터 구현 (UpdateEnemyWalkingAnimation 함수)](https://github.com/Chanwoongs/DX_Doom/blob/main/DX_Doom/graphicsclass.cpp)
 > Billboard 기법과 선형대수학을 활용해 플레이어가 다방면에서 몬스터를 보더라도 그에 맞는 2D 애니메이션 재생
