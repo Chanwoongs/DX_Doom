@@ -17,8 +17,6 @@
 #include "spriteclass.h"
 #include "enemyStates.h"
 #include "StateMachine.h"
-#include "soundclass.h"
-#include "graphicsclass.h"
 
 using namespace DirectX;
 
@@ -107,8 +105,6 @@ public:
 
 	bool IsReturning() { return m_isReturning == true; }
 	void SetReturning(bool returning) { m_isReturning = returning; }
-
-	void OnDead();
 
 private:
 	StateMachine<EnemyClass>* m_pStateMachine;

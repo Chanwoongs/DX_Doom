@@ -173,11 +173,7 @@ void Approach::Execute(EnemyClass* pEnemyClass, float deltaTime)
 		}
 		target = *path.begin();
 
-		XMFLOAT3 enemyPos = pEnemyClass->GetPosition();
-		XMVECTOR enemyPositionVec = XMLoadFloat3(&enemyPos);
-		XMVECTOR targetVec = XMLoadFloat3(&target);
-		XMVECTOR diff = enemyPositionVec - targetVec;
-		float distance = XMVectorGetX(XMVector3Length(diff));
+		float distance = Distance(&target, pEnemyClass->GetPosition());
 		if (distance <= 0.1f)
 		{
 			if (path.size() > 2)

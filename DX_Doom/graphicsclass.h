@@ -113,6 +113,8 @@ public:
 	int GetSceneNum() { return m_SceneNum; }
 	void SetSceneNum(int num) { m_SceneNum = num; }
 
+	void checkEnd(AnimationInfo anim, EnemyClass* enemy);
+
 private:
 	bool Render(float);
 	XMMATRIX UpdateEnemyWalkingAnimation(EnemyClass*, AnimationInfo&, float);
