@@ -26,7 +26,7 @@
 > #### [FSM을 사용해 적 AI 구현](https://github.com/Chanwoongs/DX_Doom/blob/main/DX_Doom/stateMachine.h)
 > 외부 FSM 라이브러리를 Import하고 몬스터의 상태들을 정의하여 AI 동작
 > #### [HLSL](https://github.com/Chanwoongs/DX_Doom/blob/main/DX_Doom/data/light.ps)
-> Multi Texturing, Alpha Blending, Normal Mapping, Environment Mapping , Lighting 적용
+> Multi Texturing, Alpha Blending, Normal Mapping, Environment Mapping ,Lighting 적용
 
 ### 리팩토링
 > 어떤 수학 연산을 할때 XMFLOAT3, XMVECTOR 값을 너무 빈번하게 바꿔, 이를 HelperClass를 만들어 자주 쓰이는 연산을 함수화함
