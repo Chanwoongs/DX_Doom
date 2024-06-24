@@ -8,6 +8,7 @@
 // INCLUDES //
 //////////////
 #include <DirectXMath.h>
+#include <utility>
 
 ///////////////////////
 // MY CLASS INCLUDES //
